@@ -1,165 +1,54 @@
-import PageBanner from "@/components/commonSections/PageBanner";
 import CartCard from "@/components/cards/CartCard";
-import OrderSummaryCard from "@/components/cards/OrderSummaryCard";
-import MainInput from "@/components/form/MainInput";
-import { confirmOrder, getCart, getCartHero } from "@/api/cartServices";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import EmptyDataSection from "@/components/commonSections/EmptyDataSection";
-import { toast } from "sonner";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import CartPageSkeleton from "@/components/Loading/SkeletonLoading/CartSkeletonPage";
 import { useTranslation } from "react-i18next";
 
-// 🔥 form
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import image from "@/assets/images/auth-bg.png";
+import userImg from "@/assets/icons/Icon (1).png";
+import OrderSummaryCard from "./sections/OrderSummaryCard";
 
 const Cart = () => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
 
-  // ✅ schema
-  const schema = z.object({
-    location: z.string().min(1, t("Cart.validation.locationRequired")),
-    home_num: z.string().min(1, t("Cart.validation.homeNumRequired")),
-    comment: z.string().optional(),
-  });
+  const isLoading = false;
 
-  // ✅ form setup
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      location: "",
-      home_num: "",
-      comment: "",
+  const list = Array.from({ length: 9 }, (_, index) => ({
+    id: index + 1,
+    title: "اللغة الانجليزية - المستوى الأول",
+    description:
+      "طوّر مهاراتك في القراءة والكتابة والاستماع والمحادثة من خلال منهج عملي يساعدك على استخدام اللغة الإنجليزية بطلاقة في الدراسة والعمل والحياة اليومية",
+    image: image,
+    price: 50,
+    lecture_number: 12,
+    teacher: {
+      name: "بودا سلطان",
+      image: userImg,
     },
-  });
+    slug: "بودا-سلطان",
+  }));
 
-  // ✅ queries
-  const { data: cartHero, isLoading: isLoadingHero } = useQuery({
-    queryKey: ["cartHero"],
-    queryFn: getCartHero,
-  });
-
-  const { data: cart, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: getCart,
-  });
-
-  // ✅ mutation
-  const { mutate: createOrder, isPending } = useMutation({
-    mutationFn: confirmOrder,
-    onSuccess: (res) => {
-      // toast.success(t("Cart.orderConfirmed"));
-
-      if (res?.payment_url) {
-        window.location.href = res.payment_url;
-      } else {
-        toast.success(t("Cart.orderConfirmed"));
-      }
-
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      queryClient.invalidateQueries({ queryKey: ["cart_count"] });
-
-      reset();
-    },
-    onError: () => {},
-  });
-
-  // ✅ submit
-  const onSubmit = (data) => {
-    createOrder({
-      location: data.location,
-      home_num: data.home_num,
-      comment: data.comment?.trim() || "",
-    });
-  };
-
-  const isCartEmpty = !isLoading && (cart?.cart_items?.length === 0 || !cart);
+  const isCartEmpty = !isLoading && (list?.length === 0 || !list);
 
   return (
-    <main>
-      <PageBanner
-        image={cartHero?.image}
-        title={t("Cart.pageTitle")}
-        description={cartHero?.description}
-        loading={isLoadingHero}
-      />
+    <main className="container pagePadding">
+      <h2 className="flex items-center gap-2 text-4xl font-semibold mb-6">
+        <span className="bg-secondary brightness-75 w-0.75 h-7 rounded-full" />
+        سلة المشتريات
+      </h2>
 
       {isLoading ? (
         <CartPageSkeleton />
       ) : isCartEmpty ? (
         <EmptyDataSection msg={t("Cart.emptyMessage")} />
       ) : (
-        <section className="container pagePadding">
-          <div className="flex flex-col md:flex-row gap-4 lg:gap-8">
-            <div className="flex-1 h-full flex flex-col gap-4 justify-between">
-              <div className="space-y-4">
-                {cart?.cart_items?.map((item) => (
-                  <CartCard key={item.id} item={item} />
-                ))}
-              </div>
-
-              {/* 🔥 FORM */}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* LOCATION */}
-                  <Controller
-                    name="location"
-                    control={control}
-                    render={({ field }) => (
-                      <MainInput
-                        {...field}
-                        label={t("Cart.locationLabel")}
-                        placeholder={t("Cart.locationPlaceholder")}
-                        error={errors.location?.message}
-                      />
-                    )}
-                  />
-
-                  {/* HOME NUMBER */}
-                  <Controller
-                    name="home_num"
-                    control={control}
-                    render={({ field }) => (
-                      <MainInput
-                        {...field}
-                        label={t("Cart.homeNumLabel")}
-                        placeholder={t("Cart.homeNumPlaceholder")}
-                        error={errors.home_num?.message}
-                      />
-                    )}
-                  />
-                </div>
-
-                {/* COMMENT (OPTIONAL) */}
-                <Controller
-                  name="comment"
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      type="textarea"
-                      label={t("Cart.commentLabel")}
-                      placeholder={t("Cart.commentPlaceholder")}
-                      error={errors.comment?.message}
-                    />
-                  )}
-                />
-              </form>
-            </div>
-
-            <OrderSummaryCard
-              cart={cart}
-              onConfirm={handleSubmit(onSubmit)}
-              loading={isPending}
-            />
+        <section className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1 flex flex-col gap-4">
+            {list?.map((item) => (
+              <CartCard key={item.id} item={item} />
+            ))}
           </div>
+
+          <OrderSummaryCard />
         </section>
       )}
     </main>

@@ -1,10 +1,12 @@
 import { HiOutlineCollection } from "react-icons/hi";
+import { Link } from "react-router";
 
 const CourseCard = ({ course }) => {
   return (
-    <div
+    <Link
+      to={`/courses/${course.slug}`}
       key={course.id}
-      className="border rounded-lg overflow-hidden bg-white hover:shadow-xl hover:border-primary hover:bg-primary/10 transition duration-300 ease-in-out"
+      className="border rounded-lg overflow-hidden bg-white hover:shadow-xl hover:border-primary hover:bg-primary/5 transition duration-300 ease-in-out"
     >
       <div className="w-full aspect-5/3 overflow-hidden">
         <img
@@ -41,7 +43,7 @@ const CourseCard = ({ course }) => {
           <p className="text-2xl font-bold text-green-500">${course.price}</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

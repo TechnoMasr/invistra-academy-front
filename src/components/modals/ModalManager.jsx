@@ -6,6 +6,7 @@ import TermsModal from "./TermsModal";
 import ChangePasswordModal from "./ChangePasswordModal";
 import LoadingModal from "./LoadingModal";
 import ContactUsModal from "./ContactUsModal";
+import PaymentModal from "./PaymentModal";
 
 const ModalManager = () => {
   return (
@@ -18,6 +19,7 @@ const ModalManager = () => {
       <TermsModal />
       <ChangePasswordModal />
       <ContactUsModal />
+      <PaymentModal />
     </>
   );
 };

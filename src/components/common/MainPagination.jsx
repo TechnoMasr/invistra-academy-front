@@ -1,4 +1,4 @@
-import { TfiArrowCircleLeft, TfiArrowCircleRight } from "react-icons/tfi";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 const MainPagination = ({ totalPages, currentPage, onPageChange }) => {
   if (!totalPages || totalPages === 0 || totalPages === 1) return null;
@@ -45,7 +45,7 @@ const MainPagination = ({ totalPages, currentPage, onPageChange }) => {
             : "pagination-btn--normal"
         }`}
       >
-        <TfiArrowCircleLeft className="text-lg rtl:rotate-180" />
+        <IoIosArrowBack className="text-lg rtl:rotate-180" />
       </button>
 
       {visiblePages.map((page) => (
@@ -73,7 +73,7 @@ const MainPagination = ({ totalPages, currentPage, onPageChange }) => {
             : "pagination-btn--normal"
         }`}
       >
-        <TfiArrowCircleRight className="text-lg rtl:rotate-180" />
+        <IoIosArrowForward className="text-lg rtl:rotate-180" />
       </button>
     </div>
   );

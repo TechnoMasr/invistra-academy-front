@@ -9,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import PageHead from "@/components/common/PageHead";
+import MainPagination from "@/components/common/MainPagination";
 
 const Courses = () => {
   const list = Array.from({ length: 9 }, (_, index) => ({
@@ -23,10 +25,16 @@ const Courses = () => {
       name: "بودا سلطان",
       image: userImg,
     },
+    slug: "بودا-سلطان",
   }));
 
   return (
     <main>
+      <PageHead
+        title="اكتشف دوراتك القادمة"
+        description="استثمر في نفسك من خلال محتوى تعليمي عالي الجودة يقدمه نخبة من الخبراء"
+      />
+
       <section className="container pagePadding space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
@@ -68,6 +76,12 @@ const Courses = () => {
             <CourseCard key={item.id} course={item} />
           ))}
         </div>
+
+        <MainPagination
+          totalPages={10}
+          currentPage={1}
+          onPageChange={() => {}}
+        />
       </section>
     </main>
   );

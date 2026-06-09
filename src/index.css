@@ -6,6 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --breakpoint-xs: 480px;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
@@ -302,8 +303,8 @@ input::-webkit-inner-spin-button {
     @apply flex items-center justify-center gap-2;
 
     .pagination-btn {
-      @apply w-8 h-8 flex items-center justify-center rounded-md bg-input 
-      text-muted cursor-pointer hover:bg-primary/70 transition-all duration-200;
+      @apply w-8 h-8 flex items-center justify-center rounded-full bg-input border
+      text-primary cursor-pointer hover:brightness-80 transition-all duration-200;
     }
 
     .pagination-btn--disabled {

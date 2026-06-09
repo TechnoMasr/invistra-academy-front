@@ -9,6 +9,13 @@ import CheckVerifiedEmailGuard from "@/components/protectRoutes/CheckVerifiedEma
 
 const Home = React.lazy(() => import("../pages/Home/Home"));
 const Courses = React.lazy(() => import("../pages/Courses/Courses"));
+const CourseDetails = React.lazy(
+  () => import("../pages/CourseDetails/CourseDetails"),
+);
+const Teachers = React.lazy(() => import("../pages/Teachers/Teachers"));
+const TeacherDetails = React.lazy(
+  () => import("../pages/TeacherDetails/TeacherDetails"),
+);
 
 const Cart = React.lazy(() => import("../pages/Cart/Cart"));
 const Payment = React.lazy(() => import("../pages/Payment/Payment"));
@@ -61,6 +68,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "/courses", element: <Courses /> },
+      { path: "/courses/:slug", element: <CourseDetails /> },
+      { path: "/teachers", element: <Teachers /> },
+      { path: "/teachers/:slug", element: <TeacherDetails /> },
 
       { path: "/terms-and-conditions", element: <Terms /> },
       { path: "/privacy-policy", element: <Policy /> },
@@ -71,6 +81,11 @@ const router = createBrowserRouter([
       //   path: "payment/:status?",
       //   element: <Payment />,
       // },
+
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
 
       {
         element: <ProtectedRoute />,

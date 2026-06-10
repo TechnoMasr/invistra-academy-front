@@ -7,9 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FaRegUser } from "react-icons/fa6";
-import { FiCoffee, FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
-import { FaRegHeart } from "react-icons/fa";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Link, useNavigate } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +17,8 @@ import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { BiSolidDownArrow } from "react-icons/bi";
+import { MdOutlineOndemandVideo } from "react-icons/md";
+import { PiCertificateLight, PiExam, PiMoneyWavyBold } from "react-icons/pi";
 
 const ProfileSide = ({ user, loading }) => {
   const dispatch = useDispatch();
@@ -25,21 +26,31 @@ const ProfileSide = ({ user, loading }) => {
   const { t } = useTranslation();
 
   const links = [
-    { name: t("ProfileSideBar.profile"), href: "/profile", icon: FaRegUser },
+    { name: "البيانات الشخصية", href: "/profile", icon: FaRegUser },
     {
-      name: t("ProfileSideBar.orders"),
+      name: "الطلبات",
       href: "/profile/orders",
       icon: FiShoppingCart,
     },
     {
-      name: t("ProfileSideBar.eventOrders"),
-      href: "/profile/event-orders",
-      icon: FiCoffee,
+      name: "الكورسات",
+      href: "/profile/courses",
+      icon: MdOutlineOndemandVideo,
     },
     {
-      name: t("ProfileSideBar.favorites"),
-      href: "/profile/favorites",
-      icon: FaRegHeart,
+      name: "الاختبارات",
+      href: "/profile/exams",
+      icon: PiExam,
+    },
+    {
+      name: "الشهادات",
+      href: "/profile/certificates",
+      icon: PiCertificateLight,
+    },
+    {
+      name: "التحويلات المالية",
+      href: "/profile/transactions",
+      icon: PiMoneyWavyBold,
     },
   ];
 
@@ -58,34 +69,39 @@ const ProfileSide = ({ user, loading }) => {
             />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuContent
+            align="end"
+            className="min-w-52 bg-secondary text-primary border-primary"
+          >
             <DropdownMenuLabel className="flex items-center gap-2">
               <UserAvatar name={user?.name} image={user?.image} />
               <h3 className="font-semibold">{user?.name}</h3>
             </DropdownMenuLabel>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className={`bg-primary`} />
 
             {links.map((link) => (
               <DropdownMenuItem
                 key={link.name}
                 onClick={() => navigate(link.href)}
+                className={`focus:bg-secondary focus:text-primary focus:brightness-90 cursor-pointer`}
               >
-                <link.icon />
+                <link.icon className="text-primary" />
                 {link.name}
               </DropdownMenuItem>
             ))}
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className={`bg-primary`} />
 
             <DropdownMenuItem
               variant="destructive"
+              className="cursor-pointer"
               onClick={() => {
                 dispatch(openModal({ modalName: "logOutModal" }));
               }}
             >
               <IoIosLogOut />
-              {t("ProfileSide.logout")}
+              {"تسجيل الخروج"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

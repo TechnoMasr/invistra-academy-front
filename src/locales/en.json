@@ -282,17 +282,43 @@
     "description": "Your information will be reviewed and you will be notified via email"
   },
 
-  "ErrorPage": {
-    "title": "An unexpected error occurred",
-    "description": "There was a problem loading the page. Please try again later.",
-    "reload": "Reload page",
-    "goHome": "Go to Home"
-  },
+  "account": {
+    "personalInfo": "Personal Information",
 
-  "notFound": {
-    "title": "404",
-    "subtitle": "Page Not Found",
-    "goHome": "Go Home"
+    "form": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter name",
+        "validation": {
+          "min": "Name must be at least 2 characters"
+        }
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "example@email.com",
+        "validation": {
+          "invalid": "Invalid email address"
+        }
+      },
+      "phone": {
+        "label": "Phone number",
+        "validation": {
+          "invalid": "Invalid phone number"
+        }
+      }
+    },
+
+    "buttons": {
+      "save": "Save changes",
+      "saving": "Saving...",
+      "changePassword": "Change password",
+      "edit": "Edit",
+      "cancelEdit": "Cancel"
+    },
+
+    "messages": {
+      "success": "Profile updated successfully"
+    }
   },
 
   "payment": {
@@ -313,5 +339,18 @@
       "orders": "Go to Orders",
       "home": "Back to Home"
     }
+  },
+
+  "ErrorPage": {
+    "title": "An unexpected error occurred",
+    "description": "There was a problem loading the page. Please try again later.",
+    "reload": "Reload page",
+    "goHome": "Go to Home"
+  },
+
+  "notFound": {
+    "title": "404",
+    "subtitle": "Page Not Found",
+    "goHome": "Go Home"
   }
 }

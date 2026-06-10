@@ -246,26 +246,23 @@ input::-webkit-inner-spin-button {
     }
   }
 
-  .main_slider_btn {
-    @apply w-8 h-8 rounded-full cursor-pointer
-    flex items-center justify-center 
-    bg-primary text-white rtl:rotate-180
-    hover:scale-110 transition-all duration-200;
+  .sideBarLink {
+    @apply text-white flex items-center gap-2 py-1 px-4 rounded-md cursor-pointer transition-all duration-300;
 
-    &.layout {
-      @apply absolute top-1/2 -translate-y-1/2 z-10 hidden xl:flex;
+    &.danger {
+      @apply text-red-100 bg-destructive;
     }
 
-    &.prev {
-      @apply -left-10 rtl:left-auto rtl:-right-10;
+    &:hover {
+      @apply bg-slate-950/20;
+
+      &.danger {
+        @apply bg-destructive brightness-90;
+      }
     }
 
-    &.next {
-      @apply -right-10 rtl:right-auto rtl:-left-10;
-    }
-
-    &:disabled {
-      @apply opacity-40 cursor-not-allowed hover:scale-100;
+    &.active {
+      @apply bg-secondary text-primary;
     }
   }
 

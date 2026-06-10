@@ -9,7 +9,7 @@ const Hero = ({ data = {}, loading }) => {
   // if (!data || (!data?.title && !data?.description && !data?.image)) return null;
 
   return (
-    <section className="bg-secondary text-primary min-h-[calc(100vh-95px)] flex items-center sectionPadding relative overflow-hidden">
+    <section className="bg-secondary text-primary min-h-[calc(100vh-83px)] flex items-center sectionPadding relative overflow-hidden">
       <div className="absolute w-70 lg:w-100 aspect-square -top-50 -inset-s-20 bg-[#CCA880] rounded-full" />
       <div className="absolute w-70 lg:w-100 aspect-square top-20 -inset-e-50 bg-[#CCA880] rounded-full" />
       <div className="absolute w-70 lg:w-100 aspect-square -bottom-50 inset-e-1/2 bg-[#CCA880] rounded-full" />

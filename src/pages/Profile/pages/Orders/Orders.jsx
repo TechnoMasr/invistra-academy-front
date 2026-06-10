@@ -1,63 +1,36 @@
-import SectionTitle from "@/components/common/SectionTitle";
 import OrderCard from "@/components/cards/OrderCard";
-import { getOrders, getOrdersStatus } from "@/api/cartServices";
-import { useQuery } from "@tanstack/react-query";
 import MyOrdersSkeleton from "@/components/Loading/SkeletonLoading/MyOrdersSkeleton";
-import OptionSelector from "@/components/common/OptionSelector";
-import EmptyDataSection from "@/components/commonSections/EmptyDataSection";
-import { useSearchParams } from "react-router";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import MainPagination from "@/components/common/MainPagination";
 import { useTranslation } from "react-i18next";
+import image from "@/assets/images/auth-bg.png";
+import userImg from "@/assets/icons/Icon (1).png";
 
 const Orders = () => {
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  const selectedStatus = searchParams.get("status") || "all";
-  const page = Number(searchParams.get("page")) || 1;
-
-  const { data: orders, isLoading } = useQuery({
-    queryKey: ["orders", selectedStatus, page],
-    queryFn: () => getOrders(selectedStatus, page),
-  });
-
-  const { data: ordersStatus } = useQuery({
-    queryKey: ["orders_status"],
-    queryFn: getOrdersStatus,
-  });
-
-  const isEmpty = !isLoading && (orders?.items?.length === 0 || !orders);
-
-  const filterList = [
-    {
-      value: "all",
-      label: t("ordersPage.all"),
+  const orders = Array.from({ length: 9 }, (_, index) => ({
+    id: index + 1,
+    title: "اللغة الانجليزية - المستوى الأول",
+    description:
+      "طوّر مهاراتك في القراءة والكتابة والاستماع والمحادثة من خلال منهج عملي يساعدك على استخدام اللغة الإنجليزية بطلاقة في الدراسة والعمل والحياة اليومية",
+    image: image,
+    price: 50,
+    lecture_number: 12,
+    teacher: {
+      name: "بودا سلطان",
+      image: userImg,
     },
-    ...(ordersStatus?.map((item) => ({
-      value: item.value,
-      label: item.label,
-    })) || []),
-  ];
+    slug: "بودا-سلطان",
+  }));
 
-  const handleSelect = (item) => {
-    if (item.value === "all") {
-      setSearchParams({ page: 1 });
-    } else {
-      setSearchParams({ status: item.value, page: 1 });
-    }
-  };
+  const isLoading = false;
+
+  const isEmpty = !isLoading && (orders?.length === 0 || !orders);
 
   return (
     <div className="space-y-6">
-      <SectionTitle title={t("ordersPage.title")} />
-
-      <OptionSelector
-        options={filterList}
-        selected={selectedStatus}
-        onSelect={handleSelect}
-        getLabel={(item) => item.label}
-        getValue={(item) => item.value}
-      />
+      <h2>الطلبات</h2>
 
       {isLoading ? (
         <MyOrdersSkeleton />
@@ -65,23 +38,12 @@ const Orders = () => {
         <EmptyDataSection msg={t("ordersPage.noOrders")} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {orders?.items?.map((item) => (
+          {orders?.map((item) => (
             <OrderCard key={item.id} item={item} />
           ))}
         </div>
       )}
-
-      <MainPagination
-        totalPages={orders?.meta?.last_page}
-        currentPage={page}
-        onPageChange={(newPage) => {
-          const params = {};
-          if (selectedStatus && selectedStatus !== "all")
-            params.status = selectedStatus;
-          params.page = newPage;
-          setSearchParams(params);
-        }}
-      />
+      <MainPagination totalPages={10} currentPage={1} onPageChange={() => {}} />
     </div>
   );
 };

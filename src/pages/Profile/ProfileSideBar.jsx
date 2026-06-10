@@ -17,9 +17,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { openModal } from "@/store/modals/modalsSlice";
-import { SlHandbag } from "react-icons/sl";
-import { FaRegHeart } from "react-icons/fa";
-import { FiCoffee } from "react-icons/fi";
+import { FiShoppingCart } from "react-icons/fi";
+import { MdOutlineOndemandVideo } from "react-icons/md";
+import { PiCertificateLight, PiExam, PiMoneyWavyBold } from "react-icons/pi";
 
 const ProfileSideBar = () => {
   const { t } = useTranslation();
@@ -30,24 +30,34 @@ const ProfileSideBar = () => {
   const dispatch = useDispatch();
 
   const links = [
-    { name: t("ProfileSideBar.profile"), href: "/profile", icon: FaRegUser },
+    { name: "البيانات الشخصية", href: "/profile", icon: FaRegUser },
     {
-      name: t("ProfileSideBar.orders"),
+      name: "الطلبات",
       href: "/profile/orders",
-      icon: SlHandbag,
+      icon: FiShoppingCart,
     },
     {
-      name: t("ProfileSideBar.eventOrders"),
-      href: "/profile/event-orders",
-      icon: FiCoffee,
+      name: "الكورسات",
+      href: "/profile/courses",
+      icon: MdOutlineOndemandVideo,
     },
     {
-      name: t("ProfileSideBar.favorites"),
-      href: "/profile/favorites",
-      icon: FaRegHeart,
+      name: "الاختبارات",
+      href: "/profile/exams",
+      icon: PiExam,
     },
     {
-      name: t("ProfileSideBar.notifications"),
+      name: "الشهادات",
+      href: "/profile/certificates",
+      icon: PiCertificateLight,
+    },
+    {
+      name: "التحويلات المالية",
+      href: "/profile/transactions",
+      icon: PiMoneyWavyBold,
+    },
+    {
+      name: "الاشعارات",
       href: "/profile/notifications",
       icon: FaRegBell,
     },
@@ -75,45 +85,45 @@ const ProfileSideBar = () => {
         className="sideBarLink danger"
       >
         <IoIosLogOut />
-        {t("ProfileSideBar.logout")}
+        تسجيل الخروج
       </button>
     </div>
   );
 
   return (
     <>
-      <aside className="hidden lg:block bg-card w-64 p-6 border-e ">
-        <div className="sticky top-35">{sideContent}</div>
+      <aside className="hidden lg:block w-64 p-6 bg-primary">
+        <div className="sticky top-27">{sideContent}</div>
       </aside>
 
       <Sheet open={openSideBar} onOpenChange={setOpenSideBar}>
         <SheetTrigger asChild className="lg:hidden w-fit mt-4 ms-4">
           <Button variant="outline">
             <HiOutlineBars3 />
-            {t("ProfileSideBar.menu")}
+            القائمة
           </Button>
         </SheetTrigger>
 
-        <SheetContent side={lang === "ar" ? "right" : "left"} className="w-64">
+        <SheetContent
+          showCloseButton={false}
+          side={lang === "ar" ? "right" : "left"}
+          className="w-64 bg-primary"
+        >
           <SheetTitle
             asChild
             className="flex items-center justify-center w-full"
           >
-            <div className="w-32 h-12 overflow-hidden mt-4">
+            <div className="w-40 h-20 overflow-hidden mt-4">
               <img
                 loading="lazy"
                 src={settings?.header_logo || logo}
                 alt="logo"
-                className="w-full h-full object-contain invert"
+                className="w-full h-full object-contain"
               />
             </div>
           </SheetTitle>
 
-          <VisuallyHidden>
-            <SheetDescription>
-              {t("ProfileSideBar.sheetDescription")}
-            </SheetDescription>
-          </VisuallyHidden>
+          <SheetDescription className="sr-only"></SheetDescription>
 
           <div className="p-4">{sideContent}</div>
         </SheetContent>

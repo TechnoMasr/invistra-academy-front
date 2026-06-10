@@ -94,28 +94,41 @@ const router = createBrowserRouter([
       { path: "/forgot-password", element: <ForgotPassword /> },
 
       {
+        path: "/profile",
+        element: <Profile />,
+        children: [
+          { index: true, element: <Account /> },
+          { path: "orders", element: <Orders /> },
+          { path: "event-orders", element: <EventOrders /> },
+          { path: "event-orders/:id", element: <EventOrderDetails /> },
+          { path: "favorites", element: <Favorites /> },
+          { path: "notifications", element: <Notifications /> },
+        ],
+      },
+
+      {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: "/profile",
-            element: <Profile />,
-            children: [
-              { index: true, element: <Account /> },
-              { path: "orders", element: <Orders /> },
-              { path: "event-orders", element: <EventOrders /> },
-              { path: "event-orders/:id", element: <EventOrderDetails /> },
-              { path: "favorites", element: <Favorites /> },
-              { path: "notifications", element: <Notifications /> },
-            ],
-          },
-          {
-            path: "/cart",
-            element: (
-              <CheckVerifiedEmailGuard>
-                <Cart />
-              </CheckVerifiedEmailGuard>
-            ),
-          },
+          // {
+          //   path: "/profile",
+          //   element: <Profile />,
+          //   children: [
+          //     { index: true, element: <Account /> },
+          //     { path: "orders", element: <Orders /> },
+          //     { path: "event-orders", element: <EventOrders /> },
+          //     { path: "event-orders/:id", element: <EventOrderDetails /> },
+          //     { path: "favorites", element: <Favorites /> },
+          //     { path: "notifications", element: <Notifications /> },
+          //   ],
+          // },
+          // {
+          //   path: "/cart",
+          //   element: (
+          //     <CheckVerifiedEmailGuard>
+          //       <Cart />
+          //     </CheckVerifiedEmailGuard>
+          //   ),
+          // },
           {
             path: "payment/:status?",
             element: (

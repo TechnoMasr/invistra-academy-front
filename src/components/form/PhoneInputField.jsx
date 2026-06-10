@@ -26,7 +26,8 @@ const PhoneInputField = ({
           defaultCountry="EG"
           countryCallingCodeEditable={false}
           value={value}
-          onChange={onChange}
+          // onChange={onChange}
+          onChange={(val) => onChange(val ?? "")}
           disabled={disabled}
           placeholder={placeholder}
           className={cn("phone-input-wrapper", error && "aria-invalid")}

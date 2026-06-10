@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { GrCart } from "react-icons/gr";
 
 const CartIcon = ({ user }) => {
-  const { data: cartCount = 0 } = useQuery({
-    queryKey: ["cart_count"],
-    queryFn: getCartItemsCount,
-    enabled: !!user,
-  });
+  // const { data: cartCount = 0 } = useQuery({
+  //   queryKey: ["cart_count"],
+  //   queryFn: getCartItemsCount,
+  //   enabled: !!user,
+  // });
+
+  const cartCount = 9;
 
   return (
     <Link to="/cart" className="relative">

@@ -238,21 +238,11 @@ input::-webkit-inner-spin-button {
   }
 
   .nav_link {
-    @apply text-lg text-white transition-all duration-300 relative;
-
-    &::after {
-      content: "";
-      @apply absolute left-0 -bottom-1 w-full h-0.5 bg-secondary rounded-full
-      scale-x-0 origin-center transition-transform duration-300;
-    }
+    @apply text-white transition-all duration-300;
 
     &:hover,
     &.active {
-      @apply text-secondary;
-
-      &::after {
-        @apply scale-x-100;
-      }
+      @apply text-secondary scale-105;
     }
   }
 

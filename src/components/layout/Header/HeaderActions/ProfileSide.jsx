@@ -11,12 +11,13 @@ import { FiCoffee, FiShoppingCart } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRegHeart } from "react-icons/fa";
 import UserAvatar from "@/components/common/UserAvatar";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { BiSolidDownArrow } from "react-icons/bi";
 
 const ProfileSide = ({ user, loading }) => {
   const dispatch = useDispatch();
@@ -48,7 +49,8 @@ const ProfileSide = ({ user, loading }) => {
         <Skeleton className="h-9 w-9 rounded-full" />
       ) : user ? (
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger className="flex items-center gap-1 cursor-pointer">
+            <BiSolidDownArrow className="text-white text-sm" />
             <UserAvatar
               name={user?.name}
               image={user?.image}
@@ -88,13 +90,14 @@ const ProfileSide = ({ user, loading }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button
-          variant="outline"
-          onClick={() => navigate("/login")}
-          className={`lg:min-w-40`}
-        >
-          {t("ProfileSide.login")}
-        </Button>
+        <>
+          <Link to="/login" className="rounded-full">
+            <Button variant="secondary">تسجيل الدخول</Button>
+          </Link>
+          <Link to="/register/teacher" className="rounded-full hidden md:block">
+            <Button variant="secondary">انضم كمحاضر</Button>
+          </Link>
+        </>
       )}
     </>
   );

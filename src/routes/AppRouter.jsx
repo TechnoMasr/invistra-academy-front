@@ -87,6 +87,12 @@ const router = createBrowserRouter([
         element: <Cart />,
       },
 
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      { path: "/register/teacher", element: <RegisterTeacher /> },
+      { path: "/register/student", element: <RegisterStudent /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+
       {
         element: <ProtectedRoute />,
         children: [
@@ -121,16 +127,16 @@ const router = createBrowserRouter([
         ],
       },
 
-      {
-        element: <AuthGuard />,
-        children: [
-          { path: "/login", element: <Login /> },
-          { path: "/register", element: <Register /> },
-          { path: "/register/teacher", element: <RegisterTeacher /> },
-          { path: "/register/student", element: <RegisterStudent /> },
-          { path: "/forgot-password", element: <ForgotPassword /> },
-        ],
-      },
+      // {
+      //   element: <AuthGuard />,
+      //   children: [
+      //     { path: "/login", element: <Login /> },
+      //     { path: "/register", element: <Register /> },
+      //     { path: "/register/teacher", element: <RegisterTeacher /> },
+      //     { path: "/register/student", element: <RegisterStudent /> },
+      //     { path: "/forgot-password", element: <ForgotPassword /> },
+      //   ],
+      // },
 
       {
         path: "/verify-email",

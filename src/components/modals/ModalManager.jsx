@@ -1,4 +1,3 @@
-import MobileNav from "./MobileNav";
 import LogOutModal from "./LogOutModal";
 import RequiredLoginModal from "./RequiredLoginModal";
 import RequiredVerifyEmailModal from "./RequiredVerifyEmailModal";
@@ -7,12 +6,13 @@ import ChangePasswordModal from "./ChangePasswordModal";
 import LoadingModal from "./LoadingModal";
 import ContactUsModal from "./ContactUsModal";
 import PaymentModal from "./PaymentModal";
+import SearchModal from "./SearchModal";
 
 const ModalManager = () => {
   return (
     <>
       <LoadingModal />
-      <MobileNav />
+      <SearchModal />
       <LogOutModal />
       <RequiredLoginModal />
       <RequiredVerifyEmailModal />

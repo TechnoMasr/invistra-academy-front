@@ -45,10 +45,12 @@ const NotificationsPopUp = () => {
     <Popover open={openNotifications} onOpenChange={setOpenNotifications}>
       <PopoverTrigger asChild>
         <div className="relative">
-          <FaRegBell className="header_icon" />
+          <Button variant="secondary" size="icon" className="rounded-full">
+            <FaRegBell />
+          </Button>
           {unreadNotifications > 0 && (
             <span
-              className="absolute -top-2 -inset-e-1 bg-secondary text-primary text-sm rounded-full w-4 h-4 
+              className="absolute -top-2 -inset-e-1 bg-destructive text-white text-sm rounded-full w-4 h-4 
             flex items-center justify-center"
             >
               {unreadNotifications > 9 ? "9+" : unreadNotifications}

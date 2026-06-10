@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changeLanguage } from "@/store/languageSlice/languageSlice";
-import LoadingModal from "@/components/modals/LoadingModal";
-import { AiOutlineGlobal } from "react-icons/ai";
 import { openModal } from "@/store/modals/modalsSlice";
+import { Button } from "@/components/ui/button";
 
 const LanguageSwitcher = () => {
   const dispatch = useDispatch();
@@ -19,27 +18,14 @@ const LanguageSwitcher = () => {
   };
 
   return (
-    <button
+    <Button
       onClick={handleToggle}
-      className="flex items-center gap-1 text-white border px-2 py-1 rounded-md cursor-pointer 
-        hover:text-secondary hover:border-secondary transition-colors duration-300"
+      variant="secondary"
+      size="icon"
+      className="rounded-full"
     >
-      <span className="font-medium text-sm sm:hidden">
-        {lang === "en" ? "AR" : "EN"}
-      </span>
-      <span
-        style={{
-          fontFamily:
-            lang === "en"
-              ? "Noto Sans Arabic, sans-serif"
-              : "Assistant, sans-serif",
-        }}
-        className="font-medium text-sm hidden sm:inline"
-      >
-        {lang === "en" ? "العربية" : "English"}
-      </span>
-      <AiOutlineGlobal />
-    </button>
+      {lang === "en" ? "AR" : "EN"}
+    </Button>
   );
 };
 

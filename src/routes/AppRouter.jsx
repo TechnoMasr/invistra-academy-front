@@ -25,17 +25,50 @@ const Account = React.lazy(
   () => import("../pages/Profile/pages/Account/Account"),
 );
 const Orders = React.lazy(() => import("../pages/Profile/pages/Orders/Orders"));
-const EventOrders = React.lazy(
-  () => import("../pages/Profile/pages/EventOrders/EventOrders"),
+const MyCourses = React.lazy(
+  () => import("../pages/Profile/pages/MyCourses/MyCourses"),
 );
-const EventOrderDetails = React.lazy(
-  () => import("../pages/Profile/pages/EventOrderDetails/EventOrderDetails"),
+const MyCertificates = React.lazy(
+  () => import("../pages/Profile/pages/MyCertificates/MyCertificates"),
 );
-const Favorites = React.lazy(
-  () => import("../pages/Profile/pages/Favorites/Favorites"),
+const MyExams = React.lazy(
+  () => import("../pages/Profile/pages/MyExams/MyExams"),
+);
+const OrderDetails = React.lazy(
+  () => import("../pages/Profile/pages/OrderDetails/OrderDetails"),
+);
+const Lectures = React.lazy(
+  () => import("../pages/Profile/pages/Lectures/Lectures"),
+);
+const LectureDetails = React.lazy(
+  () => import("../pages/Profile/pages/LectureDetails/LectureDetails"),
+);
+const MyExamDetails = React.lazy(
+  () => import("../pages/Profile/pages/MyExamDetails/MyExamDetails"),
 );
 const Notifications = React.lazy(
   () => import("../pages/Profile/pages/Notifications/Notifications"),
+);
+const AddCourse = React.lazy(
+  () => import("../pages/Profile/pages/AddCourse/AddCourse"),
+);
+const EditCourse = React.lazy(
+  () => import("../pages/Profile/pages/EditCourse/EditCourse"),
+);
+const AddLecture = React.lazy(
+  () => import("../pages/Profile/pages/AddLecture/AddLecture"),
+);
+const AddExam = React.lazy(
+  () => import("../pages/Profile/pages/AddExam/AddExam"),
+);
+const EditExam = React.lazy(
+  () => import("../pages/Profile/pages/EditExam/EditExam"),
+);
+const MyCourses2 = React.lazy(
+  () => import("../pages/Profile/pages/MyCourses/TeacherCourses"),
+);
+const MyExams2 = React.lazy(
+  () => import("../pages/Profile/pages/MyExams/TeacherExams"),
 );
 
 const Login = React.lazy(() => import("../pages/Login/Login"));
@@ -99,10 +132,21 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Account /> },
           { path: "orders", element: <Orders /> },
-          { path: "event-orders", element: <EventOrders /> },
-          { path: "event-orders/:id", element: <EventOrderDetails /> },
-          { path: "favorites", element: <Favorites /> },
+          { path: "my-courses", element: <MyCourses /> },
+          { path: "exams", element: <MyExams /> },
+          { path: "certificates", element: <MyCertificates /> },
+          { path: "order-details/:id", element: <OrderDetails /> },
+          { path: "lectures/:id", element: <Lectures /> },
+          { path: "lecture-details/:id", element: <LectureDetails /> },
+          { path: "exam-details/:id", element: <MyExamDetails /> },
           { path: "notifications", element: <Notifications /> },
+          { path: "add-course", element: <AddCourse /> },
+          { path: "edit-course/:id", element: <EditCourse /> },
+          { path: "add-lecture/:id", element: <AddLecture /> },
+          { path: "add-exam", element: <AddExam /> },
+          { path: "edit-exam/:id", element: <EditExam /> },
+          { path: "my-courses-teacher", element: <MyCourses2 /> },
+          { path: "exams-teacher", element: <MyExams2 /> },
         ],
       },
 

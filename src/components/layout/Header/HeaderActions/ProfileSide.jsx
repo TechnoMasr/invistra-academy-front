@@ -34,7 +34,7 @@ const ProfileSide = ({ user, loading }) => {
     },
     {
       name: "الكورسات",
-      href: "/profile/courses",
+      href: "/profile/my-courses",
       icon: MdOutlineOndemandVideo,
     },
     {

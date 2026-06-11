@@ -38,12 +38,22 @@ const ProfileSideBar = () => {
     },
     {
       name: "الكورسات",
-      href: "/profile/courses",
+      href: "/profile/my-courses",
       icon: MdOutlineOndemandVideo,
     },
     {
       name: "الاختبارات",
       href: "/profile/exams",
+      icon: PiExam,
+    },
+    {
+      name: "الكورسات2",
+      href: "/profile/my-courses-teacher",
+      icon: MdOutlineOndemandVideo,
+    },
+    {
+      name: "الاختبارات2",
+      href: "/profile/exams-teacher",
       icon: PiExam,
     },
     {
@@ -77,8 +87,6 @@ const ProfileSideBar = () => {
           {link.name}
         </NavLink>
       ))}
-
-      <hr className="" />
 
       <button
         onClick={() => dispatch(openModal({ modalName: "logOutModal" }))}

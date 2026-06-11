@@ -11,7 +11,7 @@ import {
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import MainPagination from "@/components/common/MainPagination";
+
 import { useSearchParams } from "react-router";
 
 const Notifications = () => {

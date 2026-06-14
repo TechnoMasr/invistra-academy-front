@@ -15,7 +15,7 @@ const CartIcon = ({ user }) => {
 
   return (
     <Link to="/cart" className="relative">
-      <Button variant="secondary" size="icon" className="rounded-full">
+      <Button size="icon" className="rounded-full">
         <GrCart />
       </Button>
 

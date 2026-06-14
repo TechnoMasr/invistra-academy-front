@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import image from "@/assets/images/auth-bg.png";
 import userImg from "@/assets/icons/Icon (1).png";
 import OrderSummaryCard from "./sections/OrderSummaryCard";
+import ProfileTitle from "@/components/common/ProfileTitle";
 
 const Cart = () => {
   const { t } = useTranslation();
@@ -30,11 +31,8 @@ const Cart = () => {
   const isCartEmpty = !isLoading && (list?.length === 0 || !list);
 
   return (
-    <main className="container pagePadding">
-      <h2 className="flex items-center gap-2 text-4xl font-semibold mb-6">
-        <span className="bg-secondary brightness-75 w-0.75 h-7 rounded-full" />
-        سلة المشتريات
-      </h2>
+    <main className="container pagePadding space-y-6">
+      <ProfileTitle title="سلة المشتريات" />
 
       {isLoading ? (
         <CartPageSkeleton />

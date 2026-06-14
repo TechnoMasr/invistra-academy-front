@@ -44,9 +44,9 @@
 
   "ContactForm": {
     "heading": "تواصل معنا",
-    "name": "الاسم الأول",
-    "namePlaceholder": "أدخل الاسم الأول",
-    "nameRequired": "الاسم الأول مطلوب",
+    "name": "الاسم",
+    "namePlaceholder": "أدخل الاسم",
+    "nameRequired": "الاسم مطلوب",
     "phone": "الهاتف",
     "phonePlaceholder": "أدخل رقم الهاتف",
     "invalidPhone": "رقم الهاتف غير صالح",
@@ -298,18 +298,24 @@
 
   "account": {
     "personalInfo": "البيانات الشخصية",
-
     "form": {
-      "name": {
-        "label": "الاسم",
-        "placeholder": "أدخل الاسم",
+      "nameAr": {
+        "label": "الاسم باللغة العربية",
+        "placeholder": "وليد مصطفى",
         "validation": {
-          "min": "الاسم يجب أن يكون حرفين على الأقل"
+          "min": "الاسم بالعربي يجب أن يكون حرفين على الأقل"
+        }
+      },
+      "nameEn": {
+        "label": "الاسم باللغة الانجليزية",
+        "placeholder": "Walid Mostafa",
+        "validation": {
+          "min": "الاسم بالإنجليزي يجب أن يكون حرفين على الأقل"
         }
       },
       "email": {
         "label": "البريد الإلكتروني",
-        "placeholder": "example@email.com",
+        "placeholder": "walidmoustafa@gmail.com",
         "validation": {
           "invalid": "البريد الإلكتروني غير صالح"
         }
@@ -319,9 +325,28 @@
         "validation": {
           "invalid": "رقم الهاتف غير صالح"
         }
+      },
+      "department": {
+        "label": "القسم",
+        "placeholder": "اختر القسم..."
+      },
+      "jobTitleAr": {
+        "label": "المسمى الوظيفي باللغة العربية",
+        "placeholder": "ادخل المسمى الوظيفي..."
+      },
+      "jobTitleEn": {
+        "label": "المسمى الوظيفي باللغة الانجليزية",
+        "placeholder": "Enter a job title..."
+      },
+      "bioAr": {
+        "label": "نبذة عني باللغة العربية",
+        "placeholder": "ادخل نبذة عنك باللغة العربية..."
+      },
+      "bioEn": {
+        "label": "نبذة عني باللغة الانجليزية",
+        "placeholder": "Enter a bio in English..."
       }
     },
-
     "buttons": {
       "save": "حفظ التغييرات",
       "saving": "جاري الحفظ...",
@@ -329,7 +354,6 @@
       "edit": "تعديل",
       "cancelEdit": "الغاء التعديل"
     },
-
     "messages": {
       "success": "تم تحديث البيانات بنجاح"
     }

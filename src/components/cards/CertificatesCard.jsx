@@ -1,6 +1,7 @@
 import { FiDownloadCloud } from "react-icons/fi";
 import { Button } from "../ui/button";
 import { SlLayers } from "react-icons/sl";
+import { ImLinkedin } from "react-icons/im";
 
 const CertificatesCard = ({ item }) => {
   return (
@@ -34,8 +35,12 @@ const CertificatesCard = ({ item }) => {
           <h4 className="font-medium">{item.teacher.name}</h4>
         </div>
 
-        <Button variant="outline">
+        <Button>
           تحميل الشهادة <FiDownloadCloud />
+        </Button>
+        <Button variant="outline">
+          مشاركة في لينكدإن
+          <ImLinkedin className="w-5 h-5 text-[#0077B5]" />
         </Button>
       </div>
     </div>

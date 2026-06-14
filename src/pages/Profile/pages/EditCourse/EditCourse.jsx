@@ -38,7 +38,8 @@ const EditCourse = () => {
     course_duration: "12 ساعة",
     price_egp: 1500,
     price_usd: 50,
-    course_image: "https://via.placeholder.com/150", // رابط الصورة المخزنة مسبقاً
+    course_image:
+      "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80", // رابط الصورة المخزنة مسبقاً
   };
 
   // بناء الـ Schema
@@ -170,7 +171,7 @@ const EditCourse = () => {
 
           <div
             onClick={() => isEditing && fileInputRef.current.click()} // الضغط يعمل فقط في وضع التعديل
-            className={`w-40 aspect-[4/3] bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all ${
+            className={`w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all ${
               isEditing
                 ? "cursor-pointer hover:bg-gray-100"
                 : "cursor-not-allowed opacity-90"
@@ -185,8 +186,8 @@ const EditCourse = () => {
               />
             ) : (
               <div className="flex flex-col items-center gap-2 text-gray-400">
-                <IoImageOutline className="text-4xl" />
-                <span className="text-xs">صورة الكورس</span>
+                <IoImageOutline className="text-7xl" />
+                <span className="">صورة الكورس</span>
               </div>
             )}
           </div>

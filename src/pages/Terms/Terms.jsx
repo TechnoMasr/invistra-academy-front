@@ -1,3 +1,4 @@
+import { getPages } from "@/api/mainServices";
 import SectionTitle from "@/components/common/SectionTitle";
 import TextSkeleton from "@/components/Loading/SkeletonLoading/TextSkeleton";
 import { useQuery } from "@tanstack/react-query";
@@ -6,12 +7,10 @@ import { useTranslation } from "react-i18next";
 const Terms = () => {
   const { t } = useTranslation();
 
-  // const { data: page, isLoading } = useQuery({
-  //   queryKey: ["page", "terms_conditions"],
-  //   queryFn: () => getPages("terms_conditions"),
-  // });
-
-  const isLoading = false;
+  const { data: page, isLoading } = useQuery({
+    queryKey: ["page", "terms"],
+    queryFn: () => getPages("terms"),
+  });
 
   return (
     <main className="container pagePadding">
@@ -21,10 +20,10 @@ const Terms = () => {
         <TextSkeleton />
       ) : (
         <>
-          {/* <div
-              className="rich_content"
-              dangerouslySetInnerHTML={{ __html: page }}
-            /> */}
+          <div
+            className="rich_content"
+            dangerouslySetInnerHTML={{ __html: page }}
+          />
         </>
       )}
     </main>

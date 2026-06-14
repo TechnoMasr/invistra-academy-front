@@ -15,8 +15,8 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // dispatch(getUser());
-    // dispatch(fetchSettings());
+    dispatch(getUser());
+    dispatch(fetchSettings());
   }, [dispatch]);
 
   useEffect(() => {

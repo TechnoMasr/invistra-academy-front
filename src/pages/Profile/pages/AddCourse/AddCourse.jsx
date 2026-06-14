@@ -8,6 +8,7 @@ import { IoImageOutline } from "react-icons/io5";
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
+import ProfileTitle from "@/components/common/ProfileTitle";
 
 // افتراضًا أن هناك خدمة لتخزين الكورس، يمكنك تعديلها بمسار الـ API الخاص بك
 // import { createCourse } from "@/api/courseServices";
@@ -131,8 +132,8 @@ const AddCourse = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl lg:text-4xl font-bold text-center mb-6">إضافة كورس</h2>
+    <div className="space-y-6">
+      <ProfileTitle title="إضافة كورس" />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* قسم رفع صورة الكورس */}
@@ -153,7 +154,7 @@ const AddCourse = () => {
 
           <div
             onClick={() => fileInputRef.current.click()}
-            className="w-40 aspect-[4/3] bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:bg-gray-100 transition-all"
+            className="w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:bg-gray-100 transition-all"
           >
             {imagePreview ? (
               <img
@@ -164,8 +165,8 @@ const AddCourse = () => {
               />
             ) : (
               <div className="flex flex-col items-center gap-2 text-gray-400">
-                <IoImageOutline className="text-4xl" />
-                <span className="text-xs">صورة الكورس</span>
+                <IoImageOutline className="text-7xl" />
+                <span className="">صورة الكورس</span>
               </div>
             )}
           </div>

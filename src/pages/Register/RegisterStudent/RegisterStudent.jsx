@@ -90,8 +90,7 @@ const RegisterStudent = () => {
     });
 
     formData.append("terms_accepted", 1);
-    formData.append("type", "user");
-    formData.append("source", "web");
+    formData.append("type", "student");
 
     if (imageFile) {
       formData.append("image", imageFile);

@@ -11,21 +11,18 @@ const FixedSection = () => {
     {
       id: 1,
       title: t("phone"),
-      link: `tel:${(settings?.contact?.phone || "").replace(/\s/g, "")}`,
+      link: `tel:${(settings?.phone || "").replace(/\s/g, "")}`,
       icon: <MdLocalPhone />,
-      color: "#215274",
-      value: settings?.contact?.phone,
+      color: "#20262e",
+      value: settings?.phone,
     },
     {
       id: 2,
       title: t("whatsapp"),
-      link: `https://wa.me/${(settings?.social?.whatsapp || "").replace(
-        /\s/g,
-        "",
-      )}`,
+      link: `https://wa.me/${(settings?.whatsapp || "").replace(/\s/g, "")}`,
       icon: <FaWhatsapp />,
       color: "#25D366",
-      value: settings?.social?.whatsapp,
+      value: settings?.whatsapp,
     },
   ];
 
@@ -40,7 +37,7 @@ const FixedSection = () => {
               href={item.link}
               target="_blank"
               style={{ backgroundColor: `${item.color}` }}
-              className="p-1 ps-2 shadow-md shadow-myGold/20 rounded-s-full flex items-center gap-1 group"
+              className="p-1 ps-2 shadow-md rounded-s-lg flex items-center gap-1 group text-white"
             >
               <span className="text-3xl">{item.icon}</span>
 

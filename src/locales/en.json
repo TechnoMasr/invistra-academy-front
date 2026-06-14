@@ -39,9 +39,9 @@
 
   "ContactForm": {
     "heading": "Contact Us",
-    "name": "First Name",
-    "namePlaceholder": "Enter your first name",
-    "nameRequired": "First name is required",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "nameRequired": "name is required",
     "phone": "Phone",
     "phonePlaceholder": "Enter your phone number",
     "invalidPhone": "Invalid phone number",
@@ -284,18 +284,24 @@
 
   "account": {
     "personalInfo": "Personal Information",
-
     "form": {
-      "name": {
-        "label": "Name",
-        "placeholder": "Enter name",
+      "nameAr": {
+        "label": "Name (Arabic)",
+        "placeholder": "وليد مصطفى",
         "validation": {
-          "min": "Name must be at least 2 characters"
+          "min": "Arabic name must be at least 2 characters"
+        }
+      },
+      "nameEn": {
+        "label": "Name (English)",
+        "placeholder": "Walid Mostafa",
+        "validation": {
+          "min": "English name must be at least 2 characters"
         }
       },
       "email": {
         "label": "Email",
-        "placeholder": "example@email.com",
+        "placeholder": "walidmoustafa@gmail.com",
         "validation": {
           "invalid": "Invalid email address"
         }
@@ -305,9 +311,28 @@
         "validation": {
           "invalid": "Invalid phone number"
         }
+      },
+      "department": {
+        "label": "Department",
+        "placeholder": "Select department..."
+      },
+      "jobTitleAr": {
+        "label": "Job Title (Arabic)",
+        "placeholder": "ادخل الوظيفة باللغة العربية..."
+      },
+      "jobTitleEn": {
+        "label": "Job Title (English)",
+        "placeholder": "Enter your job title..."
+      },
+      "bioAr": {
+        "label": "Bio (Arabic)",
+        "placeholder": "ادخل نبذة عنك باللغة العربية..."
+      },
+      "bioEn": {
+        "label": "Bio (English)",
+        "placeholder": "Enter your bio here..."
       }
     },
-
     "buttons": {
       "save": "Save changes",
       "saving": "Saving...",
@@ -315,7 +340,6 @@
       "edit": "Edit",
       "cancelEdit": "Cancel"
     },
-
     "messages": {
       "success": "Profile updated successfully"
     }

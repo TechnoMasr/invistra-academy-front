@@ -5,7 +5,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { NavLink } from "react-router";
 import { FaRegBell, FaRegUser } from "react-icons/fa6";
 import { IoIosLogOut } from "react-icons/io";

@@ -4,13 +4,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { RiVideoUploadLine } from "react-icons/ri";
+import { FiUploadCloud } from "react-icons/fi"; // استيراد أيقونة الرفع المطابقة للتصميم
+import { IoCloseCircleSharp } from "react-icons/io5"; // أيقونة لحذف الملفات
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
+import ProfileTitle from "@/components/common/ProfileTitle";
 
 const AddLecture = () => {
   const [videoPreview, setVideoPreview] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
+
+  // تعديل الـ state لتكون مصفوفة عادية يسهل الحذف منها
   const [attachedFiles, setAttachedFiles] = useState([]);
 
   const videoInputRef = useRef(null);
@@ -53,6 +58,21 @@ const AddLecture = () => {
     },
   });
 
+  // دالة التعامل مع اختيار ملفات متعددة وتجنب التكرار
+  const handleFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    }
+  };
+
+  // دالة لحذف ملف معين من القائمة
+  const removeFile = (indexToRemove) => {
+    setAttachedFiles((prevFiles) =>
+      prevFiles.filter((_, index) => index !== indexToRemove),
+    );
+  };
+
   const onSubmit = (data) => {
     const formData = new FormData();
 
@@ -68,7 +88,7 @@ const AddLecture = () => {
 
     // إضافة ملفات المحاضرة المرفقة إن وجدت
     if (attachedFiles.length > 0) {
-      Array.from(attachedFiles).forEach((file) => {
+      attachedFiles.forEach((file) => {
         formData.append("lecture_files", file);
       });
     }
@@ -77,10 +97,8 @@ const AddLecture = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl lg:text-3xl font-bold text-center mb-6 ">
-        إضافة محاضرة
-      </h2>
+    <div className="space-y-6">
+      <ProfileTitle title="إضافة محاضرة" />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* قسم رفع فيديو المحاضرة (الكبير في المنتصف) */}
@@ -94,7 +112,7 @@ const AddLecture = () => {
               const file = e.target.files[0];
               if (file) {
                 setVideoFile(file);
-                setVideoPreview(file.name); // عرض اسم الفيديو المرفوع
+                setVideoPreview(file.name);
               }
             }}
           />
@@ -172,30 +190,60 @@ const AddLecture = () => {
           />
         </div>
 
-        {/* ملفات المحاضرة المرفقة */}
-        <div className="flex flex-col gap-2 max-w-xl mx-auto w-full">
-          <label className="text-sm font-medium text-gray-500 text-center">
+        {/* قسم ملفات المحاضرة المرفقة المحدث تماماً حسب التصميم */}
+        <div className="flex flex-col gap-2 w-full max-w-xl mx-auto">
+          <label className="text-lg font-medium text-[#1A202C] text-right mb-1">
             ملفات المحاضرة
           </label>
+
           <input
             type="file"
             multiple
             ref={fileInputRef}
             className="hidden"
-            onChange={(e) => {
-              if (e.target.files.length > 0) {
-                setAttachedFiles(e.target.files);
-              }
-            }}
+            onChange={handleFileChange}
           />
+
+          {/* صندوق الرفع المطابق للتصميم المرفق */}
           <div
             onClick={() => fileInputRef.current.click()}
-            className="w-full border border-gray-300 rounded-lg py-2 px-4 bg-white text-center cursor-pointer text-gray-400 text-sm hover:bg-gray-50 transition-all"
+            className="w-full border-2 border-dashed border-sky-600 bg-white hover:bg-sky-600/20 rounded-lg py-5 px-4 cursor-pointer flex items-center justify-center gap-3 transition-all select-none"
           >
-            {attachedFiles.length > 0
-              ? `تم اختيار ${attachedFiles.length} ملفات`
-              : "رفع ملفات المحاضرة"}
+            <span className="text-sky-600 font-medium text-base">
+              رفع ملفات المحاضرة
+            </span>
+            <FiUploadCloud className="text-sky-600 text-2xl" />
           </div>
+
+          {/* قائمة الملفات المختارة مع إمكانية حذفها */}
+          {attachedFiles.length > 0 && (
+            <div className="mt-3 flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+              <p className="text-xs font-semibold text-gray-500 mb-1">
+                الملفات المختارة ({attachedFiles.length}):
+              </p>
+              {attachedFiles.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm"
+                >
+                  <span
+                    className="text-sm text-gray-700 truncate max-w-[85%] text-left"
+                    dir="ltr"
+                  >
+                    {file.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
+                    title="حذف الملف"
+                  >
+                    <IoCloseCircleSharp className="text-xl" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* زر الحفظ */}

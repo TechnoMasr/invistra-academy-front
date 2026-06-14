@@ -6,25 +6,25 @@ import { getHome } from "@/api/homeServices";
 import SeoManager from "@/utils/SeoManager";
 
 const Home = () => {
-  // const { data: homeData, isLoading } = useQuery({
-  //   queryKey: ["home"],
-  //   queryFn: getHome,
-  // });
+  const { data: homeData, isLoading } = useQuery({
+    queryKey: ["home"],
+    queryFn: getHome,
+  });
 
   return (
     <>
-      {/* <SeoManager
-        title={homeData?.home_seo?.meta_title}
-        description={homeData?.home_seo?.meta_description}
-        keywords={homeData?.home_seo?.keywords}
-        canonical={homeData?.home_seo?.canonical_url}
-        ogImage={homeData?.home_seo?.og_image}
-      /> */}
+      <SeoManager
+        title={homeData?.seo?.meta_title}
+        description={homeData?.seo?.meta_description}
+        keywords={homeData?.seo?.keywords}
+        canonical={homeData?.seo?.canonical_url}
+        ogImage={homeData?.seo?.og_image}
+      />
 
       <main>
-        <Hero />
-        <StatsSection />
-        <CoursesSection />
+        <Hero data={homeData?.intro} loading={isLoading} />
+        <StatsSection data={homeData?.stats} loading={isLoading} />
+        <CoursesSection data={homeData?.courses_section} loading={isLoading} />
       </main>
     </>
   );

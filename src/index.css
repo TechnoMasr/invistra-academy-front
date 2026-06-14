@@ -238,7 +238,7 @@ input::-webkit-inner-spin-button {
   }
 
   .nav_link {
-    @apply text-white transition-all duration-300;
+    @apply transition-all duration-300;
 
     &:hover,
     &.active {

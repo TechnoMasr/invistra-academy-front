@@ -24,7 +24,7 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
 
     bio_en: z.string().min(10, t("RegisterTeacherStep2.validation.bioEn")),
 
-    department: z
+    category_id: z
       .string()
       .min(1, t("RegisterTeacherStep2.validation.department")),
   });
@@ -40,7 +40,7 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
       job_title_en: parentData.job_title_en || "",
       bio_ar: parentData.bio_ar || "",
       bio_en: parentData.bio_en || "",
-      department: parentData.department || "",
+      category_id: parentData.category_id || "",
     },
   });
 
@@ -69,23 +69,23 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
     });
 
     formData.append("terms_accepted", 1);
-    formData.append("type", "company");
+    formData.append("type", "instructor");
 
-    // mutate(formData);
-    goNext();
+    mutate(formData);
+    // goNext();
   };
 
   const departmentOptions = [
     {
-      value: "marketing",
+      id: 1,
       label: t("RegisterTeacherStep2.departments.marketing"),
     },
     {
-      value: "sales",
+      id: 2,
       label: t("RegisterTeacherStep2.departments.sales"),
     },
     {
-      value: "it",
+      id: 3,
       label: t("RegisterTeacherStep2.departments.it"),
     },
   ];
@@ -152,7 +152,7 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
 
       {/* Department */}
       <Controller
-        name="department"
+        name="category_id"
         control={control}
         render={({ field }) => (
           <MainInput
@@ -160,8 +160,14 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
             type="select"
             label={t("RegisterTeacherStep2.department")}
             placeholder={t("RegisterTeacherStep2.departmentPlaceholder")}
-            options={departmentOptions}
-            error={errors.department?.message}
+            options={
+              departmentOptions &&
+              departmentOptions.map((option) => ({
+                value: String(option.id),
+                label: option.label,
+              }))
+            }
+            error={errors.category_id?.message}
           />
         )}
       />

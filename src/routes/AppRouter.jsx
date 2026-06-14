@@ -49,6 +49,9 @@ const MyExamDetails = React.lazy(
 const Notifications = React.lazy(
   () => import("../pages/Profile/pages/Notifications/Notifications"),
 );
+const Transactions = React.lazy(
+  () => import("../pages/Profile/pages/Transactions/Transactions"),
+);
 const AddCourse = React.lazy(
   () => import("../pages/Profile/pages/AddCourse/AddCourse"),
 );
@@ -120,11 +123,11 @@ const router = createBrowserRouter([
         element: <Cart />,
       },
 
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
-      { path: "/register/teacher", element: <RegisterTeacher /> },
-      { path: "/register/student", element: <RegisterStudent /> },
-      { path: "/forgot-password", element: <ForgotPassword /> },
+      // { path: "/login", element: <Login /> },
+      // { path: "/register", element: <Register /> },
+      // { path: "/register/teacher", element: <RegisterTeacher /> },
+      // { path: "/register/student", element: <RegisterStudent /> },
+      // { path: "/forgot-password", element: <ForgotPassword /> },
 
       {
         path: "/profile",
@@ -139,6 +142,7 @@ const router = createBrowserRouter([
           { path: "lectures/:id", element: <Lectures /> },
           { path: "lecture-details/:id", element: <LectureDetails /> },
           { path: "exam-details/:id", element: <MyExamDetails /> },
+          { path: "transactions", element: <Transactions /> },
           { path: "notifications", element: <Notifications /> },
           { path: "add-course", element: <AddCourse /> },
           { path: "edit-course/:id", element: <EditCourse /> },
@@ -184,16 +188,16 @@ const router = createBrowserRouter([
         ],
       },
 
-      // {
-      //   element: <AuthGuard />,
-      //   children: [
-      //     { path: "/login", element: <Login /> },
-      //     { path: "/register", element: <Register /> },
-      //     { path: "/register/teacher", element: <RegisterTeacher /> },
-      //     { path: "/register/student", element: <RegisterStudent /> },
-      //     { path: "/forgot-password", element: <ForgotPassword /> },
-      //   ],
-      // },
+      {
+        element: <AuthGuard />,
+        children: [
+          { path: "/login", element: <Login /> },
+          { path: "/register", element: <Register /> },
+          { path: "/register/teacher", element: <RegisterTeacher /> },
+          { path: "/register/student", element: <RegisterStudent /> },
+          { path: "/forgot-password", element: <ForgotPassword /> },
+        ],
+      },
 
       {
         path: "/verify-email",

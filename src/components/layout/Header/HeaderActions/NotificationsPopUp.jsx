@@ -45,7 +45,7 @@ const NotificationsPopUp = () => {
     <Popover open={openNotifications} onOpenChange={setOpenNotifications}>
       <PopoverTrigger asChild>
         <div className="relative">
-          <Button variant="secondary" size="icon" className="rounded-full">
+          <Button size="icon" className="rounded-full">
             <FaRegBell />
           </Button>
           {unreadNotifications > 0 && (

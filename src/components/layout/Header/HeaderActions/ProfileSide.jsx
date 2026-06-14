@@ -69,29 +69,26 @@ const ProfileSide = ({ user, loading }) => {
             />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent
-            align="end"
-            className="min-w-52 bg-secondary text-primary border-primary"
-          >
+          <DropdownMenuContent align="end" className="min-w-52">
             <DropdownMenuLabel className="flex items-center gap-2">
               <UserAvatar name={user?.name} image={user?.image} />
               <h3 className="font-semibold">{user?.name}</h3>
             </DropdownMenuLabel>
 
-            <DropdownMenuSeparator className={`bg-primary`} />
+            <DropdownMenuSeparator />
 
             {links.map((link) => (
               <DropdownMenuItem
                 key={link.name}
                 onClick={() => navigate(link.href)}
-                className={`focus:bg-secondary focus:text-primary focus:brightness-90 cursor-pointer`}
+                className={`cursor-pointer`}
               >
                 <link.icon className="text-primary" />
                 {link.name}
               </DropdownMenuItem>
             ))}
 
-            <DropdownMenuSeparator className={`bg-primary`} />
+            <DropdownMenuSeparator />
 
             <DropdownMenuItem
               variant="destructive"
@@ -108,10 +105,10 @@ const ProfileSide = ({ user, loading }) => {
       ) : (
         <>
           <Link to="/login" className="rounded-full">
-            <Button variant="secondary">تسجيل الدخول</Button>
+            <Button>تسجيل الدخول</Button>
           </Link>
           <Link to="/register/teacher" className="rounded-full hidden md:block">
-            <Button variant="secondary">انضم كمحاضر</Button>
+            <Button variant="outline">انضم كمحاضر</Button>
           </Link>
         </>
       )}

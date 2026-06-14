@@ -10,16 +10,18 @@ const TeacherCard = ({ teacher }) => {
     >
       <div className="p-2">
         <div className="w-full aspect-5/4 overflow-hidden rounded-md mb-2">
-          <img
-            loading="lazy"
-            src={teacher.image}
-            alt={teacher.name}
-            className="w-full h-full object-cover"
-          />
+          {teacher.image && (
+            <img
+              loading="lazy"
+              src={teacher.image}
+              alt={teacher.name}
+              className="w-full h-full object-cover"
+            />
+          )}
         </div>
 
         <h3 className="text-xl font-semibold">{teacher.name}</h3>
-        <p className="">{teacher.jop}</p>
+        <p className="">{teacher.job_title}</p>
       </div>
 
       <p className="text-lg font-medium border-t p-2 flex items-center justify-center gap-2">

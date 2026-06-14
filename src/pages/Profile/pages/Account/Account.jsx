@@ -24,12 +24,22 @@ import PhoneInputField from "@/components/form/PhoneInputField";
 const Account = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+
+  // البيانات الافتراضية بناءً على الصورة المرفقة
   const user = {
-    name: "John Doe",
-    email: "Hx9tH@example.com",
-    phone: "+201234567898",
+    nameAr: "وليد مصطفى",
+    nameEn: "Walid Mostafa",
+    email: "walidmoustafa@gmail.com",
+    phone: "+2010123456789",
     image:
       "https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80",
+    department: "english",
+    jobTitleAr: "خبير اللغة الانجليزية",
+    jobTitleEn: "English language expert",
+    bioAr:
+      "مستر وليد مصطفى هو محاضر متخصص في اللغة الإنجليزية يمتلك خبرة واسعة في تدريس مهارات اللغة بمختلف مستوياتها، بدءًا من الأساسيات وحتى المستويات المتقدمة...",
+    bioEn:
+      "Mr. Walid Mostafa is an English language instructor with extensive experience teaching language skills at all levels, from beginner to advanced...",
   };
 
   const [isEditing, setIsEditing] = useState(false);
@@ -38,8 +48,10 @@ const Account = () => {
 
   const fileInputRef = useRef(null);
 
+  // تحديث الـ Schema لتشمل الحقول الثنائية
   const accountSchema = z.object({
-    name: z.string().min(2, t("account.form.name.validation.min")),
+    nameAr: z.string().min(2, t("account.form.nameAr.validation.min")),
+    nameEn: z.string().min(2, t("account.form.nameEn.validation.min")),
     email: z.string().email(t("account.form.email.validation.invalid")),
     phone: z
       .string()
@@ -50,6 +62,11 @@ const Account = () => {
       .optional()
       .or(z.literal("")),
     image: z.any().optional(),
+    department: z.string().optional(),
+    jobTitleAr: z.string().optional(),
+    jobTitleEn: z.string().optional(),
+    bioAr: z.string().optional(),
+    bioEn: z.string().optional(),
   });
 
   const {
@@ -61,10 +78,16 @@ const Account = () => {
   } = useForm({
     resolver: zodResolver(accountSchema),
     defaultValues: {
-      name: user?.name || "",
+      nameAr: user?.nameAr || "",
+      nameEn: user?.nameEn || "",
       email: user?.email || "",
       phone: user?.phone || "",
       image: user?.image || null,
+      department: user?.department || "",
+      jobTitleAr: user?.jobTitleAr || "",
+      jobTitleEn: user?.jobTitleEn || "",
+      bioAr: user?.bioAr || "",
+      bioEn: user?.bioEn || "",
     },
     mode: "onChange",
   });
@@ -77,10 +100,16 @@ const Account = () => {
       setIsEditing(false);
 
       reset({
-        name: data?.name,
+        nameAr: data?.nameAr,
+        nameEn: data?.nameEn,
         email: data?.email,
         phone: data?.phone,
         image: data?.image,
+        department: data?.department,
+        jobTitleAr: data?.jobTitleAr,
+        jobTitleEn: data?.jobTitleEn,
+        bioAr: data?.bioAr,
+        bioEn: data?.bioEn,
       });
 
       setAvatar(data?.image);
@@ -93,9 +122,16 @@ const Account = () => {
 
   const onSubmit = (values) => {
     const formData = new FormData();
-    formData.append("name", values.name);
+    formData.append("nameAr", values.nameAr);
+    formData.append("nameEn", values.nameEn);
     formData.append("email", values.email);
     formData.append("phone", values.phone || "");
+    formData.append("department", values.department || "");
+    formData.append("jobTitleAr", values.jobTitleAr || "");
+    formData.append("jobTitleEn", values.jobTitleEn || "");
+    formData.append("bioAr", values.bioAr || "");
+    formData.append("bioEn", values.bioEn || "");
+
     if (values.image instanceof File) {
       formData.append("image", values.image);
     }
@@ -107,6 +143,12 @@ const Account = () => {
     reset();
     setAvatar(user?.image || null);
   };
+
+  const departmentOptions = [
+    { value: "english", label: "قسم اللغة الإنجليزية" },
+    { value: "arabic", label: "قسم اللغة العربية" },
+    { value: "math", label: "قسم الرياضيات" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -129,7 +171,7 @@ const Account = () => {
               </div>
             )}
 
-            <UserAvatar name={user?.name} image={avatar} size={150} />
+            <UserAvatar name={user?.nameAr} image={avatar} size={150} />
 
             <input
               type="file"
@@ -149,22 +191,37 @@ const Account = () => {
           </div>
         </div>
 
-        {/* Name */}
+        {/* الاسم باللغة العربية */}
         <Controller
-          name="name"
+          name="nameAr"
           control={control}
           render={({ field }) => (
             <MainInput
               {...field}
-              label={t("account.form.name.label")}
-              placeholder={t("account.form.name.placeholder")}
-              error={errors.name?.message}
+              label={t("account.form.nameAr.label")}
+              placeholder={t("account.form.nameAr.placeholder")}
+              error={errors.nameAr?.message}
               disabled={!isEditing}
             />
           )}
         />
 
-        {/* Email */}
+        {/* الاسم باللغة الإنجليزية */}
+        <Controller
+          name="nameEn"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              label={t("account.form.nameEn.label")}
+              placeholder={t("account.form.nameEn.placeholder")}
+              error={errors.nameEn?.message}
+              disabled={!isEditing}
+            />
+          )}
+        />
+
+        {/* البريد الإلكتروني */}
         <Controller
           name="email"
           control={control}
@@ -180,7 +237,7 @@ const Account = () => {
           )}
         />
 
-        {/* Phone */}
+        {/* رقم الهاتف */}
         <Controller
           name="phone"
           control={control}
@@ -189,6 +246,85 @@ const Account = () => {
               {...field}
               label={t("account.form.phone.label")}
               error={errors.phone?.message}
+              disabled={!isEditing}
+            />
+          )}
+        />
+
+        {/* القسم */}
+        <Controller
+          name="department"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              type="select"
+              label={t("account.form.department.label")}
+              placeholder={t("account.form.department.placeholder")}
+              options={departmentOptions}
+              error={errors.department?.message}
+              disabled={!isEditing}
+            />
+          )}
+        />
+
+        {/* المسمى الوظيفي باللغة العربية */}
+        <Controller
+          name="jobTitleAr"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              label={t("account.form.jobTitleAr.label")}
+              placeholder={t("account.form.jobTitleAr.placeholder")}
+              error={errors.jobTitleAr?.message}
+              disabled={!isEditing}
+            />
+          )}
+        />
+
+        {/* المسمى الوظيفي باللغة الإنجليزية */}
+        <Controller
+          name="jobTitleEn"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              label={t("account.form.jobTitleEn.label")}
+              placeholder={t("account.form.jobTitleEn.placeholder")}
+              error={errors.jobTitleEn?.message}
+              disabled={!isEditing}
+            />
+          )}
+        />
+
+        {/* نبذة عني باللغة العربية */}
+        <Controller
+          name="bioAr"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              type="textarea"
+              label={t("account.form.bioAr.label")}
+              placeholder={t("account.form.bioAr.placeholder")}
+              error={errors.bioAr?.message}
+              disabled={!isEditing}
+            />
+          )}
+        />
+
+        {/* نبذة عني باللغة الإنجليزية */}
+        <Controller
+          name="bioEn"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              type="textarea"
+              label={t("account.form.bioEn.label")}
+              placeholder={t("account.form.bioEn.placeholder")}
+              error={errors.bioEn?.message}
               disabled={!isEditing}
             />
           )}

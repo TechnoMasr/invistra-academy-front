@@ -18,12 +18,7 @@ const LanguageSwitcher = () => {
   };
 
   return (
-    <Button
-      onClick={handleToggle}
-      variant="secondary"
-      size="icon"
-      className="rounded-full"
-    >
+    <Button onClick={handleToggle} size="icon" className="rounded-full">
       {lang === "en" ? "AR" : "EN"}
     </Button>
   );

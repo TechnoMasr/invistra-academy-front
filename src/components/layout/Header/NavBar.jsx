@@ -22,7 +22,7 @@ const NavBar = ({ links }) => {
         <DropdownMenuItem key={subItem.id} asChild>
           <NavLink
             to={`/courses?category_id=${parentCategoryId}&sub_category_id=${subItem.id}`}
-            className="w-full block px-2 py-1.5 text-right"
+            className="w-full block px-2 py-1.5"
           >
             {subItem.name}
           </NavLink>
@@ -61,7 +61,7 @@ const NavBar = ({ links }) => {
                         <DropdownMenuSubTrigger className="flex items-center justify-between gap-2 w-full p-0">
                           <NavLink
                             to={`/courses?category_id=${category.id}`}
-                            className="w-full h-full px-2 py-1.5 text-right"
+                            className="w-full h-full px-2 py-1.5"
                             onClick={(e) => {
                               // نمنع انتشار الحدث حتى لا يفتح القائمة الفرعية ويغلق الرئيسية بدلاً من ذلك
                               e.stopPropagation();

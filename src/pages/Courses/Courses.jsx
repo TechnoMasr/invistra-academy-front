@@ -16,6 +16,8 @@ import { getCoursesPage } from "@/api/coursesServices";
 import SeoManager from "@/utils/SeoManager";
 import { Input } from "@/components/ui/input";
 import { useSelector } from "react-redux";
+import CoursesPageSkeleton from "@/components/Loading/SkeletonLoading/CoursesPageSkeleton";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
 
 // Custom Hook للـ Debounce لمنع إرسال طلبات مع كل حرف يكتبه المستخدم
 function useDebounce(value, delay) {
@@ -220,16 +222,14 @@ const Courses = () => {
 
           {/* حالة التحميل وعرض كروت الكورسات */}
           {isLoading ? (
-            <div className="text-center py-10">جاري تحميل الدورات...</div>
+            <CoursesPageSkeleton/>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {courses?.items?.map((item) => (
                 <CourseCard key={item.id} course={item} />
               ))}
               {courses?.items?.length === 0 && (
-                <div className="col-span-full text-center py-10 text-muted-foreground">
-                  لا توجد نتائج تطابق خيارات البحث الحالية.
-                </div>
+                <EmptyDataSection msg={"لا يوجد كورسات"}/>
               )}
             </div>
           )}

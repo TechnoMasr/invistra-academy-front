@@ -1,6 +1,11 @@
 import SectionTitle from "@/components/common/SectionTitle";
+import StatsSkeleton from "@/components/Loading/SkeletonLoading/StatsSkeleton";
 
 const StatsSection = ({ data = {}, loading }) => {
+  if (loading) return <StatsSkeleton />;
+
+  if (!data) return null;
+
   const list = [
     {
       id: 1,

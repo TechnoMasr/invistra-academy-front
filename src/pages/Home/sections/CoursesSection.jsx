@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getCategories, getCourses } from "@/api/homeServices";
+import CoursesSectionSkeleton from "@/components/Loading/SkeletonLoading/CoursesSectionSkeleton";
 
 const CoursesSection = ({ data, loading }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -22,6 +23,9 @@ const CoursesSection = ({ data, loading }) => {
     queryKey: ["home-courses", selectedCategory],
     queryFn: () => getCourses(selectedCategory),
   });
+
+  if (loading || isLoading || isLoadingCourses)
+    return <CoursesSectionSkeleton />;
 
   const categoriesList = [
     { id: null, name: "الكل" },

@@ -20,9 +20,8 @@ const Footer = () => {
     queryFn: getFooter,
   });
 
-  // if (isLoading) return <FooterSkeleton />;
+  if (isLoading) return <FooterSkeleton />;
 
-  // const footerData = [];
 
   const socialLinks = [
     {

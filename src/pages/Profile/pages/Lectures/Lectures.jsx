@@ -1,6 +1,7 @@
 import LectureCard from "@/components/cards/LectureCard";
 import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
+import LecturesPageSkeleton from "@/components/Loading/SkeletonLoading/LecturesPageSkeleton";
 
 const Lectures = () => {
   const { t } = useTranslation();
@@ -11,6 +12,8 @@ const Lectures = () => {
     duration: "2 ساعات",
     number: index + 1,
   }));
+
+  // <LecturesPageSkeleton/>
 
   return (
     <div className="space-y-6">

@@ -22,7 +22,7 @@ const AuthContainer = ({ children, title, description, showTitle = true }) => {
         style={{
           backgroundImage: `url(${settings?.login_image || ""})`,
         }}
-        className="hidden md:flex sticky top-[83px] h-[calc(100vh-83px)] bg-cover bg-center bg-primary"
+        className="hidden md:flex sticky top-14 h-[calc(100vh-56px)] bg-cover bg-center bg-primary"
       >
         {/* <div className="absolute inset-0 bg-black/40" /> */}
       </article>

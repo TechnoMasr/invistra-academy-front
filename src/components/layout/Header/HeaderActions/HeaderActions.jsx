@@ -23,7 +23,7 @@ const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
   // const loading = false;
 
   return (
-    <div className="flex items-center gap-2 xl:gap-4">
+    <div className="flex items-center gap-2 2xl:gap-4">
       <LanguageSwitcher />
 
       <Button

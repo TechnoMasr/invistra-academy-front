@@ -16,6 +16,8 @@ import { getInstructorsPage } from "@/api/instructorsServices";
 import { Input } from "@/components/ui/input";
 import SeoManager from "@/utils/SeoManager";
 import { useSelector } from "react-redux";
+import TeachersSkeleton from "@/components/Loading/SkeletonLoading/TeachersSkeleton";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
 
 // Custom Hook للـ Debounce لمنع إرسال طلبات مع كل حرف يكتبه المستخدم
 function useDebounce(value, delay) {
@@ -138,7 +140,7 @@ const Teachers = () => {
 
           {/* حالة التحميل وعرض كروت المحاضرين */}
           {isLoading ? (
-            <div className="text-center py-10">جاري تحميل المحاضرين...</div>
+            <TeachersSkeleton />
           ) : (
             <>
               <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -148,9 +150,7 @@ const Teachers = () => {
               </div>
 
               {instructors?.items?.length === 0 && (
-                <div className="text-center py-10 text-muted-foreground">
-                  لا توجد نتائج تطابق خيارات البحث الحالية.
-                </div>
+                <EmptyDataSection msg="لا يوجد محاضرين" />
               )}
             </>
           )}

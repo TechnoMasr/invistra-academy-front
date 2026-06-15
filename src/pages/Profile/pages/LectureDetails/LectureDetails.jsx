@@ -2,6 +2,7 @@ import video from "@/assets/images/video.mp4";
 import { FaRegFolderOpen } from "react-icons/fa";
 import { FiDownloadCloud } from "react-icons/fi";
 import { FaFilePdf } from "react-icons/fa6";
+import LectureDetailsSkeleton from "@/components/Loading/SkeletonLoading/LectureDetailsSkeleton";
 
 const LectureDetails = () => {
   const files = Array(8).fill({
@@ -9,6 +10,7 @@ const LectureDetails = () => {
     size: "PDF 3.4MB",
   });
 
+  // <LectureDetailsSkeleton/>
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
       <div className="xl:col-span-2 space-y-4">

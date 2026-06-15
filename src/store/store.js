@@ -3,7 +3,8 @@ import settingsReducer from "./settings/settingsSlice";
 import userReducer from "./user/userSlice";
 import languageReducer from "./languageSlice/languageSlice";
 import modalsReducer from "./modals/modalsSlice";
-import headerReducer from "./headerSlice";
+import categoriesReducer from "./categories/categoriesSlice";
+import instructorsReducer from "./instructors/instructorsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     user: userReducer,
     language: languageReducer,
     modals: modalsReducer,
-    header: headerReducer,
+    categories: categoriesReducer,
+    instructors: instructorsReducer,
   },
 });

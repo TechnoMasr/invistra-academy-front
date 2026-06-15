@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router";
-import { ChevronDown, ChevronLeft } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,30 +13,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavBar = ({ links }) => {
-  // دالة فرعية لمعالجة وعرض العناصر المتداخلة بشكل تكراري (Recursive)
-  const renderDropdownItems = (items) => {
-    return items.map((item) => {
-      // إذا كان العنصر يحتوي على قائمة فرعية داخلية (المستوى الثالث فما فوق)
-      if (item.list && item.list.length > 0) {
-        return (
-          <DropdownMenuSub key={item.id}>
-            <DropdownMenuSubTrigger className="flex items-center justify-between gap-2 w-full ">
-              <span>{item.name}</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent className=" min-w-[8rem]">
-                {renderDropdownItems(item.list)}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        );
-      }
+  // نضيف State للتحكم في فتح وإغلاق القائمة الرئيسية
+  const [open, setOpen] = useState(false);
 
-      // عنصر نهائي داخل القائمة المنسدلة
+  const renderSubCategories = (subCategories, parentCategoryId) => {
+    return subCategories.map((subItem) => {
       return (
-        <DropdownMenuItem key={item.id} asChild>
-          <NavLink to={item.url} className="w-full  block px-2 py-1.5">
-            {item.name}
+        <DropdownMenuItem key={subItem.id} asChild>
+          <NavLink
+            to={`/courses?category_id=${parentCategoryId}&sub_category_id=${subItem.id}`}
+            className="w-full block px-2 py-1.5 text-right"
+          >
+            {subItem.name}
           </NavLink>
         </DropdownMenuItem>
       );
@@ -44,34 +32,73 @@ const NavBar = ({ links }) => {
   };
 
   return (
-    <nav
-      className={`flex items-center gap-4`}
-    >
+    <nav className="flex items-center gap-4">
       {links.map((link) => {
-        // إذا كان الرابط الرئيسي في الـ Navbar يحتوي على قائمة فرعية (المستوى الثاني)
         if (link.list && link.list.length > 0) {
           return (
-            <DropdownMenu key={link.id}>
+            // نربط القائمة بالـ State هنا
+            <DropdownMenu key={link.id} open={open} onOpenChange={setOpen}>
               <DropdownMenuTrigger className="nav_link flex items-center gap-1 focus:outline-none">
                 {link.name}
                 <ChevronDown className="h-4 w-4 opacity-70" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className=" min-w-[12rem]">
-                {/* رابط اختياري للعنصر الرئيسي نفسه إذا كنت تريده قابلاً للضغط */}
+              <DropdownMenuContent className="min-w-[14rem]">
                 <DropdownMenuItem asChild>
                   <NavLink to={link.url} className="w-full font-bold">
                     كل {link.name}
                   </NavLink>
                 </DropdownMenuItem>
 
-                {/* استدعاء الدالة لعرض العناصر الفرعية */}
-                {renderDropdownItems(link.list)}
+                {link.list.map((category) => {
+                  const hasSubCategories =
+                    category.sub_categories &&
+                    category.sub_categories.length > 0;
+
+                  if (hasSubCategories) {
+                    return (
+                      <DropdownMenuSub key={category.id}>
+                        {/* جعلنا الـ SubTrigger يتصرف كـ Child ونقلنا الـ NavLink للخارج لحل مشكلة الإغلاق والتوجيه معاً */}
+                        <DropdownMenuSubTrigger className="flex items-center justify-between gap-2 w-full p-0">
+                          <NavLink
+                            to={`/courses?category_id=${category.id}`}
+                            className="w-full h-full px-2 py-1.5 text-right"
+                            onClick={(e) => {
+                              // نمنع انتشار الحدث حتى لا يفتح القائمة الفرعية ويغلق الرئيسية بدلاً من ذلك
+                              e.stopPropagation();
+                              setOpen(false);
+                            }}
+                          >
+                            <span>{category.name}</span>
+                          </NavLink>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                          <DropdownMenuSubContent className="min-w-[10rem]">
+                            {renderSubCategories(
+                              category.sub_categories,
+                              category.id,
+                            )}
+                          </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                      </DropdownMenuSub>
+                    );
+                  }
+
+                  return (
+                    <DropdownMenuItem key={category.id} asChild>
+                      <NavLink
+                        to={`/courses?category_id=${category.id}`}
+                        className="w-full block px-2 py-1.5"
+                      >
+                        {category.name}
+                      </NavLink>
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
           );
         }
 
-        // رابط عادي بدون أي قوائم منسدلة
         return (
           <NavLink key={link.id} to={link.url} className="nav_link">
             {link.name}

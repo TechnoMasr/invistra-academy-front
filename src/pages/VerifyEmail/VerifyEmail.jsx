@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
+  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
@@ -124,12 +125,24 @@ const VerifyEmail = () => {
                 onChange={field.onChange}
                 containerClassName="justify-center"
               >
-                <InputOTPGroup className="gap-2 lg:gap-4">
-                  {[...Array(6)].map((_, i) => (
+                <InputOTPGroup className="gap-2">
+                  {[0, 1, 2].map((i) => (
                     <InputOTPSlot
                       key={i}
                       index={i}
-                      className="text-xl rounded-full! w-10 h-10 border border-primary bg-white text-black"
+                      className="text-xl rounded-full! w-10 h-10 border"
+                    />
+                  ))}
+                </InputOTPGroup>
+
+                <InputOTPSeparator />
+
+                <InputOTPGroup className="gap-2">
+                  {[3, 4, 5].map((i) => (
+                    <InputOTPSlot
+                      key={i}
+                      index={i}
+                      className="text-xl rounded-full! w-10 h-10 border"
                     />
                   ))}
                 </InputOTPGroup>
@@ -137,7 +150,7 @@ const VerifyEmail = () => {
 
               {errors.otp && (
                 <p className="text-sm text-red-600 text-center">
-                  {t(`verifyEmailPage.${errors.otp.message}`)}
+                  {t(`otp.${errors.otp.message}`)}
                 </p>
               )}
             </div>
@@ -156,7 +169,7 @@ const VerifyEmail = () => {
             type="button"
             onClick={handleResend}
             disabled={countdown > 0 || isSending}
-            className={`text-primary hover:underline cursor-pointer ms-1 ${
+            className={`text-sky-600 hover:underline cursor-pointer ms-1 ${
               countdown > 0 ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

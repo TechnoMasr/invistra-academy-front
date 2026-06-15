@@ -22,7 +22,10 @@ const CourseCard = ({ course }) => {
       <div className="flex flex-col gap-2 lg:gap-4 p-4">
         <h3 className="text-2xl font-bold line-clamp-2">{course?.name}</h3>
 
-        <p className="line-clamp-2">{course?.description}</p>
+        <div
+          className="rich_content line-clamp-2"
+          dangerouslySetInnerHTML={{ __html: course?.description }}
+        />
 
         <div className="flex items-center gap-2">
           {course?.instructor.image && (

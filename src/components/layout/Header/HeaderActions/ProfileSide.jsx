@@ -61,7 +61,7 @@ const ProfileSide = ({ user, loading }) => {
       ) : user ? (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger className="flex items-center gap-1 cursor-pointer">
-            <BiSolidDownArrow className="text-white text-sm" />
+            <BiSolidDownArrow className="text-sm" />
             <UserAvatar
               name={user?.name}
               image={user?.image}

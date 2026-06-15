@@ -6,9 +6,12 @@ import { useDispatch } from "react-redux";
 import { getUser } from "@/store/user/userActions.js";
 import { fetchSettings } from "@/store/settings/settingsActions.js";
 import { Toaster } from "@/components/ui/sonner";
-import ScrollToTopBtn from "./components/behaviors/ScrollToTopBtn";
-import ModalManager from "./components/modals/ModalManager";
-import FixedSection from "./components/behaviors/FixedSection";
+import ScrollToTopBtn from "@/components/behaviors/ScrollToTopBtn";
+import ModalManager from "@/components/modals/ModalManager";
+import FixedSection from "@/components/behaviors/FixedSection";
+import TopHeader from "@/components/layout/Header/TopHeader";
+import { fetchInstructors } from "@/store/instructors/instructorsActions";
+import { fetchCategories } from "./store/categories/categoriesActions";
 
 function App() {
   const { pathname } = useLocation();
@@ -17,6 +20,8 @@ function App() {
   useEffect(() => {
     dispatch(getUser());
     dispatch(fetchSettings());
+    dispatch(fetchCategories());
+    dispatch(fetchInstructors());
   }, [dispatch]);
 
   useEffect(() => {
@@ -29,6 +34,7 @@ function App() {
 
   return (
     <main>
+      <TopHeader />
       <Header />
 
       <div className="min-h-[calc(100vh-83px)]">

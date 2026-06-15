@@ -7,7 +7,7 @@ export const getInstructorsPage = async (filters = {}) => {
   return data;
 };
 
-export const getInstructorDetails = async (id) => {
-  const { data } = await api.get(`/instructors/${id}`);
+export const getInstructorDetails = async (slug) => {
+  const { data } = await api.get(`/instructors/${slug}`);
   return data?.data || null;
 };

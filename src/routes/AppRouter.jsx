@@ -105,78 +105,47 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "/courses", element: <Courses /> },
       { path: "/courses/:slug", element: <CourseDetails /> },
-      { path: "/teachers", element: <Teachers /> },
-      { path: "/teachers/:slug", element: <TeacherDetails /> },
+      { path: "/instructors", element: <Teachers /> },
+      { path: "/instructors/:slug", element: <TeacherDetails /> },
 
       { path: "/terms-and-conditions", element: <Terms /> },
       { path: "/privacy-policy", element: <Policy /> },
 
-      // { path: "/pages/:slug", element: <SitePages /> },
-
-      // {
-      //   path: "payment/:status?",
-      //   element: <Payment />,
-      // },
-
-      {
-        path: "/cart",
-        element: <Cart />,
-      },
-
-      // { path: "/login", element: <Login /> },
-      // { path: "/register", element: <Register /> },
-      // { path: "/register/teacher", element: <RegisterTeacher /> },
-      // { path: "/register/student", element: <RegisterStudent /> },
-      // { path: "/forgot-password", element: <ForgotPassword /> },
-
-      {
-        path: "/profile",
-        element: <Profile />,
-        children: [
-          { index: true, element: <Account /> },
-          { path: "orders", element: <Orders /> },
-          { path: "my-courses", element: <MyCourses /> },
-          { path: "exams", element: <MyExams /> },
-          { path: "certificates", element: <MyCertificates /> },
-          { path: "order-details/:id", element: <OrderDetails /> },
-          { path: "lectures/:id", element: <Lectures /> },
-          { path: "lecture-details/:id", element: <LectureDetails /> },
-          { path: "exam-details/:id", element: <MyExamDetails /> },
-          { path: "transactions", element: <Transactions /> },
-          { path: "notifications", element: <Notifications /> },
-          { path: "add-course", element: <AddCourse /> },
-          { path: "edit-course/:id", element: <EditCourse /> },
-          { path: "add-lecture/:id", element: <AddLecture /> },
-          { path: "add-exam", element: <AddExam /> },
-          { path: "edit-exam/:id", element: <EditExam /> },
-          { path: "my-courses-teacher", element: <MyCourses2 /> },
-          { path: "exams-teacher", element: <MyExams2 /> },
-        ],
-      },
-
       {
         element: <ProtectedRoute />,
         children: [
-          // {
-          //   path: "/profile",
-          //   element: <Profile />,
-          //   children: [
-          //     { index: true, element: <Account /> },
-          //     { path: "orders", element: <Orders /> },
-          //     { path: "event-orders", element: <EventOrders /> },
-          //     { path: "event-orders/:id", element: <EventOrderDetails /> },
-          //     { path: "favorites", element: <Favorites /> },
-          //     { path: "notifications", element: <Notifications /> },
-          //   ],
-          // },
-          // {
-          //   path: "/cart",
-          //   element: (
-          //     <CheckVerifiedEmailGuard>
-          //       <Cart />
-          //     </CheckVerifiedEmailGuard>
-          //   ),
-          // },
+          {
+            path: "/profile",
+            element: <Profile />,
+            children: [
+              { index: true, element: <Account /> },
+              { path: "orders", element: <Orders /> },
+              { path: "my-courses", element: <MyCourses /> },
+              { path: "exams", element: <MyExams /> },
+              { path: "certificates", element: <MyCertificates /> },
+              { path: "order-details/:id", element: <OrderDetails /> },
+              { path: "lectures/:id", element: <Lectures /> },
+              { path: "lecture-details/:id", element: <LectureDetails /> },
+              { path: "exam-details/:id", element: <MyExamDetails /> },
+              { path: "transactions", element: <Transactions /> },
+              { path: "notifications", element: <Notifications /> },
+              { path: "add-course", element: <AddCourse /> },
+              { path: "edit-course/:id", element: <EditCourse /> },
+              { path: "add-lecture/:id", element: <AddLecture /> },
+              { path: "add-exam", element: <AddExam /> },
+              { path: "edit-exam/:id", element: <EditExam /> },
+              { path: "my-courses-teacher", element: <MyCourses2 /> },
+              { path: "exams-teacher", element: <MyExams2 /> },
+            ],
+          },
+          {
+            path: "/cart",
+            element: (
+              <CheckVerifiedEmailGuard>
+                <Cart />
+              </CheckVerifiedEmailGuard>
+            ),
+          },
           {
             path: "payment/:status?",
             element: (

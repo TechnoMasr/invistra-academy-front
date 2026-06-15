@@ -100,7 +100,7 @@ const ProfileSideBar = () => {
   return (
     <>
       <aside className="hidden lg:block w-64 p-6 bg-primary">
-        <div className="sticky top-27">{sideContent}</div>
+        <div className="sticky top-20">{sideContent}</div>
       </aside>
 
       <Sheet open={openSideBar} onOpenChange={setOpenSideBar}>

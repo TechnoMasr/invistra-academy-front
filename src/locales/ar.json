@@ -299,16 +299,23 @@
   "account": {
     "personalInfo": "البيانات الشخصية",
     "form": {
+      "name": {
+        "label": "الاسم",
+        "placeholder": "ادخل الاسم",
+        "validation": {
+          "min": "الاسم بالعربي يجب أن يكون حرفين على الأقل"
+        }
+      },
       "nameAr": {
         "label": "الاسم باللغة العربية",
-        "placeholder": "وليد مصطفى",
+        "placeholder": "ادخل الاسم",
         "validation": {
           "min": "الاسم بالعربي يجب أن يكون حرفين على الأقل"
         }
       },
       "nameEn": {
         "label": "الاسم باللغة الانجليزية",
-        "placeholder": "Walid Mostafa",
+        "placeholder": "ادخل الاسم باللغة الانجليزية",
         "validation": {
           "min": "الاسم بالإنجليزي يجب أن يكون حرفين على الأقل"
         }

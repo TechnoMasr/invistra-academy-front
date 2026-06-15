@@ -37,7 +37,7 @@ const ChangePasswordModal = () => {
   /* ---------------- schema ---------------- */
   const changePasswordSchema = z
     .object({
-      current_password: z
+      old_password: z
         .string()
         .min(6, t("changePassword.form.currentPassword.validation.min")),
       password: z
@@ -61,7 +61,7 @@ const ChangePasswordModal = () => {
   } = useForm({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
-      current_password: "",
+      old_password: "",
       password: "",
       password_confirmation: "",
     },
@@ -84,7 +84,7 @@ const ChangePasswordModal = () => {
   /* ---------------- submit ---------------- */
   const onSubmit = (data) => {
     changePasswordMutation.mutate({
-      current_password: data.current_password,
+      old_password: data.old_password,
       password: data.password,
       password_confirmation: data.password_confirmation,
     });
@@ -107,14 +107,14 @@ const ChangePasswordModal = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Current Password */}
           <Controller
-            name="current_password"
+            name="old_password"
             control={control}
             render={({ field }) => (
               <MainInput
                 {...field}
                 label={t("changePassword.form.currentPassword.label")}
                 type="password"
-                error={errors.current_password?.message}
+                error={errors.old_password?.message}
               />
             )}
           />

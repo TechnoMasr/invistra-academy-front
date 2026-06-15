@@ -1,6 +1,8 @@
-import bg from "@/assets/images/auth-bg.png";
+import { useSelector } from "react-redux";
 
 const AuthContainer = ({ children, title, description, showTitle = true }) => {
+  const { settings } = useSelector((state) => state.settings);
+
   return (
     <main className="grid grid-cols-1 md:grid-cols-2">
       <section className="flex items-center justify-center p-8">
@@ -18,7 +20,7 @@ const AuthContainer = ({ children, title, description, showTitle = true }) => {
 
       <article
         style={{
-          backgroundImage: `url(${bg})`,
+          backgroundImage: `url(${settings?.login_image || ""})`,
         }}
         className="hidden md:flex sticky top-[83px] h-[calc(100vh-83px)] bg-cover bg-center bg-primary"
       >

@@ -4,11 +4,12 @@ import { Link } from "react-router";
 const TeacherCard = ({ teacher }) => {
   return (
     <Link
-      to={`/teachers/${teacher.slug}`}
+      to={`/instructors/${teacher.slug}`}
       key={teacher.id}
-      className="border rounded-lg overflow-hidden bg-white text-center hover:shadow-xl hover:border-primary hover:bg-primary/5 transition duration-300 ease-in-out"
+      className="border rounded-lg overflow-hidden bg-white text-center flex flex-col
+      hover:shadow-xl hover:border-primary hover:bg-primary/5 transition duration-300 ease-in-out"
     >
-      <div className="p-2">
+      <div className="p-2 flex-1">
         <div className="w-full aspect-5/4 overflow-hidden rounded-md mb-2">
           {teacher.image && (
             <img
@@ -24,10 +25,12 @@ const TeacherCard = ({ teacher }) => {
         <p className="">{teacher.job_title}</p>
       </div>
 
-      <p className="text-lg font-medium border-t p-2 flex items-center justify-center gap-2">
-        <SlLayers />
-        {teacher.category}
-      </p>
+      {teacher.category && (
+        <p className="text-lg font-medium border-t p-2 flex items-center justify-center gap-2">
+          <SlLayers />
+          {teacher.category}
+        </p>
+      )}
     </Link>
   );
 };

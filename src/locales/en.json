@@ -285,16 +285,23 @@
   "account": {
     "personalInfo": "Personal Information",
     "form": {
+      "name": {
+        "label": "Name",
+        "placeholder": "Enter your name",
+        "validation": {
+          "min": "name must be at least 2 characters"
+        }
+      },
       "nameAr": {
         "label": "Name (Arabic)",
-        "placeholder": "وليد مصطفى",
+        "placeholder": "Enter your Arabic name",
         "validation": {
           "min": "Arabic name must be at least 2 characters"
         }
       },
       "nameEn": {
         "label": "Name (English)",
-        "placeholder": "Walid Mostafa",
+        "placeholder": "Enter your English name",
         "validation": {
           "min": "English name must be at least 2 characters"
         }

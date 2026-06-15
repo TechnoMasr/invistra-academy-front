@@ -24,3 +24,13 @@ export const getPages = async (slug) => {
   const { data } = await api.get(`/page/${slug}`);
   return data?.data || [];
 };
+
+export const getCategoriesList = async () => {
+  const { data } = await api.get(`/categories/list`);
+  return data?.data;
+};
+
+export const getInstructorsList = async () => {
+  const { data } = await api.get(`/instructors/list`);
+  return data?.data;
+};

@@ -23,8 +23,6 @@ const CoursesSection = ({ data, loading }) => {
     queryFn: () => getCourses(selectedCategory),
   });
 
-  console.log("courses", courses);
-
   const categoriesList = [
     { id: null, name: "الكل" },
     ...(Array.isArray(categories) ? categories : []),

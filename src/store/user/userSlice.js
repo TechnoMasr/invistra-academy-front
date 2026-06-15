@@ -51,4 +51,14 @@ const userSlice = createSlice({
 });
 
 export const { addUser, clearUser } = userSlice.actions;
+
+export const selectUser = (state) => state.user.user;
+
+export const selectUserType = (state) => state.user.user?.type;
+
+export const selectIsStudent = (state) => state.user.user?.type === "student";
+
+export const selectIsInstructor = (state) =>
+  state.user.user?.type === "instructor";
+
 export default userSlice.reducer;

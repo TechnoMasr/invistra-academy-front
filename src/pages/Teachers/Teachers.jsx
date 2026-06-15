@@ -13,9 +13,9 @@ import PageHead from "@/components/common/PageHead";
 import MainPagination from "@/components/common/MainPagination";
 import { useQuery } from "@tanstack/react-query";
 import { getInstructorsPage } from "@/api/instructorsServices";
-import { getCategoriesList } from "@/api/coursesServices";
 import { Input } from "@/components/ui/input";
 import SeoManager from "@/utils/SeoManager";
+import { useSelector } from "react-redux";
 
 // Custom Hook للـ Debounce لمنع إرسال طلبات مع كل حرف يكتبه المستخدم
 function useDebounce(value, delay) {
@@ -74,10 +74,9 @@ const Teachers = () => {
   });
 
   // جلب قائمة الأقسام لعرضها في قائمة الفلترة
-  const { data: categories, isLoading: categoriesLoading } = useQuery({
-    queryKey: ["categories-list"],
-    queryFn: getCategoriesList,
-  });
+  const { categories, categoriesLoading } = useSelector(
+    (state) => state.categories,
+  );
 
   return (
     <>

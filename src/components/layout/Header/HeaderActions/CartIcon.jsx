@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { GrCart } from "react-icons/gr";
 
 const CartIcon = ({ user }) => {
-  // const { data: cartCount = 0 } = useQuery({
-  //   queryKey: ["cart_count"],
-  //   queryFn: getCartItemsCount,
-  //   enabled: !!user,
-  // });
+  const { data: cartCount = 0 } = useQuery({
+    queryKey: ["cartItemsCount"],
+    queryFn: getCartItemsCount,
+    enabled: !!user,
+  });
 
-  const cartCount = 9;
+  const count = cartCount?.count > 9 ? "9+" : cartCount?.count;
 
   return (
     <Link to="/cart" className="relative">
@@ -19,12 +19,12 @@ const CartIcon = ({ user }) => {
         <GrCart />
       </Button>
 
-      {cartCount > 0 && (
+      {count > 0 && (
         <span
           className="absolute -top-2 -inset-e-1 bg-destructive text-white text-sm rounded-full w-4 h-4 
             flex items-center justify-center"
         >
-          {cartCount > 9 ? "9+" : cartCount}
+          {count}
         </span>
       )}
     </Link>

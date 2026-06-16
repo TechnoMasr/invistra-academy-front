@@ -5,6 +5,7 @@ import image from "@/assets/images/auth-bg.png";
 import userImg from "@/assets/icons/Icon (1).png";
 import { LuCirclePlus } from "react-icons/lu";
 import { Link } from "react-router";
+import MyCoursesSkeleton from "@/components/Loading/SkeletonLoading/MyCoursesSkeleton";
 
 const TeacherCourses = () => {
   const list = Array.from({ length: 9 }, (_, index) => ({
@@ -23,6 +24,8 @@ const TeacherCourses = () => {
   }));
 
   // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+
+  // <MyCoursesSkeleton />;
 
   return (
     <div className="space-y-6">

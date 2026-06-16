@@ -1,9 +1,9 @@
 import CertificatesCard from "@/components/cards/CertificatesCard";
-
 import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import image from "@/assets/images/auth-bg.png";
 import userImg from "@/assets/icons/Icon (1).png";
+import MyCertificatesSkeleton from "@/components/Loading/SkeletonLoading/MyCertificatesSkeleton";
 
 const MyCertificates = () => {
   const { t } = useTranslation();
@@ -24,6 +24,8 @@ const MyCertificates = () => {
   }));
 
   // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+
+  // <MyCertificatesSkeleton />
 
   return (
     <div className="space-y-6">

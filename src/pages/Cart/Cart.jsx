@@ -33,7 +33,10 @@ const Cart = () => {
             ))}
           </div>
 
-          <OrderSummaryCard data={cart?.summary} />
+          <OrderSummaryCard
+            summary={cart?.summary}
+            payment_methods={cart?.payment_methods}
+          />
         </section>
       )}
     </main>

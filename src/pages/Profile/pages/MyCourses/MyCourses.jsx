@@ -3,6 +3,7 @@ import OrdersDetailsCard from "@/components/cards/OrdersDetailsCard";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import image from "@/assets/images/auth-bg.png";
 import userImg from "@/assets/icons/Icon (1).png";
+import MyCoursesSkeleton from "@/components/Loading/SkeletonLoading/MyCoursesSkeleton";
 
 const MyCourses = () => {
   const list = Array.from({ length: 9 }, (_, index) => ({
@@ -21,6 +22,8 @@ const MyCourses = () => {
   }));
 
   // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+
+  // <MyCoursesSkeleton />;
 
   return (
     <div className="space-y-6">

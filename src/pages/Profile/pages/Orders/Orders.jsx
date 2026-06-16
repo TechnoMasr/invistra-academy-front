@@ -2,6 +2,7 @@ import OrderCard from "@/components/cards/OrderCard";
 
 import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
+import OrdersSkeleton from "@/components/Loading/SkeletonLoading/OrdersSkeleton";
 
 const Orders = () => {
   const { t } = useTranslation();
@@ -17,6 +18,8 @@ const Orders = () => {
   }));
 
   // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+
+  // <OrdersSkeleton />;
 
   return (
     <div className="space-y-6">

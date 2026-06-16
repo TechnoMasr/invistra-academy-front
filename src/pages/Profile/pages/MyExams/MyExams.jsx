@@ -3,6 +3,7 @@ import ExamCard from "@/components/cards/ExamCard";
 import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import userImg from "@/assets/icons/Icon (1).png";
+import MyExamsSkeleton from "@/components/Loading/SkeletonLoading/MyExamsSkeleton";
 
 const MyExams = () => {
   const list = Array.from({ length: 9 }, (_, index) => ({
@@ -18,6 +19,8 @@ const MyExams = () => {
     },
     slug: "بودا-سلطان",
   }));
+
+  // <MyExamsSkeleton />
 
   return (
     <div className="space-y-6">

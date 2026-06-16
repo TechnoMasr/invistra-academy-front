@@ -33,7 +33,7 @@ const Header = () => {
     <header className="sticky top-0 left-0 w-full z-50 bg-white shadow-lg">
       <div className="container py-2 flex justify-between items-center gap-2">
         {/* اللوجو */}
-        <Link to="/" className="w-24 md:w-28">
+        <Link to="/" className="w-24 md:w-28 h-10">
           <img
             loading="lazy"
             src={logo}

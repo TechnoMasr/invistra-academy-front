@@ -5,7 +5,7 @@ const TopHeader = () => {
 
   return (
     <div>
-      <div className="bg-[#A4996C] text-white text-center py-1 px-4 whitespace-nowrap overflow-x-auto">
+      <div className="bg-[#A4996C] text-white text-center py-1 px-4 whitespace-nowrap overflow-x-auto h-8">
         {settings?.top_bar_content}
       </div>
 

@@ -1,6 +1,4 @@
 import NotificationCard from "@/components/cards/NotificationCard";
-import SectionTitle from "@/components/common/SectionTitle";
-import EmptyDataSection from "@/components/commonSections/EmptyDataSection";
 import NotificationsSkeleton from "@/components/Loading/SkeletonLoading/NotificationsSkeleton";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +11,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { useSearchParams } from "react-router";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
+import MainPagination from "@/components/common/MainPagination";
+import ProfileTitle from "@/components/common/ProfileTitle";
 
 const Notifications = () => {
   const { t } = useTranslation();
@@ -42,8 +43,8 @@ const Notifications = () => {
 
   return (
     <div>
-      <div className="flex items-start justify-between">
-        <SectionTitle title={t("notifications.title")} />
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+        <ProfileTitle title={t("notifications.title")} />
 
         {hasUnread && (
           <Button disabled={isPending} onClick={markAllAsRead}>

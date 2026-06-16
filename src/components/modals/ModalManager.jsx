@@ -5,7 +5,7 @@ import TermsModal from "./TermsModal";
 import ChangePasswordModal from "./ChangePasswordModal";
 import LoadingModal from "./LoadingModal";
 import ContactUsModal from "./ContactUsModal";
-import PaymentModal from "./PaymentModal";
+import SuccessesPaymentModal from "./SuccessesPaymentModal";
 import SearchModal from "./SearchModal";
 
 const ModalManager = () => {
@@ -19,7 +19,7 @@ const ModalManager = () => {
       <TermsModal />
       <ChangePasswordModal />
       <ContactUsModal />
-      <PaymentModal />
+      <SuccessesPaymentModal />
     </>
   );
 };

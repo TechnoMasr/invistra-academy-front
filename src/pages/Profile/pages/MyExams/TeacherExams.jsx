@@ -5,6 +5,7 @@ import ProfileTitle from "@/components/common/ProfileTitle";
 import userImg from "@/assets/icons/Icon (1).png";
 import { Link } from "react-router";
 import { LuCirclePlus } from "react-icons/lu";
+import MyExamsSkeleton from "@/components/Loading/SkeletonLoading/MyExamsSkeleton";
 
 const TeacherExams = () => {
   const list = Array.from({ length: 9 }, (_, index) => ({
@@ -20,6 +21,8 @@ const TeacherExams = () => {
     },
     slug: "بودا-سلطان",
   }));
+
+  // <MyExamsSkeleton />;
 
   return (
     <div className="space-y-6">

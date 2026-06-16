@@ -24,8 +24,26 @@ export const removeFromCart = async (id) => {
   return data?.data || null;
 };
 
+export const getCartSummary = async (payment_method) => {
+  const { data } = await api.get(
+    `/cart/summary?payment_method=${payment_method}`,
+  );
+
+  return data?.data || null;
+};
+
 export const getCartItemsCount = async () => {
   const { data } = await api.get(`/cart/count`);
 
   return data?.data || [];
+};
+
+export const createOrder = async (formData) => {
+  const { data } = await api.post(`/orders`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return data?.data || null;
 };

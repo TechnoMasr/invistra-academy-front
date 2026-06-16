@@ -68,7 +68,7 @@ const SearchInput = () => {
     <button
       onMouseDown={(e) => e.preventDefault()}
       onClick={() => handleSelect(item, type)}
-      className="flex items-center justify-between w-full px-4 py-2.5 hover:bg-gray-50 transition-colors text-right"
+      className="flex items-center justify-between w-full px-4 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors"
     >
       <div className="flex items-center gap-3">
         {type !== "category" && (
@@ -108,7 +108,7 @@ const SearchInput = () => {
         }}
         onFocus={() => query && setIsOpen(true)}
         placeholder="ابحث فى المنصة"
-        className="bg-white py-2 px-8 pe-8 rounded-full outline-0 border w-full"
+        className="bg-white py-2 px-8 pe-8 rounded-full outline-0 border w-full focus:border-primary"
       />
 
       {/* Search icon */}
@@ -127,7 +127,7 @@ const SearchInput = () => {
 
       {/* Dropdown */}
       {isOpen && query.trim() && (
-        <div className="absolute top-[calc(100%+8px)] w-full bg-white rounded-2xl shadow-lg z-50 overflow-hidden min-h-[50px] max-h-[400px] overflow-y-auto border border-gray-100">
+        <div className="absolute top-[calc(100%+8px)] custom_scrollbar w-full bg-white rounded-2xl shadow-lg z-50 overflow-hidden min-h-[50px] max-h-[400px] overflow-y-auto border border-gray-100">
           {isLoading ? (
             <div className="py-6 flex justify-center text-sm text-gray-500">
               جاري البحث...
@@ -137,7 +137,7 @@ const SearchInput = () => {
               {/* قسم الكورسات */}
               {searchResults.courses && searchResults.courses.length > 0 && (
                 <div className="py-1">
-                  <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none text-right">
+                  <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none">
                     الكورسات
                   </div>
                   {searchResults.courses.map((course) => (
@@ -154,7 +154,7 @@ const SearchInput = () => {
               {searchResults.instructors &&
                 searchResults.instructors.length > 0 && (
                   <div className="py-1">
-                    <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none text-right">
+                    <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none">
                       المحاضرين
                     </div>
                     {searchResults.instructors.map((instructor) => (
@@ -171,7 +171,7 @@ const SearchInput = () => {
               {searchResults.categories &&
                 searchResults.categories.length > 0 && (
                   <div className="py-1">
-                    <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none text-right">
+                    <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none">
                       الأقسام
                     </div>
                     {searchResults.categories.map((category) => (

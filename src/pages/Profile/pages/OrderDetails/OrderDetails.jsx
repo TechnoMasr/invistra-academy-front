@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import image from "@/assets/images/auth-bg.png";
 import userImg from "@/assets/icons/Icon (1).png";
+import OrderDetailsSkeleton from "@/components/Loading/SkeletonLoading/OrderDetailsSkeleton";
 
 const OrderDetails = () => {
   const { t } = useTranslation();
@@ -24,6 +25,8 @@ const OrderDetails = () => {
   }));
 
   // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+
+  // <OrderDetailsSkeleton />;
 
   return (
     <div className="space-y-6">

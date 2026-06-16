@@ -9,9 +9,9 @@ import FormError from "@/components/form/FormError";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/api/authServices";
 import { useDispatch } from "react-redux";
-import { addUser } from "@/store/user/userSlice";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { getUser } from "@/store/user/userActions";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,9 +42,10 @@ const Login = () => {
     error,
   } = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
+    onSuccess: () => {
       navigate("/");
-      dispatch(addUser({ ...data?.user, image: data?.user?.image_url }));
+      // dispatch(addUser(data?.user));
+      dispatch(getUser())
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Login failed!");

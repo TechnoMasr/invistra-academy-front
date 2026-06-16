@@ -30,14 +30,15 @@ function useDebounce(value, delay) {
 }
 
 const Courses = () => {
-  // استخدام useSearchParams الخاصة بـ react-router-dom
+  // استخدام useSearchParams الخاصة بـ react-router
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // قراءة القيم الحالية من الـ URL
+  // قراءة القيم الحالية من الـ URL (مع إضافة الترقيم)
   const currentSearch = searchParams.get("search") || "";
   const currentCategory = searchParams.get("category_id") || "all";
-  const currentSubCategory = searchParams.get("sub_category_id") || "all"; // الفلتر الجديد
+  const currentSubCategory = searchParams.get("sub_category_id") || "all";
   const currentInstructor = searchParams.get("instructor_id") || "all";
+  const currentPage = Number(searchParams.get("page")) || 1; // قراءة الصفحة الحالية
 
   // State محلي للـ Input عشان الكتابة تكون سريعة وسلسة
   const [searchInput, setSearchInput] = useState(currentSearch);
@@ -72,6 +73,11 @@ const Courses = () => {
       newParams.delete("sub_category_id");
     }
 
+    // تصفير الصفحة وإعادتها للأولى عند تغيير أي فلتر آخر غير الترقيم نفسه
+    if (key !== "page") {
+      newParams.delete("page");
+    }
+
     setSearchParams(newParams);
   };
 
@@ -87,24 +93,29 @@ const Courses = () => {
 
   // جلب البيانات بناءً على الفلاتر الحالية في الـ URL
   const { data: courses, isLoading } = useQuery({
-    // ربط الـ queryKey بالفلاتر الجديدة
+    // ربط الـ queryKey بكافة الفلاتر بما فيها الصفحة الحالية لعمل refetch تلقائي
     queryKey: [
       "courses-page",
       currentSearch,
       currentCategory,
-      currentSubCategory, // أضيف هنا
+      currentSubCategory,
       currentInstructor,
+      currentPage, // أضيف هنا لمراقبة الترقيم
     ],
     queryFn: () =>
       getCoursesPage({
         search: currentSearch || undefined,
         category_id: currentCategory !== "all" ? currentCategory : undefined,
         sub_category_id:
-          currentSubCategory !== "all" ? currentSubCategory : undefined, // يرسل للـ API هنا
+          currentSubCategory !== "all" ? currentSubCategory : undefined,
         instructor_id:
           currentInstructor !== "all" ? currentInstructor : undefined,
+        page: currentPage, // إرسال رقم الصفحة للـ API
       }),
   });
+
+  // استخراج إجمالي عدد الصفحات ديناميكياً من الـ meta الخاصة بالسيرفر
+  const totalPages = courses?.meta?.last_page || 1;
 
   return (
     <>
@@ -189,13 +200,12 @@ const Courses = () => {
               </Select>
             </div>
 
-            {/* فلتر الأقسام الفرعية (الجديد) */}
+            {/* فلتر الأقسام الفرعية */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
                 القسم الفرعي
               </label>
               <Select
-                // يفتح فقط لو تم اختيار قسم رئيسي وكان لديه أقسام فرعية بالفعل
                 disabled={
                   currentCategory === "all" ||
                   availableSubCategories.length === 0
@@ -222,22 +232,26 @@ const Courses = () => {
 
           {/* حالة التحميل وعرض كروت الكورسات */}
           {isLoading ? (
-            <CoursesPageSkeleton/>
+            <CoursesPageSkeleton />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {courses?.items?.map((item) => (
-                <CourseCard key={item.id} course={item} />
-              ))}
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {courses?.items?.map((item) => (
+                  <CourseCard key={item.id} course={item} />
+                ))}
+              </div>
+
               {courses?.items?.length === 0 && (
-                <EmptyDataSection msg={"لا يوجد كورسات"}/>
+                <EmptyDataSection msg={"لا يوجد كورسات"} />
               )}
-            </div>
+            </>
           )}
 
+          {/* الكومبوننت الفعلي للترقيم بعد ربطه */}
           <MainPagination
-            totalPages={10}
-            currentPage={1}
-            onPageChange={() => {}}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={(page) => updateFilters("page", page)}
           />
         </section>
       </main>

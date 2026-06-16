@@ -33,9 +33,10 @@ const Teachers = () => {
   // استخدام useSearchParams للتحكم في الـ URL params
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // قراءة القيم الحالية من الـ URL (البحث و قسم المحاضر)
+  // قراءة القيم الحالية من الـ URL (البحث، قسم المحاضر، ورقم الصفحة)
   const currentSearch = searchParams.get("search") || "";
   const currentCategory = searchParams.get("category_id") || "all";
+  const currentPage = Number(searchParams.get("page")) || 1;
 
   // State محلي لحقل إدخال البحث لضمان سلاسة الكتابة
   const [searchInput, setSearchInput] = useState(currentSearch);
@@ -51,6 +52,11 @@ const Teachers = () => {
       newParams.delete(key); // لو اختار "الكل" أو تم مسح النص يحذف تماماً من الرابط
     }
 
+    // عند تغيير البحث أو القسم، يجب إعادة الترقيم للصفحة الأولى دائماً
+    if (key !== "page") {
+      newParams.delete("page");
+    }
+
     setSearchParams(newParams);
   };
 
@@ -64,14 +70,15 @@ const Teachers = () => {
     setSearchInput(currentSearch);
   }, [currentSearch]);
 
-  // جلب المحاضرين بناءً على قيم الفلاتر الحالية من الـ URL
+  // جلب المحاضرين بناءً على قيم الفلاتر الحالية من الـ URL والصفحة الحالية
   const { data: instructors, isLoading } = useQuery({
-    // ربط الـ queryKey بالفلاتر لضمان عمل الـ Refetch تلقائياً عند تغيرها
-    queryKey: ["instructors-page", currentSearch, currentCategory],
+    // ربط الـ queryKey بالفلاتر والصفحة لضمان عمل الـ Refetch تلقائياً عند تغيرها
+    queryKey: ["instructors-page", currentSearch, currentCategory, currentPage],
     queryFn: () =>
       getInstructorsPage({
         search: currentSearch || undefined,
         category_id: currentCategory !== "all" ? currentCategory : undefined,
+        page: currentPage, // إرسال رقم الصفحة الحالية للـ API
       }),
   });
 
@@ -79,6 +86,9 @@ const Teachers = () => {
   const { categories, categoriesLoading } = useSelector(
     (state) => state.categories,
   );
+
+  // استخراج بيانات الترقيم من الـ meta الخاصة بالـ API
+  const totalPages = instructors?.meta?.last_page || 1;
 
   return (
     <>
@@ -155,10 +165,11 @@ const Teachers = () => {
             </>
           )}
 
+          {/* الترقيم الديناميكي المرتبط بالـ URL */}
           <MainPagination
-            totalPages={10}
-            currentPage={1}
-            onPageChange={() => {}}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={(page) => updateFilters("page", page)}
           />
         </section>
       </main>

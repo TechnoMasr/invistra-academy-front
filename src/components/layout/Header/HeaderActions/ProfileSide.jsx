@@ -19,11 +19,13 @@ import { Button } from "@/components/ui/button";
 import { BiSolidDownArrow } from "react-icons/bi";
 import { MdOutlineOndemandVideo } from "react-icons/md";
 import { PiCertificateLight, PiExam, PiMoneyWavyBold } from "react-icons/pi";
+import useAuthGuard from "@/hooks/useAuthGuard";
 
 const ProfileSide = ({ user, loading }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isInstructor, isStudent } = useAuthGuard();
 
   const links = [
     { name: "البيانات الشخصية", href: "/profile", icon: FaRegUser },
@@ -31,6 +33,7 @@ const ProfileSide = ({ user, loading }) => {
       name: "الطلبات",
       href: "/profile/orders",
       icon: FiShoppingCart,
+      hideForInstructor: true,
     },
     {
       name: "الكورسات",
@@ -46,13 +49,19 @@ const ProfileSide = ({ user, loading }) => {
       name: "الشهادات",
       href: "/profile/certificates",
       icon: PiCertificateLight,
+      hideForInstructor: true,
     },
     {
       name: "التحويلات المالية",
       href: "/profile/transactions",
       icon: PiMoneyWavyBold,
+      hideForStudent: true,
     },
-  ];
+  ].filter(
+    (link) =>
+      !(link.hideForInstructor && isInstructor) &&
+      !(link.hideForStudent && isStudent),
+  );
 
   return (
     <>

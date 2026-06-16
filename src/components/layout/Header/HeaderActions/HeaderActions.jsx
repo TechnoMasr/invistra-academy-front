@@ -8,11 +8,13 @@ import { IoSearchOutline } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
+import useAuthGuard from "@/hooks/useAuthGuard";
 
 const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
   const dispatch = useDispatch();
 
   const { user, loading } = useSelector((state) => state.user);
+  const { isInstructor } = useAuthGuard();
 
   return (
     <div className="flex items-center gap-2 2xl:gap-4">
@@ -30,7 +32,7 @@ const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
         <>
           <NotificationsPopUp />
 
-          <CartIcon user={user} />
+          {!isInstructor && <CartIcon user={user} />}
         </>
       )}
       <ProfileSide user={user} loading={loading} />

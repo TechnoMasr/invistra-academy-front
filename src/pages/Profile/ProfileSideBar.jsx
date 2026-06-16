@@ -19,12 +19,15 @@ import { openModal } from "@/store/modals/modalsSlice";
 import { FiShoppingCart } from "react-icons/fi";
 import { MdOutlineOndemandVideo } from "react-icons/md";
 import { PiCertificateLight, PiExam, PiMoneyWavyBold } from "react-icons/pi";
+import useAuthGuard from "@/hooks/useAuthGuard";
 
 const ProfileSideBar = () => {
   const { t } = useTranslation();
   const [openSideBar, setOpenSideBar] = useState(false);
   const { lang } = useSelector((state) => state.language);
   const { settings } = useSelector((state) => state.settings);
+
+  const { isInstructor, isStudent } = useAuthGuard();
 
   const dispatch = useDispatch();
 
@@ -34,6 +37,7 @@ const ProfileSideBar = () => {
       name: "الطلبات",
       href: "/profile/orders",
       icon: FiShoppingCart,
+      hideForInstructor: true,
     },
     {
       name: "الكورسات",
@@ -46,31 +50,27 @@ const ProfileSideBar = () => {
       icon: PiExam,
     },
     {
-      name: "الكورسات2",
-      href: "/profile/my-courses-teacher",
-      icon: MdOutlineOndemandVideo,
-    },
-    {
-      name: "الاختبارات2",
-      href: "/profile/exams-teacher",
-      icon: PiExam,
-    },
-    {
       name: "الشهادات",
       href: "/profile/certificates",
       icon: PiCertificateLight,
+      hideForInstructor: true,
     },
     {
       name: "التحويلات المالية",
       href: "/profile/transactions",
       icon: PiMoneyWavyBold,
+      hideForStudent: true,
     },
     {
       name: "الاشعارات",
       href: "/profile/notifications",
       icon: FaRegBell,
     },
-  ];
+  ].filter(
+    (link) =>
+      !(link.hideForInstructor && isInstructor) &&
+      !(link.hideForStudent && isStudent),
+  );
 
   const sideContent = (
     <div className="flex flex-col gap-2">
@@ -114,13 +114,13 @@ const ProfileSideBar = () => {
         <SheetContent
           showCloseButton={false}
           side={lang === "ar" ? "right" : "left"}
-          className="w-64 bg-primary"
+          className="w-64 bg-primary border-0"
         >
           <SheetTitle
             asChild
             className="flex items-center justify-center w-full"
           >
-            <div className="w-40 h-20 overflow-hidden mt-4">
+            <div className="w-40 h-20 overflow-hidden mt-4 p-4">
               <img
                 loading="lazy"
                 src={settings?.header_logo || logo}

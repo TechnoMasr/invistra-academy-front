@@ -1,42 +1,39 @@
 import OrdersDetailsCard from "@/components/cards/OrdersDetailsCard";
-
 import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
-import image from "@/assets/images/auth-bg.png";
-import userImg from "@/assets/icons/Icon (1).png";
 import OrderDetailsSkeleton from "@/components/Loading/SkeletonLoading/OrderDetailsSkeleton";
+import { getMyOrdersDetails } from "@/api/ordersServices";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router";
 
 const OrderDetails = () => {
   const { t } = useTranslation();
 
-  const list = Array.from({ length: 9 }, (_, index) => ({
-    id: index + 1,
-    title: "اللغة الانجليزية - المستوى الأول",
-    description:
-      "طوّر مهاراتك في القراءة والكتابة والاستماع والمحادثة من خلال منهج عملي يساعدك على استخدام اللغة الإنجليزية بطلاقة في الدراسة والعمل والحياة اليومية",
-    image: image,
-    price: 50,
-    lecture_number: 12,
-    teacher: {
-      name: "بودا سلطان",
-      image: userImg,
-    },
-    slug: "بودا-سلطان",
-  }));
+  const { id } = useParams();
 
-  // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ["ordersDetails" + id],
+    queryFn: () => getMyOrdersDetails(id),
+  });
 
-  // <OrderDetailsSkeleton />;
+  const isEmpty = !isLoading && (orders?.items?.length === 0 || !orders);
+
 
   return (
     <div className="space-y-6">
       <ProfileTitle title="تفاصيل الطلب" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {list?.map((item) => (
-          <OrdersDetailsCard key={item.id} item={item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <OrderDetailsSkeleton />
+      ) : isEmpty ? (
+        <EmptyDataSection msg={t("Orders.emptyMessage")} />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {orders?.items?.map((item) => (
+            <OrdersDetailsCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import CourseCard from "@/components/cards/CourseCard";
-import MainPagination from "@/components/common/MainPagination";
 import TeacherHead from "./sections/TeacherHead";
 import { useParams } from "react-router";
 import { getInstructorDetails } from "@/api/instructorsServices";
@@ -36,12 +35,6 @@ const TeacherDetails = () => {
               <CourseCard key={item.id} course={item} />
             ))}
           </div>
-
-          <MainPagination
-            totalPages={10}
-            currentPage={1}
-            onPageChange={() => {}}
-          />
         </section>
       </main>
     </>

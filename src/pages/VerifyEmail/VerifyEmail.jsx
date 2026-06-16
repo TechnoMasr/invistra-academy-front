@@ -20,7 +20,7 @@ import FormError from "@/components/form/FormError";
 import { sendOtpVerifyEmail, verifyEmail } from "@/api/verifyEmailServices";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, clearUser } from "@/store/user/userSlice";
-import { logoutAction } from "@/store/user/userActions";
+import { getUser, logoutAction } from "@/store/user/userActions";
 import { useTranslation } from "react-i18next";
 
 const otpSchema = z.object({
@@ -69,9 +69,10 @@ const VerifyEmail = () => {
     error,
   } = useMutation({
     mutationFn: ({ email, code }) => verifyEmail({ email, code }),
-    onSuccess: (data) => {
-      dispatch(addUser(data?.user));
+    onSuccess: () => {
       navigate("/", { replace: true });
+      // dispatch(addUser(data?.user));
+      dispatch(getUser());
     },
   });
 

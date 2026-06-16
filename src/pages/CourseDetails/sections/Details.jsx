@@ -13,14 +13,13 @@ import { Loader2 } from "lucide-react";
 import { addToCart } from "@/api/cartServices";
 import { toast } from "sonner";
 import FormError from "@/components/form/FormError";
-import useRequireAuth from "@/hooks/useRequireAuth"; // قم بتعديل المسار حسب مشروعك
+import useRequireAuth from "@/hooks/useRequireAuth";
 
-const Details = ({ data }) => {
+const Details = ({ data, hideBtns = false }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const requireAuth = useRequireAuth(); // استدعاء الهوك هنا
+  const requireAuth = useRequireAuth();
 
-  // تعريف الـ Mutation الخاص بإضافة الكورس للسلة
   const {
     mutate: handleAddToCart,
     isPending,
@@ -121,38 +120,40 @@ const Details = ({ data }) => {
         </p>
 
         {/* أزرار التحكم */}
-        <div className="flex items-center gap-2">
-          <Button
-            size="lg"
-            className="rounded-full flex-1"
-            onClick={onAddToCartClick} // استخدام الدالة المحمية الجديدة
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Loader2 className="animate-spin h-5 w-5" />
-            ) : (
-              <>
-                أضف الى السلة <GrCart />
-              </>
-            )}
-          </Button>
+        {!hideBtns && (
+          <div className="flex items-center gap-2">
+            <Button
+              size="lg"
+              className="rounded-full flex-1"
+              onClick={onAddToCartClick} // استخدام الدالة المحمية الجديدة
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="animate-spin h-5 w-5" />
+              ) : (
+                <>
+                  أضف الى السلة <GrCart />
+                </>
+              )}
+            </Button>
 
-          <Button
-            size="lg"
-            variant="ghost"
-            className="rounded-full flex-1"
-            onClick={handleBuyNow} // الدالة أصبحت محمية بالداخل تلقائياً
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Loader2 className="animate-spin h-5 w-5" />
-            ) : (
-              <>
-                اشتري الان <IoFlashOutline />
-              </>
-            )}
-          </Button>
-        </div>
+            <Button
+              size="lg"
+              variant="ghost"
+              className="rounded-full flex-1"
+              onClick={handleBuyNow} // الدالة أصبحت محمية بالداخل تلقائياً
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="animate-spin h-5 w-5" />
+              ) : (
+                <>
+                  اشتري الان <IoFlashOutline />
+                </>
+              )}
+            </Button>
+          </div>
+        )}
 
         {error && (
           <FormError

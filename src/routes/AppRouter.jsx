@@ -134,8 +134,6 @@ const router = createBrowserRouter([
               { path: "add-lecture/:id", element: <AddLecture /> },
               { path: "add-exam", element: <AddExam /> },
               { path: "edit-exam/:id", element: <EditExam /> },
-              { path: "my-courses-teacher", element: <MyCourses2 /> },
-              { path: "exams-teacher", element: <MyExams2 /> },
             ],
           },
           {

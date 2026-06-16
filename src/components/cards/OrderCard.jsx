@@ -1,50 +1,43 @@
-import image from "@/assets/images/hero.png";
 import { IoCalendarOutline } from "react-icons/io5";
 import { Link } from "react-router";
 
 const OrderCard = ({ item }) => {
+  //  formate date 2026-06-16T09:47:06.000000Z
+  const date = new Date(item.date).toLocaleDateString("en-GB");
   return (
-    <div
-      key={item.id}
-      className="border rounded-lg p-3 flex flex-col gap-2"
-    >
+    <div key={item.id} className="border rounded-lg p-3 flex flex-col gap-2">
       <div className="flex items-center flex-wrap gap-1">
         <p className="font-semibold">كود الطلب:</p>
-        <span>{item.code}</span>
+        <span>{item.order_code}</span>
       </div>
 
       <div className="flex items-center flex-wrap gap-1">
         <p className="font-semibold">حالة الدفع:</p>
-        <span>{item.status}</span>
+        <span>{item.payment_status}</span>
       </div>
 
       <div className="flex items-center flex-wrap gap-1">
         <p className="font-semibold">حالة الطلب:</p>
-        <span>{item.payment_status}</span>
+        <span>{item.order_status}</span>
+      </div>
+
+      <div className="flex items-center flex-wrap gap-1">
+        <p className="font-semibold">طريقة الدفع:</p>
+        <span>{item.payment_method}</span>
       </div>
 
       <div className="flex items-center flex-wrap gap-1">
         <p className="font-semibold">
           <IoCalendarOutline size={20} />
         </p>
-        <span>{item.date}</span>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div className="w-12 aspect-square overflow-hidden">
-          <img src={image} alt="" className="w-full h-full object-contain" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <h3 className="text-lg font-bold">فودافون كاش</h3>
-          <p className="text-sm opacity-90">تحويل فوري عبر المحفظة</p>
-        </div>
+        <span>{date}</span>
       </div>
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center flex-wrap gap-1">
           <p className="font-semibold">السعر:</p>
           <span className="text-2xl font-bold text-green-500">
-            ${item.price}
+            {item.total_price} {item.currency}
           </span>
         </div>
 

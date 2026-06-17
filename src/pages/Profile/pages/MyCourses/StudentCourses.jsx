@@ -2,30 +2,25 @@ import { useState } from "react";
 import OrdersDetailsCard from "@/components/cards/OrdersDetailsCard";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import MyCoursesSkeleton from "@/components/Loading/SkeletonLoading/MyCoursesSkeleton";
-import { getMyCourses } from "@/api/myCoursesServices";
+import { getMyCoursesStudent } from "@/api/myCoursesServices";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
-import MainPagination from "@/components/common/MainPagination"; // استيراد الباجنيشن
+import MainPagination from "@/components/common/MainPagination";
 
 const StudentCourses = () => {
   const { t } = useTranslation();
 
-  // إدارة الصفحة الحالية محلياً داخل المكون
   const [page, setPage] = useState(1);
 
-  // جلب البيانات بناءً على رقم الصفحة الحالية
   const { data: myCourses, isLoading } = useQuery({
-    // ربط الـ queryKey برقم الصفحة لعمل refetch تلقائي عند تغيرها
     queryKey: ["myCourses", page],
-    queryFn: () => getMyCourses({ page }),
+    queryFn: () => getMyCoursesStudent({ page }),
   });
 
-  // التحقق من خلو البيانات بناءً على الهيكل الجديد المرتجع (items)
   const isEmpty =
     !isLoading && (!myCourses?.items || myCourses?.items?.length === 0);
 
-  // استخراج إجمالي عدد الصفحات ديناميكياً من الـ meta الخاصة بالسيرفر
   const totalPages = myCourses?.meta?.last_page || 1;
 
   return (
@@ -44,7 +39,6 @@ const StudentCourses = () => {
             ))}
           </div>
 
-          {/* إضافة كومبوننت الترقيم في الأسفل */}
           <div className="flex justify-center pt-4">
             <MainPagination
               totalPages={totalPages}

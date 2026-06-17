@@ -1,31 +1,28 @@
 import TeacherCourseCard from "@/components/cards/TeacherCourseCard";
-
 import ProfileTitle from "@/components/common/ProfileTitle";
-import image from "@/assets/images/auth-bg.png";
-import userImg from "@/assets/icons/Icon (1).png";
 import { LuCirclePlus } from "react-icons/lu";
 import { Link } from "react-router";
 import MyCoursesSkeleton from "@/components/Loading/SkeletonLoading/MyCoursesSkeleton";
+import { getMyCoursesInstructor } from "@/api/myCoursesServices";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
+import { useTranslation } from "react-i18next";
+import MainPagination from "@/components/common/MainPagination";
 
 const TeacherCourses = () => {
-  const list = Array.from({ length: 9 }, (_, index) => ({
-    id: index + 1,
-    title: "اللغة الانجليزية - المستوى الأول",
-    description:
-      "طوّر مهاراتك في القراءة والكتابة والاستماع والمحادثة من خلال منهج عملي يساعدك على استخدام اللغة الإنجليزية بطلاقة في الدراسة والعمل والحياة اليومية",
-    image: image,
-    price: 50,
-    lecture_number: 12,
-    teacher: {
-      name: "بودا سلطان",
-      image: userImg,
-    },
-    slug: "بودا-سلطان",
-  }));
+  const { t } = useTranslation();
+  const [page, setPage] = useState(1);
 
-  // const isEmpty = !isLoading && (orders?.length === 0 || !orders);
+  const { data: myCourses, isLoading } = useQuery({
+    queryKey: ["myCourses", page],
+    queryFn: () => getMyCoursesInstructor({ page }),
+  });
 
-  // <MyCoursesSkeleton />;
+  const isEmpty =
+    !isLoading && (!myCourses?.items || myCourses?.items?.length === 0);
+
+  const totalPages = myCourses?.meta?.last_page || 1;
 
   return (
     <div className="space-y-6">
@@ -41,11 +38,27 @@ const TeacherCourses = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {list?.map((item) => (
-          <TeacherCourseCard key={item.id} item={item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <MyCoursesSkeleton />
+      ) : isEmpty ? (
+        <EmptyDataSection msg={t("myCourses.emptyMessage")} />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {myCourses?.items?.map((item) => (
+              <TeacherCourseCard key={item.id} item={item} />
+            ))}
+          </div>
+
+          <div className="flex justify-center pt-4">
+            <MainPagination
+              totalPages={totalPages}
+              currentPage={page}
+              onPageChange={(newPage) => setPage(newPage)}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

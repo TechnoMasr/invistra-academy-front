@@ -1,4 +1,5 @@
 const WhatLearn = ({ data }) => {
+  if (!data || !data?.length) return null;
   return (
     <section className="container sectionPadding">
       <h1 className="text-2xl md:text-3xl font-bold leading-normal mb-6">

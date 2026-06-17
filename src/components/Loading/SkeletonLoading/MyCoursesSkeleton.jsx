@@ -10,7 +10,7 @@ const MyCoursesSkeleton = () => {
       <Skeleton className="h-8 w-32 rounded-md" />
 
       {/* شبكة الكروت بنفس أبعاد الكروت الأصلية */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {skeletonItems.map((_, index) => (
           <div
             key={index}

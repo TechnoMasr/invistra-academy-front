@@ -9,25 +9,23 @@ import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
 import ProfileTitle from "@/components/common/ProfileTitle";
-
-// افتراضًا أن هناك خدمة لتخزين الكورس، يمكنك تعديلها بمسار الـ API الخاص بك
-// import { createCourse } from "@/api/courseServices";
+import { createCourse } from "@/api/myCoursesServices";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const AddCourse = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   // بناء الـ Schema باللغة العربية مباشرة
   const courseSchema = z.object({
-    intro_video_url: z
-      .string()
-      .url("رابط الفيديو غير صالح")
-      .or(z.string().optional()),
+    link: z.string().url("رابط الفيديو غير صالح").or(z.string().optional()),
 
     // بيانات الكورس الأساسية باللغتين
-    title_ar: z.string().min(3, "اسم الكورس بالعربي مطلوب (3 أحرف على الأقل)"),
-    title_en: z
+    name_ar: z.string().min(3, "اسم الكورس بالعربي مطلوب (3 أحرف على الأقل)"),
+    name_en: z
       .string()
       .min(3, "اسم الكورس بالإنجليزي مطلوب (3 أحرف على الأقل)"),
     description_ar: z
@@ -38,94 +36,123 @@ const AddCourse = () => {
       .min(10, "وصف الكورس بالإنجليزي مطلوب (10 أحرف على الأقل)"),
 
     // ميزات تعلم الكورس (مصفوفة ديناميكية)
-    features: z.array(
+    learnings: z.array(
       z.object({
-        feature_title_ar: z.string().min(3, "عنوان الميزة بالعربي مطلوب"),
-        feature_title_en: z.string().min(3, "عنوان الميزة بالإنجليزي مطلوب"),
-        feature_desc_ar: z.string().min(5, "وصف الميزة بالعربي مطلوب"),
-        feature_desc_en: z.string().min(5, "وصف الميزة بالإنجليزي مطلوب"),
+        title_ar: z.string().min(3, "عنوان الميزة بالعربي مطلوب"),
+        title_en: z.string().min(3, "عنوان الميزة بالإنجليزي مطلوب"),
+        description_ar: z.string().min(5, "وصف الميزة بالعربي مطلوب"),
+        description_en: z.string().min(5, "وصف الميزة بالإنجليزي مطلوب"),
       }),
     ),
 
     // الحقول السفلية للكورس
-    lectures_count: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, "عدد المحاضرات يجب أن يكون 1 أو أكثر"),
-    ),
-    course_duration: z.string().min(1, "مدة الكورس مطلوبة"),
-    price_egp: z.preprocess(
-      (val) => Number(val),
-      z.number().min(0, "السعر مطلوب"),
-    ),
-    price_usd: z.preprocess(
+    duration: z
+      .string()
+      .min(1, "مدة الكورس مطلوبة")
+      .regex(/^\d{2}:\d{2}$/, "صيغة المدة يجب أن تكون HH:MM مثل 05:30"),
+    price: z.preprocess((val) => Number(val), z.number().min(0, "السعر مطلوب")),
+    dollar_price: z.preprocess(
       (val) => Number(val),
       z.number().min(0, "السعر مطلوب"),
+    ),
+    price_before_discount: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : Number(val)),
+      z.number().min(0, "السعر قبل الخصم غير صالح").optional(),
+    ),
+    dollar_price_before_discount: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : Number(val)),
+      z.number().min(0, "السعر قبل الخصم غير صالح").optional(),
     ),
   });
 
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(courseSchema),
     defaultValues: {
-      intro_video_url: "",
-      title_ar: "",
-      title_en: "",
+      link: "",
+      name_ar: "",
+      name_en: "",
       description_ar: "",
       description_en: "",
-      features: [
+      learnings: [
         {
-          feature_title_ar: "",
-          feature_title_en: "",
-          feature_desc_ar: "",
-          feature_desc_en: "",
+          title_ar: "",
+          title_en: "",
+          description_ar: "",
+          description_en: "",
         },
       ],
-      lectures_count: "",
-      course_duration: "",
-      price_egp: "",
-      price_usd: "",
+      duration: "",
+      price: "",
+      dollar_price: "",
+      price_before_discount: "",
+      dollar_price_before_discount: "",
     },
   });
 
   // التحكم بإضافة وحذف ميزات الكورس ديناميكيًا
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "features",
+    name: "learnings",
   });
 
-  // إدارة الـ Mutation لإرسال البيانات للـ Back-end
+  // إدارة الـ Mutation لإرسال البيانات للـ Back-end عبر createCourse
   const {
     mutate: createCourseMutate,
     isPending,
     error,
   } = useMutation({
-    mutationFn: async (formData) => {
-      console.log("FormData to send: ", formData);
-    },
+    mutationFn: createCourse,
     onSuccess: () => {
-      // التوجيه أو إظهار رسالة نجاح هنا
+      reset();
+      toast.success("تم انشاء الكورس بنجاح");
+      navigate("/profile/my-courses");
     },
   });
 
   const onSubmit = (data) => {
     const formData = new FormData();
 
-    // إضافة الحقول النصية العادية للـ FormData
-    Object.keys(data).forEach((key) => {
-      if (key !== "features") {
-        formData.append(key, data[key]);
-      }
+    // الحقول النصية البسيطة بأسماء الـ backend المطلوبة
+    formData.append("name[en]", data.name_en);
+    formData.append("name[ar]", data.name_ar);
+    formData.append("description[en]", data.description_en);
+    formData.append("description[ar]", data.description_ar);
+    formData.append("price", data.price);
+    formData.append("dollar_price", data.dollar_price);
+    if (data.price_before_discount !== undefined) {
+      formData.append("price_before_discount", data.price_before_discount);
+    }
+    if (data.dollar_price_before_discount !== undefined) {
+      formData.append(
+        "dollar_price_before_discount",
+        data.dollar_price_before_discount,
+      );
+    }
+    formData.append("duration", data.duration);
+    formData.append("link", data.link);
+
+    // مصفوفة الـ learnings بصيغة learnings[index][field][lang]
+    data.learnings.forEach((item, index) => {
+      formData.append(`learnings[${index}][title][en]`, item.title_en);
+      formData.append(`learnings[${index}][title][ar]`, item.title_ar);
+      formData.append(
+        `learnings[${index}][description][en]`,
+        item.description_en,
+      );
+      formData.append(
+        `learnings[${index}][description][ar]`,
+        item.description_ar,
+      );
     });
 
-    // تحويل مصفوفة الميزات إلى نص JSON
-    formData.append("features", JSON.stringify(data.features));
-
-    // إضافة ملف الصورة إذا تم اختياره
+    // الصورة الرئيسية فقط (image) - تم إلغاء thumbnail بناءً على الطلب
     if (imageFile) {
-      formData.append("course_image", imageFile);
+      formData.append("image", imageFile);
     }
 
     createCourseMutate(formData);
@@ -172,16 +199,18 @@ const AddCourse = () => {
           </div>
         </div>
 
-        {/* حقل الفيديو التعريفي */}
+        {/* حقل الفيديو التعريفي (link) */}
         <Controller
-          name="intro_video_url"
+          name="link"
           control={control}
           render={({ field }) => (
             <MainInput
-              {...field}
-              label="الفيديو التعريفي"
+              name={field.name}
+              value={field.value}
+              onChange={field.onChange}
+              label="رابط الفيديو التعريفي"
               placeholder="https://example.com"
-              error={errors.intro_video_url?.message}
+              error={errors.link?.message}
             />
           )}
         />
@@ -189,27 +218,30 @@ const AddCourse = () => {
         {/* اسم الكورس (عربي وإنجليزي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
-            name="title_ar"
+            name="name_ar"
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 label="اسم الكورس باللغة العربية"
                 placeholder="ادخل اسم الكورس..."
-                error={errors.title_ar?.message}
+                error={errors.name_ar?.message}
               />
             )}
           />
           <Controller
-            name="title_en"
+            name="name_en"
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 label="اسم الكورس باللغة الانجليزية"
                 placeholder="ادخل اسم الكورس..."
-                error={errors.title_en?.message}
-                dir="ltr"
+                error={errors.name_en?.message}
               />
             )}
           />
@@ -222,11 +254,13 @@ const AddCourse = () => {
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 label="وصف الكورس باللغة العربية"
                 placeholder="أضف وصف للكورس..."
                 error={errors.description_ar?.message}
-                isTextArea
+                type="textarea"
               />
             )}
           />
@@ -235,18 +269,19 @@ const AddCourse = () => {
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 label="وصف الكورس باللغة الانجليزية"
                 placeholder="أضف وصف للكورس..."
                 error={errors.description_en?.message}
-                isTextArea
-                dir="ltr"
+                type="textarea"
               />
             )}
           />
         </div>
 
-        {/* قسم إضافة ميزات تعلم الكورس الديناميكي */}
+        {/* قسم إضافة ميزات تعلم الكورس الديناميكي (learnings) */}
         <div className="border-t pt-4">
           <h3 className="text-lg font-semibold mb-4">
             إضافة ميزات تعلم الكورس
@@ -270,31 +305,30 @@ const AddCourse = () => {
               {/* عنوان الميزة */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Controller
-                  name={`features.${index}.feature_title_ar`}
+                  name={`learnings.${index}.title_ar`}
                   control={control}
                   render={({ field }) => (
                     <MainInput
-                      {...field}
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
                       label="عنوان الميزة باللغة العربية"
                       placeholder="ادخل عنوان الميزة..."
-                      error={
-                        errors.features?.[index]?.feature_title_ar?.message
-                      }
+                      error={errors.learnings?.[index]?.title_ar?.message}
                     />
                   )}
                 />
                 <Controller
-                  name={`features.${index}.feature_title_en`}
+                  name={`learnings.${index}.title_en`}
                   control={control}
                   render={({ field }) => (
                     <MainInput
-                      {...field}
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
                       label="عنوان الميزة باللغة الانجليزية"
                       placeholder="ادخل عنوان الميزة..."
-                      error={
-                        errors.features?.[index]?.feature_title_en?.message
-                      }
-                      dir="ltr"
+                      error={errors.learnings?.[index]?.title_en?.message}
                     />
                   )}
                 />
@@ -303,29 +337,32 @@ const AddCourse = () => {
               {/* وصف الميزة */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Controller
-                  name={`features.${index}.feature_desc_ar`}
+                  name={`learnings.${index}.description_ar`}
                   control={control}
                   render={({ field }) => (
                     <MainInput
-                      {...field}
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
                       label="وصف الميزة باللغة العربية"
                       placeholder="أضف وصف للميزة..."
-                      error={errors.features?.[index]?.feature_desc_ar?.message}
-                      isTextArea
+                      error={errors.learnings?.[index]?.description_ar?.message}
+                      type="textarea"
                     />
                   )}
                 />
                 <Controller
-                  name={`features.${index}.feature_desc_en`}
+                  name={`learnings.${index}.description_en`}
                   control={control}
                   render={({ field }) => (
                     <MainInput
-                      {...field}
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
                       label="وصف الميزة باللغة الانجليزية"
                       placeholder="أضف وصف للميزة..."
-                      error={errors.features?.[index]?.feature_desc_en?.message}
-                      isTextArea
-                      dir="ltr"
+                      error={errors.learnings?.[index]?.description_en?.message}
+                      type="textarea"
                     />
                   )}
                 />
@@ -338,10 +375,10 @@ const AddCourse = () => {
             type="button"
             onClick={() =>
               append({
-                feature_title_ar: "",
-                feature_title_en: "",
-                feature_desc_ar: "",
-                feature_desc_en: "",
+                title_ar: "",
+                title_en: "",
+                description_ar: "",
+                description_en: "",
               })
             }
             className="flex items-center gap-2 text-sm font-semibold border px-4 py-2 rounded-full hover:bg-gray-50 transition-all mt-2"
@@ -350,60 +387,86 @@ const AddCourse = () => {
           </button>
         </div>
 
-        {/* عدد المحاضرات و مدة الكورس */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+        {/* مدة الكورس */}
           <Controller
-            name="lectures_count"
+            name="duration"
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                type="text"
+                label="مدة الكورس"
+                placeholder="مثال: 05:30"
+                error={errors.duration?.message}
+              />
+            )}
+          />
+
+        {/* سعر الكورس (جنيه مصري ودولار أمريكي) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Controller
+            name="price"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 type="number"
-                label="عدد المحاضرات"
-                placeholder="ادخل عدد محاضرات الكورس..."
-                error={errors.lectures_count?.message}
+                label="سعر الكورس بالجنيه المصري"
+                placeholder="ادخل سعر الكورس بالجنيه المصري..."
+                error={errors.price?.message}
               />
             )}
           />
           <Controller
-            name="course_duration"
+            name="dollar_price"
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
-                label="مدة الكورس"
-                placeholder="ادخل مدة الكورس..."
-                error={errors.course_duration?.message}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                type="number"
+                label="سعر الكورس بالدولار الأمريكي"
+                placeholder="ادخل سعر الكورس بالدولار الأمريكي..."
+                error={errors.dollar_price?.message}
               />
             )}
           />
         </div>
 
-        {/* سعر الكورس (جنيه مصري ودولار أمريكي) */}
+        {/* السعر قبل الخصم (جنيه مصري ودولار أمريكي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
-            name="price_egp"
+            name="price_before_discount"
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 type="number"
-                label="سعر الكورس بالجنيه المصري"
-                placeholder="ادخل سعر الكورس بالجنيه المصري..."
-                error={errors.price_egp?.message}
+                label="السعر قبل الخصم بالجنيه المصري"
+                placeholder="ادخل السعر قبل الخصم..."
+                error={errors.price_before_discount?.message}
               />
             )}
           />
           <Controller
-            name="price_usd"
+            name="dollar_price_before_discount"
             control={control}
             render={({ field }) => (
               <MainInput
-                {...field}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
                 type="number"
-                label="سعر الكورس بالدولار الأمريكي"
-                placeholder="ادخل سعر الكورس بالدولار الأمريكي..."
-                error={errors.price_usd?.message}
+                label="السعر قبل الخصم بالدولار الأمريكي"
+                placeholder="ادخل السعر قبل الخصم..."
+                error={errors.dollar_price_before_discount?.message}
               />
             )}
           />

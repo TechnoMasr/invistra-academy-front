@@ -61,6 +61,9 @@ const EditCourse = React.lazy(
 const AddLecture = React.lazy(
   () => import("../pages/Profile/pages/AddLecture/AddLecture"),
 );
+const EditLecture = React.lazy(
+  () => import("../pages/Profile/pages/EditLecture/EditLecture"),
+);
 const AddExam = React.lazy(
   () => import("../pages/Profile/pages/AddExam/AddExam"),
 );
@@ -132,6 +135,7 @@ const router = createBrowserRouter([
               { path: "add-course", element: <AddCourse /> },
               { path: "edit-course/:id", element: <EditCourse /> },
               { path: "add-lecture/:id", element: <AddLecture /> },
+              { path: "edit-lecture/:id", element: <EditLecture /> },
               { path: "add-exam", element: <AddExam /> },
               { path: "edit-exam/:id", element: <EditExam /> },
             ],

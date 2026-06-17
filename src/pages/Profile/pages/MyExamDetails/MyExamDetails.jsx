@@ -91,7 +91,7 @@ const MyExamDetails = () => {
       </div>
 
       {/* محتوى الأسئلة */}
-      <div className="space-y-6" dir="ltr">
+      <div className="space-y-6">
         {" "}
         {/* الأسئلة بالإنجليزية فتكون اليسار لليمين */}
         <h3 className="text-gray-800 font-bold text-lg mb-4">

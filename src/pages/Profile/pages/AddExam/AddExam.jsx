@@ -115,7 +115,7 @@ const AddExam = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="إضافة كورس" />
+      <ProfileTitle title="إضافة امتحان" />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* حقل اختيار الكورس */}
@@ -159,7 +159,6 @@ const AddExam = () => {
                 label="اسم الاختبار باللغة الانجليزية"
                 placeholder="ادخل اسم الاختبار.."
                 error={errors.exam_title_en?.message}
-                dir="ltr"
               />
             )}
           />
@@ -254,7 +253,6 @@ const AddExam = () => {
                       error={
                         errors.questions?.[index]?.question_title_en?.message
                       }
-                      dir="ltr"
                     />
                   )}
                 />
@@ -283,7 +281,6 @@ const AddExam = () => {
                       label="الاجابة الاولى (الصحيحة) باللغة الانجليزية"
                       placeholder="ادخل الاجابة الاولى (الصحيحة).."
                       error={errors.questions?.[index]?.ans_1_en?.message}
-                      dir="ltr"
                     />
                   )}
                 />
@@ -312,7 +309,6 @@ const AddExam = () => {
                       label="الاجابة الثانية باللغة الانجليزية"
                       placeholder="ادخل الاجابة الثانية.."
                       error={errors.questions?.[index]?.ans_2_en?.message}
-                      dir="ltr"
                     />
                   )}
                 />
@@ -341,7 +337,6 @@ const AddExam = () => {
                       label="الاجابة الثالثة باللغة الانجليزية"
                       placeholder="ادخل الاجابة الثالثة.."
                       error={errors.questions?.[index]?.ans_3_en?.message}
-                      dir="ltr"
                     />
                   )}
                 />
@@ -370,7 +365,6 @@ const AddExam = () => {
                       label="الاجابة الرابعة باللغة الانجليزية"
                       placeholder="ادخل الاجابة الرابعة.."
                       error={errors.questions?.[index]?.ans_4_en?.message}
-                      dir="ltr"
                     />
                   )}
                 />

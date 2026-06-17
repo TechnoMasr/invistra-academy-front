@@ -12,7 +12,7 @@ const LectureDetails = () => {
   const { id } = useParams();
 
   const { data: lecture, isLoading } = useQuery({
-    queryKey: ["lecture" + id],
+    queryKey: ["lecture", id],
     queryFn: () => getMyLectureDetails(id),
   });
 

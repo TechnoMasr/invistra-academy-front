@@ -137,7 +137,6 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
         render={({ field }) => (
           <MainInput
             {...field}
-            dir="ltr"
             label={t("RegisterTeacherStep1.fullNameEnglish")}
             placeholder={t("RegisterTeacherStep1.fullNameEnglishPlaceholder")}
             error={errors.name_en?.message}

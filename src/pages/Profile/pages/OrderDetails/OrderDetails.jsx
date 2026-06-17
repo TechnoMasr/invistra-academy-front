@@ -12,12 +12,11 @@ const OrderDetails = () => {
   const { id } = useParams();
 
   const { data: orders, isLoading } = useQuery({
-    queryKey: ["ordersDetails" + id],
+    queryKey: ["ordersDetails", id],
     queryFn: () => getMyOrdersDetails(id),
   });
 
   const isEmpty = !isLoading && (orders?.items?.length === 0 || !orders);
-
 
   return (
     <div className="space-y-6">

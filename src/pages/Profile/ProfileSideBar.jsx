@@ -82,7 +82,7 @@ const ProfileSideBar = () => {
           className="sideBarLink"
           onClick={() => setOpenSideBar(false)}
         >
-          <link.icon />
+          <link.icon size={20} />
           {link.name}
         </NavLink>
       ))}

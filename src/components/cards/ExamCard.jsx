@@ -4,16 +4,14 @@ import { Link } from "react-router";
 
 const ExamCard = ({ item }) => {
   return (
-    <div key={item.id} className="border rounded-lg p-4 flex flex-col gap-2">
-      <h3 className="text-lg font-bold line-clamp-2">{item.title}</h3>
+    <div key={item?.id} className="border rounded-lg p-4 flex flex-col gap-2">
+      <h3 className="text-lg font-bold line-clamp-2">{item?.title}</h3>
 
-      <p className="opacity-70 font-medium line-clamp-2">
-        اللغة الانجليزية - المستوى الأول
-      </p>
+      <p className="opacity-70 font-medium line-clamp-2">{item?.course_name}</p>
 
       <p className="text-sm flex items-center gap-1 font-semibold">
         <SlLayers />
-        قسم اللغة انجليزية
+        {item?.category}
       </p>
 
       <div className="flex items-center gap-2">
@@ -29,12 +27,12 @@ const ExamCard = ({ item }) => {
         <div className="w-8 aspect-square overflow-hidden rounded-full">
           <img
             loading="lazy"
-            src={item.teacher.image}
-            alt={item.teacher.name}
+            src={item?.instructor_image}
+            alt={item?.instructor_name}
             className="w-full h-full object-cover"
           />
         </div>
-        <h4 className="font-medium">{item.teacher.name}</h4>
+        <h4 className="font-medium">{item?.instructor_name}</h4>
       </div>
 
       <hr className="my-2" />
@@ -43,7 +41,7 @@ const ExamCard = ({ item }) => {
         <p>درجة الاختبار: 7 / 10</p>
 
         <Link
-          to={`/profile/exam-details/${item.id}`}
+          to={`/profile/exam-details/${item?.id}`}
           className="font-medium text-xs py-1 px-4 text-primary border border-primary rounded-full"
         >
           عرض الاختبار

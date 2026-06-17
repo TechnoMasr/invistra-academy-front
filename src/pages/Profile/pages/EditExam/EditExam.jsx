@@ -24,7 +24,6 @@ const EditExam = () => {
 
   // 1. بناء الـ Schema الديناميكي المتوافق مع هيكل الـ options الجديد
   const examSchema = z.object({
-    course_id: z.string().min(1, "الرجاء اختيار الكورس"),
     exam_title_ar: z.string().min(3, "اسم الاختبار بالعربي مطلوب"),
     exam_title_en: z.string().min(3, "اسم الاختبار بالإنجليزي مطلوب"),
     min_degree: z.preprocess(
@@ -63,7 +62,6 @@ const EditExam = () => {
   } = useForm({
     resolver: zodResolver(examSchema),
     defaultValues: {
-      course_id: "",
       exam_title_ar: "",
       exam_title_en: "",
       min_degree: "",
@@ -89,7 +87,6 @@ const EditExam = () => {
   useEffect(() => {
     if (examDetails) {
       const formattedData = {
-        course_id: String(examDetails.course_id || ""),
         exam_title_ar: examDetails.title?.ar || "",
         exam_title_en: examDetails.title?.en || "",
         min_degree: examDetails.pass_mark || "",
@@ -130,7 +127,7 @@ const EditExam = () => {
     onSuccess: () => {
       toast.success("تم تحديث الامتحان بنجاح");
       setIsEditing(false);
-      navigate(`/profile/exams`);
+      // navigate(`/profile/exams`);
     },
   });
 
@@ -173,7 +170,7 @@ const EditExam = () => {
     <div className="p-4 max-w-5xl mx-auto" dir="rtl">
       {/* الهيدر العلوي */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-        <ProfileTitle title="تعديل الاختبار" />
+        <ProfileTitle title="تفاصيل الاختبار" />
 
         {!isEditing && (
           <button
@@ -188,32 +185,6 @@ const EditExam = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-        {/* حقل اختيار الكورس */}
-        <div className="w-full">
-          <Controller
-            name="course_id"
-            control={control}
-            render={({ field }) => (
-              <MainInput
-                {...field}
-                type="select"
-                disabled={!isEditing || isCoursesLoading}
-                label="الكورس"
-                placeholder="اختر الكورس"
-                options={
-                  !isCoursesLoading
-                    ? courses.map((course) => ({
-                        label: course.name,
-                        value: String(course.id),
-                      }))
-                    : []
-                }
-                error={errors.course_id?.message}
-              />
-            )}
-          />
-        </div>
-
         {/* اسم الاختبار (عربي وإنجليزي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
@@ -338,7 +309,6 @@ const EditExam = () => {
                 // إعادة تعيين الحقول إلى تفاصيل الامتحان الأصلية المجلوبة من الـ API
                 if (examDetails) {
                   reset({
-                    course_id: String(examDetails.course_id || ""),
                     exam_title_ar: examDetails.title?.ar || "",
                     exam_title_en: examDetails.title?.en || "",
                     min_degree: examDetails.pass_mark || "",

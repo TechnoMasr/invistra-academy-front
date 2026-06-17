@@ -262,7 +262,7 @@ input::-webkit-inner-spin-button {
     }
 
     &.active {
-      @apply bg-secondary text-primary;
+      @apply bg-secondary text-primary font-semibold;
     }
   }
 

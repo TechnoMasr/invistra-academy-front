@@ -236,7 +236,7 @@ const EditCourse = () => {
     <div className="space-y-6">
       {/* الهيدر العلوي المحتوي على عنوان الصفحة وزر التعديل */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-        <ProfileTitle title="تعديل الكورس" />
+        <ProfileTitle title="تفاصيل الكورس" />
 
         {!isEditing && (
           <button
@@ -490,22 +490,22 @@ const EditCourse = () => {
         </div>
 
         {/* مدة الكورس */}
-          <Controller
-            name="duration"
-            control={control}
-            render={({ field }) => (
-              <MainInput
-                name={field.name}
-                value={field.value}
-                onChange={field.onChange}
-                disabled={!isEditing}
-                type="text"
-                label="مدة الكورس"
-                placeholder="مثال: 05:30"
-                error={errors.duration?.message}
-              />
-            )}
-          />
+        <Controller
+          name="duration"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              name={field.name}
+              value={field.value}
+              onChange={field.onChange}
+              disabled={!isEditing}
+              type="text"
+              label="مدة الكورس"
+              placeholder="مثال: 05:30"
+              error={errors.duration?.message}
+            />
+          )}
+        />
 
         {/* سعر الكورس (جنيه مصري ودولار أمريكي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

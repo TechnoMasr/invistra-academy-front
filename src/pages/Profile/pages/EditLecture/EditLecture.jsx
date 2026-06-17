@@ -198,7 +198,7 @@ const EditLecture = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-        <ProfileTitle title="تعديل المحاضرة" />
+        <ProfileTitle title="تفاصيل المحاضرة" />
 
         {!isEditing && (
           <button

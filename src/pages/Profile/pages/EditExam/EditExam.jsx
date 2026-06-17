@@ -1,44 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaRegEdit } from "react-icons/fa";
+import { useParams, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
 import ProfileTitle from "@/components/common/ProfileTitle";
+import {
+  getExamDetailsInstructor,
+  updateExam,
+  getInstructorCoursesForExams,
+} from "@/api/ExamSecvices";
 
 const EditExam = () => {
-  // 1. حالة التحكم في وضع التعديل (عرض فقط أو تعديل)
+  const { id } = useParams(); // جلب معرف الامتحان من الـ URL
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
 
-  // بيانات الاختبار الافتراضية (كمثال لما سيأتي من الـ API أو الـ Props)
-  const examData = {
-    course_id: "1",
-    exam_title_ar: "اختبار أساسيات الجافا سكريبت",
-    exam_title_en: "JavaScript Basics Exam",
-    min_degree: 50,
-    max_degree: 100,
-    questions: [
-      {
-        question_title_ar: "ما هي طريقة تعريف متغير ثابت في الجافا سكريبت؟",
-        question_title_en:
-          "How do you declare a constant variable in JavaScript?",
-        ans_1_ar: "const",
-        ans_1_en: "const",
-        ans_2_ar: "let",
-        ans_2_en: "let",
-        ans_3_ar: "var",
-        ans_3_en: "var",
-        ans_4_ar: "constant",
-        ans_4_en: "constant",
-      },
-    ],
-  };
-
-  // 2. بناء الـ Schema للتحقق من المدخلات
+  // 1. بناء الـ Schema الديناميكي المتوافق مع هيكل الـ options الجديد
   const examSchema = z.object({
     course_id: z.string().min(1, "الرجاء اختيار الكورس"),
     exam_title_ar: z.string().min(3, "اسم الاختبار بالعربي مطلوب"),
@@ -56,24 +40,21 @@ const EditExam = () => {
         z.object({
           question_title_ar: z.string().min(5, "عنوان السؤال بالعربي مطلوب"),
           question_title_en: z.string().min(5, "عنوان السؤال بالإنجليزي مطلوب"),
-          ans_1_ar: z
-            .string()
-            .min(1, "الإجابة الأولى (الصحيحة) بالعربي مطلوبة"),
-          ans_1_en: z
-            .string()
-            .min(1, "الإجابة الأولى (الصحيحة) بالإنجليزي مطلوبة"),
-          ans_2_ar: z.string().min(1, "الإجابة الثانية بالعربي مطلوبة"),
-          ans_2_en: z.string().min(1, "الإجابة الثانية بالإنجليزي مطلوبة"),
-          ans_3_ar: z.string().min(1, "الإجابة الثالثة بالعربي مطلوبة"),
-          ans_3_en: z.string().min(1, "الإجابة الثالثة بالإنجليزي مطلوبة"),
-          ans_4_ar: z.string().min(1, "الإجابة الرابعة بالعربي مطلوبة"),
-          ans_4_en: z.string().min(1, "الإجابة الرابعة بالإنجليزي مطلوبة"),
+          options: z
+            .array(
+              z.object({
+                option_ar: z.string().min(1, "الخيار بالعربي مطلوب"),
+                option_en: z.string().min(1, "الخيار بالإنجليزي مطلوب"),
+              }),
+            )
+            .min(2, "يجب إضافة خيارين على الأقل للسؤال")
+            .max(4, "الحد الأقصى هو 4 خيارات فقط"),
         }),
       )
       .min(1, "يجب إضافة سؤال واحد على الأقل"),
   });
 
-  // 3. إعداد الـ Form مع تعبئة البيانات الافتراضية تلقائياً
+  // 2. إعداد الـ Form
   const {
     handleSubmit,
     control,
@@ -81,43 +62,116 @@ const EditExam = () => {
     reset,
   } = useForm({
     resolver: zodResolver(examSchema),
-    defaultValues: examData,
+    defaultValues: {
+      course_id: "",
+      exam_title_ar: "",
+      exam_title_en: "",
+      min_degree: "",
+      max_degree: "",
+      questions: [],
+    },
   });
 
-  // التحكم بمصفوفة الأسئلة
-  const { fields, append, remove } = useFieldArray({
+  // 3. جلب تفاصيل الامتحان الحالي وتحويل شكل البيانات ليتناسب مع الـ Form
+  const { data: examDetails, isLoading: isExamLoading } = useQuery({
+    queryKey: ["examDetails", id],
+    queryFn: () => getExamDetailsInstructor(id),
+    enabled: !!id,
+  });
+
+  // جلب قائمة الكورسات الخاصة بالمدرس لتعبئة حقل الاختيار
+  const { data: courses, isLoading: isCoursesLoading } = useQuery({
+    queryKey: ["instructorCoursesForExams"],
+    queryFn: getInstructorCoursesForExams,
+  });
+
+  // عمل تعبئة (Reset) للـ Form فور وصول البيانات من الـ API
+  useEffect(() => {
+    if (examDetails) {
+      const formattedData = {
+        course_id: String(examDetails.course_id || ""),
+        exam_title_ar: examDetails.title?.ar || "",
+        exam_title_en: examDetails.title?.en || "",
+        min_degree: examDetails.pass_mark || "",
+        max_degree: examDetails.full_mark || "",
+        // تحويل الأسئلة والخيارات من الشكل القادم من السيرفر إلى شكل المصفوفات المتداخلة
+        questions: (examDetails.questions || []).map((q) => ({
+          question_title_ar: q.title?.ar || "",
+          question_title_en: q.title?.en || "",
+          options: (q.options || []).map((opt) => ({
+            option_ar: opt.option?.ar || "",
+            option_en: opt.option?.en || "",
+          })),
+        })),
+      };
+      reset(formattedData);
+    }
+  }, [examDetails, reset]);
+
+  // 4. التحكم بمصفوفة الأسئلة الأساسية
+  const {
+    fields: questionFields,
+    append: appendQuestion,
+    remove: removeQuestion,
+  } = useFieldArray({
     control,
     name: "questions",
   });
 
-  // 4. إدارة الـ Mutation للتعديل وإرسال البيانات الجديدة للـ Back-end
+  // 5. إدارة الـ Mutation للتحديث وإرسال البيانات كـ FormData
   const {
     mutate: updateExamMutate,
     isPending,
     error,
   } = useMutation({
-    mutationFn: async (updatedData) => {
-      console.log("Updating Exam with Data: ", updatedData);
-      // هنا يتم استدعاء الـ API الخاص بالتحديث مثل axios.put
+    mutationFn: async (formData) => {
+      return await updateExam(formData, id);
     },
     onSuccess: () => {
-      setIsEditing(false); // العودة لوضع العرض فقط بعد النجاح
+      toast.success("تم تحديث الامتحان بنجاح");
+      setIsEditing(false);
+      navigate(`/profile/exams`);
     },
   });
 
+  // 6. تحويل كائن البيانات (Object) إلى FormData بالصيغة المدعومة في السيرفر
   const onSubmit = (data) => {
-    updateExamMutate(data);
+    const formData = new FormData();
+
+    formData.append("title[en]", data.exam_title_en);
+    formData.append("title[ar]", data.exam_title_ar);
+    formData.append("pass_mark", String(data.min_degree));
+    formData.append("full_mark", String(data.max_degree));
+
+    data.questions.forEach((q, qIndex) => {
+      formData.append(`questions[${qIndex}][title][en]`, q.question_title_en);
+      formData.append(`questions[${qIndex}][title][ar]`, q.question_title_ar);
+
+      q.options.forEach((opt, optIndex) => {
+        formData.append(
+          `questions[${qIndex}][options][${optIndex}][option][en]`,
+          opt.option_en,
+        );
+        formData.append(
+          `questions[${qIndex}][options][${optIndex}][option][ar]`,
+          opt.option_ar,
+        );
+      });
+    });
+
+    // إرسال الـ FormData المجهزة مع الـ Mutation
+    updateExamMutate(formData);
   };
 
-  // مصفوفة تجريبية للكورسات لتمريرها لـ MainInput من نوع select
-  const courseOptions = [
-    { label: "كورس البرمجة الـ Web", value: "1" },
-    { label: "كورس التصميم UI/UX", value: "2" },
-  ];
+  if (isExamLoading) {
+    return (
+      <div className="text-center py-10">جاري تحميل بيانات الامتحان...</div>
+    );
+  }
 
   return (
     <div className="p-4 max-w-5xl mx-auto" dir="rtl">
-      {/* الهيدر العلوي المحتوي على عنوان الصفحة وزر التعديل */}
+      {/* الهيدر العلوي */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
         <ProfileTitle title="تعديل الاختبار" />
 
@@ -143,10 +197,17 @@ const EditExam = () => {
               <MainInput
                 {...field}
                 type="select"
-                disabled={!isEditing}
+                disabled={!isEditing || isCoursesLoading}
                 label="الكورس"
                 placeholder="اختر الكورس"
-                options={courseOptions}
+                options={
+                  !isCoursesLoading
+                    ? courses.map((course) => ({
+                        label: course.name,
+                        value: String(course.id),
+                      }))
+                    : []
+                }
                 error={errors.course_id?.message}
               />
             )}
@@ -226,182 +287,16 @@ const EditExam = () => {
             </span>
           </div>
 
-          {fields.map((item, index) => (
-            <div
+          {questionFields.map((item, index) => (
+            <QuestionFieldsGroup
               key={item.id}
-              className="p-6 bg-gray-50/60 border border-gray-100 rounded-xl mb-6 flex flex-col gap-4 relative"
-            >
-              {/* يظهر زر حذف السؤال فقط لو كنا في وضع التعديل وهناك أكثر من سؤال */}
-              {fields.length > 1 && isEditing && (
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="absolute top-3 left-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
-                >
-                  حذف السؤال
-                </button>
-              )}
-
-              <h4 className="text-sm font-bold text-primary">
-                السؤال رقم ({index + 1})
-              </h4>
-
-              {/* عنوان السؤال (عربي وإنجليزي) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Controller
-                  name={`questions.${index}.question_title_ar`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      type="textarea"
-                      disabled={!isEditing}
-                      label="عنوان السؤال باللغة العربية"
-                      placeholder="أضف عنوان السؤال.."
-                      error={
-                        errors.questions?.[index]?.question_title_ar?.message
-                      }
-                    />
-                  )}
-                />
-                <Controller
-                  name={`questions.${index}.question_title_en`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      type="textarea"
-                      disabled={!isEditing}
-                      label="عنوان السؤال باللغة الانجليزية"
-                      placeholder="أضف عنوان السؤال.."
-                      error={
-                        errors.questions?.[index]?.question_title_en?.message
-                      }
-                    />
-                  )}
-                />
-              </div>
-
-              {/* الإجابة الأولى الصحيحة */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Controller
-                  name={`questions.${index}.ans_1_ar`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الاولى (الصحيحة) باللغة العربية"
-                      placeholder="ادخل الاجابة الاولى (الصحيحة).."
-                      error={errors.questions?.[index]?.ans_1_ar?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name={`questions.${index}.ans_1_en`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الاولى (الصحيحة) باللغة الانجليزية"
-                      placeholder="ادخل الاجابة الاولى (الصحيحة).."
-                      error={errors.questions?.[index]?.ans_1_en?.message}
-                    />
-                  )}
-                />
-              </div>
-
-              {/* الإجابة الثانية */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Controller
-                  name={`questions.${index}.ans_2_ar`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الثانية باللغة العربية"
-                      placeholder="ادخل الاجابة الثانية.."
-                      error={errors.questions?.[index]?.ans_2_ar?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name={`questions.${index}.ans_2_en`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الثانية باللغة الانجليزية"
-                      placeholder="ادخل الاجابة الثانية.."
-                      error={errors.questions?.[index]?.ans_2_en?.message}
-                    />
-                  )}
-                />
-              </div>
-
-              {/* الإجابة الثالثة */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Controller
-                  name={`questions.${index}.ans_3_ar`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الثالثة باللغة العربية"
-                      placeholder="ادخل الاجابة الثالثة.."
-                      error={errors.questions?.[index]?.ans_3_ar?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name={`questions.${index}.ans_3_en`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الثالثة باللغة الانجليزية"
-                      placeholder="ادخل الاجابة الثالثة.."
-                      error={errors.questions?.[index]?.ans_3_en?.message}
-                    />
-                  )}
-                />
-              </div>
-
-              {/* الإجابة الرابعة */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Controller
-                  name={`questions.${index}.ans_4_ar`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الرابعة باللغة العربية"
-                      placeholder="ادخل الاجابة الرابعة.."
-                      error={errors.questions?.[index]?.ans_4_ar?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name={`questions.${index}.ans_4_en`}
-                  control={control}
-                  render={({ field }) => (
-                    <MainInput
-                      {...field}
-                      disabled={!isEditing}
-                      label="الاجابة الرابعة باللغة الانجليزية"
-                      placeholder="ادخل الاجابة الرابعة.."
-                      error={errors.questions?.[index]?.ans_4_en?.message}
-                    />
-                  )}
-                />
-              </div>
-            </div>
+              questionIndex={index}
+              control={control}
+              errors={errors}
+              removeQuestion={removeQuestion}
+              totalQuestions={questionFields.length}
+              isEditing={isEditing}
+            />
           ))}
 
           {/* زر إضافة سؤال جديد يظهر فقط في وضع التعديل */}
@@ -409,17 +304,13 @@ const EditExam = () => {
             <button
               type="button"
               onClick={() =>
-                append({
+                appendQuestion({
                   question_title_ar: "",
                   question_title_en: "",
-                  ans_1_ar: "",
-                  ans_1_en: "",
-                  ans_2_ar: "",
-                  ans_2_en: "",
-                  ans_3_ar: "",
-                  ans_3_en: "",
-                  ans_4_ar: "",
-                  ans_4_en: "",
+                  options: [
+                    { option_ar: "", option_en: "" },
+                    { option_ar: "", option_en: "" },
+                  ],
                 })
               }
               className="flex items-center gap-2 text-sm font-semibold border px-4 py-2 rounded-full hover:bg-gray-50 transition-all mt-2"
@@ -444,7 +335,24 @@ const EditExam = () => {
               variant="outline"
               className="w-full md:w-40 rounded-full"
               onClick={() => {
-                reset(examData); // استعادة البيانات الأصلية عند إلغاء التعديل
+                // إعادة تعيين الحقول إلى تفاصيل الامتحان الأصلية المجلوبة من الـ API
+                if (examDetails) {
+                  reset({
+                    course_id: String(examDetails.course_id || ""),
+                    exam_title_ar: examDetails.title?.ar || "",
+                    exam_title_en: examDetails.title?.en || "",
+                    min_degree: examDetails.pass_mark || "",
+                    max_degree: examDetails.full_mark || "",
+                    questions: (examDetails.questions || []).map((q) => ({
+                      question_title_ar: q.title?.ar || "",
+                      question_title_en: q.title?.en || "",
+                      options: (q.options || []).map((opt) => ({
+                        option_ar: opt.option?.ar || "",
+                        option_en: opt.option?.en || "",
+                      })),
+                    })),
+                  });
+                }
                 setIsEditing(false);
               }}
             >
@@ -464,6 +372,156 @@ const EditExam = () => {
           </div>
         )}
       </form>
+    </div>
+  );
+};
+
+// المكون الفرعي المتنقل لإدارة خيارات كل سؤال بشكل ديناميكي مع ميزة تعطيل وتفعيل المدخلات بناءً على وضع التعديل
+const QuestionFieldsGroup = ({
+  questionIndex,
+  control,
+  errors,
+  removeQuestion,
+  totalQuestions,
+  isEditing,
+}) => {
+  const {
+    fields: optionFields,
+    append: appendOption,
+    remove: removeOption,
+  } = useFieldArray({
+    control,
+    name: `questions.${questionIndex}.options`,
+  });
+
+  return (
+    <div className="p-6 bg-gray-50/60 border border-gray-100 rounded-xl mb-6 flex flex-col gap-4 relative">
+      {totalQuestions > 1 && isEditing && (
+        <button
+          type="button"
+          onClick={() => removeQuestion(questionIndex)}
+          className="absolute top-3 left-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
+        >
+          حذف السؤال
+        </button>
+      )}
+
+      <h4 className="text-sm font-bold text-primary">
+        السؤال رقم ({questionIndex + 1})
+      </h4>
+
+      {/* عنوان السؤال (عربي وإنجليزي) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Controller
+          name={`questions.${questionIndex}.question_title_ar`}
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              type="textarea"
+              disabled={!isEditing}
+              label="عنوان السؤال باللغة العربية"
+              placeholder="أضف عنوان السؤال.."
+              error={
+                errors.questions?.[questionIndex]?.question_title_ar?.message
+              }
+            />
+          )}
+        />
+        <Controller
+          name={`questions.${questionIndex}.question_title_en`}
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              {...field}
+              type="textarea"
+              disabled={!isEditing}
+              label="عنوان السؤال باللغة الانجليزية"
+              placeholder="أضف عنوان السؤال.."
+              error={
+                errors.questions?.[questionIndex]?.question_title_en?.message
+              }
+            />
+          )}
+        />
+      </div>
+
+      {/* حقول الإجابات (الخيارات المضافة ديناميكياً) */}
+      <div className="space-y-4 border-t pt-4 mt-2">
+        <h5 className="text-xs font-bold text-gray-700">خيارات الإجابة:</h5>
+
+        {optionFields.map((optItem, optIndex) => (
+          <div
+            key={optItem.id}
+            className="flex flex-col gap-2 bg-white p-3 rounded-lg border border-gray-100 relative"
+          >
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500 font-semibold">
+                الخيار رقم ({optIndex + 1}){" "}
+                {optIndex === 0 && (
+                  <span className="text-green-600">(الإجابة الصحيحة)</span>
+                )}
+              </span>
+              {/* إمكانية حذف الخيار فقط في وضع التعديل ولو زاد عن خيارين */}
+              {optionFields.length > 2 && isEditing && (
+                <button
+                  type="button"
+                  onClick={() => removeOption(optIndex)}
+                  className="text-xs text-red-400 hover:text-red-600"
+                >
+                  حذف الخيار
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Controller
+                name={`questions.${questionIndex}.options.${optIndex}.option_ar`}
+                control={control}
+                render={({ field }) => (
+                  <MainInput
+                    {...field}
+                    disabled={!isEditing}
+                    label="الخيار باللغة العربية"
+                    placeholder="ادخل الخيار بالعربي.."
+                    error={
+                      errors.questions?.[questionIndex]?.options?.[optIndex]
+                        ?.option_ar?.message
+                    }
+                  />
+                )}
+              />
+              <Controller
+                name={`questions.${questionIndex}.options.${optIndex}.option_en`}
+                control={control}
+                render={({ field }) => (
+                  <MainInput
+                    {...field}
+                    disabled={!isEditing}
+                    label="الخيار باللغة الانجليزية"
+                    placeholder="ادخل الخيار بالإنجليزي.."
+                    error={
+                      errors.questions?.[questionIndex]?.options?.[optIndex]
+                        ?.option_en?.message
+                    }
+                  />
+                )}
+              />
+            </div>
+          </div>
+        ))}
+
+        {/* زر إضافة خيار آخر للسؤال الحالي */}
+        {optionFields.length < 4 && isEditing && (
+          <button
+            type="button"
+            onClick={() => appendOption({ option_ar: "", option_en: "" })}
+            className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 mt-1"
+          >
+            + إضافة خيار آخر لهذا السؤال
+          </button>
+        )}
+      </div>
     </div>
   );
 };

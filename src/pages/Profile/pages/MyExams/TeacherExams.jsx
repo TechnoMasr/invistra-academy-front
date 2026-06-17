@@ -6,23 +6,24 @@ import userImg from "@/assets/icons/Icon (1).png";
 import { Link } from "react-router";
 import { LuCirclePlus } from "react-icons/lu";
 import MyExamsSkeleton from "@/components/Loading/SkeletonLoading/MyExamsSkeleton";
+import { useQuery } from "@tanstack/react-query";
+import { getExamsInstructor } from "@/api/ExamSecvices";
+import { useState } from "react";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
+import MainPagination from "@/components/common/MainPagination";
 
 const TeacherExams = () => {
-  const list = Array.from({ length: 9 }, (_, index) => ({
-    id: index + 1,
-    title: "اللغة الانجليزية - المستوى الأول",
-    description:
-      "طوّر مهاراتك في القراءة والكتابة والاستماع والمحادثة من خلال منهج عملي يساعدك على استخدام اللغة الإنجليزية بطلاقة في الدراسة والعمل والحياة اليومية",
-    price: 50,
-    lecture_number: 12,
-    teacher: {
-      name: "بودا سلطان",
-      image: userImg,
-    },
-    slug: "بودا-سلطان",
-  }));
+  const { t } = useTranslation();
+  const [page, setPage] = useState(1);
 
-  // <MyExamsSkeleton />;
+  const { data: exams, isLoading } = useQuery({
+    queryKey: ["examsInstructor", page],
+    queryFn: () => getExamsInstructor({ page }),
+  });
+
+  const isEmpty = !isLoading && (!exams?.items || exams?.items?.length === 0);
+
+  const totalPages = exams?.meta?.last_page || 1;
 
   return (
     <div className="space-y-6">
@@ -38,11 +39,27 @@ const TeacherExams = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {list?.map((item) => (
-          <TeacherExamCard key={item.id} item={item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <MyExamsSkeleton />
+      ) : isEmpty ? (
+        <EmptyDataSection msg={t("exams.emptyMessage")} />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {exams?.items?.map((item) => (
+              <TeacherExamCard key={item.id} item={item} />
+            ))}
+          </div>
+
+          <div className="flex justify-center pt-4">
+            <MainPagination
+              totalPages={totalPages}
+              currentPage={page}
+              onPageChange={(newPage) => setPage(newPage)}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

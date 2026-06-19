@@ -11,7 +11,7 @@ import { loginUser } from "@/api/authServices";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { getUser } from "@/store/user/userActions";
+import { setCredentials } from "@/store/auth/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,10 +42,13 @@ const Login = () => {
     error,
   } = useMutation({
     mutationFn: loginUser,
-    onSuccess: () => {
+    onSuccess: (data) => {
       navigate("/");
-      // dispatch(addUser(data?.user));
-      dispatch(getUser())
+      dispatch(
+        setCredentials({
+          user: data.user,
+        }),
+      );
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Login failed!");

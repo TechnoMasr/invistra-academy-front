@@ -8,7 +8,13 @@ import "./i18n";
 import { DirectionProvider } from "./components/ui/direction.jsx";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { refetchOnWindowFocus: false } },
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+    },
+  },
 });
 
 const lang = localStorage.getItem("lang") || "en";

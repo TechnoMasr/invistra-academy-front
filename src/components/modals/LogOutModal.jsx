@@ -1,4 +1,3 @@
-import { logoutAction } from "@/store/user/userActions";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
@@ -13,21 +12,34 @@ import {
 import { closeModal } from "@/store/modals/modalsSlice";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { GiEntryDoor } from "react-icons/gi";
+import { useMutation } from "@tanstack/react-query";
+import { logoutUser } from "@/api/authServices";
+import { logout } from "@/store/auth/authSlice";
 
 const LogOutModal = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { modalName } = useSelector((state) => state.modals);
-  const { logOutLoading } = useSelector((state) => state.user);
 
   const onClose = () => {
     dispatch(closeModal());
   };
 
+  const { mutate: logoutMutate, isPending } = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      dispatch(logout());
+      onClose();
+    },
+    onError: (err) => {
+      console.log("Logout Error:", err);
+      dispatch(logout());
+      onClose();
+    },
+  });
+
   const handleLogout = () => {
-    dispatch(logoutAction())
-      .unwrap()
-      .then(() => onClose());
+    logoutMutate();
   };
 
   return (
@@ -48,7 +60,7 @@ const LogOutModal = () => {
           <Button
             className={`flex-1`}
             variant="outline"
-            disabled={logOutLoading}
+            disabled={isPending}
             onClick={onClose}
           >
             {t("logOutModal.cancel")}
@@ -57,10 +69,10 @@ const LogOutModal = () => {
           <Button
             className={`flex-1`}
             variant="destructive"
-            disabled={logOutLoading}
+            disabled={isPending}
             onClick={handleLogout}
           >
-            {logOutLoading && (
+            {isPending && (
               <AiOutlineLoading3Quarters className="w-4 h-4 animate-spin" />
             )}
             {t("logOutModal.logout")}

@@ -3,16 +3,15 @@ import { useSelector } from "react-redux";
 import LoadingPage from "../Loading/LoadingPage";
 
 const AuthGuard = () => {
-  const { user, loading } = useSelector((state) => state.user);
+  const { isAuthenticated, isEmailVerified } = useSelector((s) => s.auth);
 
-  if (loading) return <LoadingPage />;
+  if (!isAuthenticated) return <Outlet />;
 
-  // لو user موجود → رجّعه للهوم
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
+  // لو مسجل بس إيميله مش متفعل، يروح OTP
+  if (!isEmailVerified) return <Navigate to="/verify-email" replace />;
 
-  return <Outlet />;
+  // لو مسجل وإيميله متفعل، يروح الـ home
+  return <Navigate to="/" replace />;
 };
 
 export default AuthGuard;

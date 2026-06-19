@@ -18,6 +18,7 @@ import {
   getLectureInstructorDetails,
   updateLecture,
 } from "@/api/lectureServices";
+import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
 // الحد الأقصى لحجم الملف: 2 ميجابايت بالبايت
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -187,13 +188,7 @@ const EditLecture = () => {
     updateLectureMutate(formData);
   };
 
-  if (isLoading) {
-    return (
-      <div className="text-center py-10 text-gray-500">
-        جاري تحميل بيانات المحاضرة...
-      </div>
-    );
-  }
+  if (isLoading) return <InputsSkeleton />;
 
   return (
     <div className="space-y-6">

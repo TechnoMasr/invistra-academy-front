@@ -22,12 +22,12 @@ const HeroSkeleton = () => {
             </div>
 
             {/* سكلتون الزر */}
-            <Skeleton className="h-11 w-full md:w-[180px] rounded-full" />
+            <Skeleton className="h-11 w-full md:w-45 rounded-full" />
           </div>
 
           {/* سكلتون الصورة (يمين في الشاشات الكبيرة) */}
           <div className="w-[70%] sm:w-[40%] lg:w-1/2 flex justify-center order-1 lg:order-2">
-            <Skeleton className="w-full aspect-square max-h-150 rounded-2xl" />
+            <Skeleton className="w-full aspect-square max-h-150 rounded-full" />
           </div>
 
         </div>

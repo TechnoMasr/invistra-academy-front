@@ -13,7 +13,7 @@ import useAuthGuard from "@/hooks/useAuthGuard";
 const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
   const dispatch = useDispatch();
 
-  const { user, loading } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.auth);
   const { isInstructor } = useAuthGuard();
 
   return (
@@ -35,7 +35,7 @@ const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
           {!isInstructor && <CartIcon user={user} />}
         </>
       )}
-      <ProfileSide user={user} loading={loading} />
+      <ProfileSide user={user}  />
       <div
         className="lg:hidden text-3xl cursor-pointer"
         onClick={() => setShowMobileNav((prev) => !prev)}

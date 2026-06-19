@@ -323,7 +323,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className="absolute top-2 left-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-transform duration-200 hover:scale-110"
+                    className="absolute top-2 inset-e-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-transform duration-200 hover:scale-110"
                     title="حذف الصورة"
                   >
                     <FiX className="w-3.5 h-3.5" />

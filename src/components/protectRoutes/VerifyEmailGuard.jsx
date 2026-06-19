@@ -3,17 +3,13 @@ import LoadingPage from "../Loading/LoadingPage";
 import { Navigate } from "react-router";
 
 const VerifyEmailGuard = ({ children }) => {
-  const { user, loading } = useSelector((state) => state.user);
+  const { isAuthenticated, isEmailVerified } = useSelector((s) => s.auth);
 
-  if (loading) return <LoadingPage />;
+  // مش مسجل؟ يروح login
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (user?.is_verified) {
-    return <Navigate to="/" replace />;
-  }
+  // إيميله متفعل؟ ميقدرش يدخل OTP تاني
+  if (isEmailVerified) return <Navigate to="/" replace />;
 
   return children;
 };

@@ -16,6 +16,7 @@ import {
   getMyCourseDetailsInstructor,
   updateCourse,
 } from "@/api/myCoursesServices";
+import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
 const EditCourse = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -224,13 +225,7 @@ const EditCourse = () => {
     updateCourseMutate(formData);
   };
 
-  if (isLoading) {
-    return (
-      <div className="text-center py-10 text-gray-500">
-        جاري تحميل بيانات الكورس...
-      </div>
-    );
-  }
+  if (isLoading) return <InputsSkeleton />;
 
   return (
     <div className="space-y-6">
@@ -392,7 +387,7 @@ const EditCourse = () => {
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="absolute top-2 left-2 text-xs text-red-500 hover:underline"
+                  className="absolute top-2 inset-e-2 text-xs text-red-500 hover:underline"
                 >
                   حذف
                 </button>

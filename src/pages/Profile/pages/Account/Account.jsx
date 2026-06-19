@@ -1,17 +1,14 @@
-import { selectIsInstructor, selectIsStudent } from "@/store/user/userSlice";
-import { useSelector } from "react-redux";
 import StudentAccount from "./StudentAccount";
 import TeacherAccount from "./TeacherAccount";
+import useAuthGuard from "@/hooks/useAuthGuard";
 
 const Account = () => {
-  const isStudent = useSelector(selectIsStudent);
-  const isInstructor = useSelector(selectIsInstructor);
-  const { user } = useSelector((state) => state.user);
+  const { isStudent, isInstructor } = useAuthGuard();
 
   return (
     <>
-      {isStudent && <StudentAccount user={user} />}
-      {isInstructor && <TeacherAccount user={user} />}
+      {isStudent && <StudentAccount />}
+      {isInstructor && <TeacherAccount />}
     </>
   );
 };

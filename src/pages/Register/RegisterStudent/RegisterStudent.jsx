@@ -14,9 +14,9 @@ import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "@/api/authServices";
 import FormError from "@/components/form/FormError";
 import { useDispatch } from "react-redux";
-import { getUser } from "@/store/user/userActions";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
+import { setCredentials } from "@/store/auth/authSlice";
 
 const RegisterStudent = () => {
   const { t } = useTranslation();
@@ -70,12 +70,14 @@ const RegisterStudent = () => {
     error,
   } = useMutation({
     mutationFn: registerUser,
-    onSuccess: () => {
-      dispatch(getUser())
-        .unwrap()
-        .then(() => {
-          navigate("/verify-email", { replace: true });
-        });
+    onSuccess: (data) => {
+      dispatch(
+        setCredentials({
+          user: data.user,
+        }),
+      );
+      // OtpRoute هتوجهه أوتوماتيك لأن isEmailVerified = false
+      navigate("/verify-email", { replace: true });
     },
   });
 

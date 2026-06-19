@@ -19,9 +19,10 @@ import { z } from "zod";
 import FormError from "@/components/form/FormError";
 import { sendOtpVerifyEmail, verifyEmail } from "@/api/verifyEmailServices";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, clearUser } from "@/store/user/userSlice";
-import { getUser, logoutAction } from "@/store/user/userActions";
 import { useTranslation } from "react-i18next";
+import { logout, setCredentials } from "@/store/auth/authSlice";
+import { logoutUser } from "@/api/authServices";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const otpSchema = z.object({
   otp: z.string().length(6, "otpError"),
@@ -29,7 +30,7 @@ const otpSchema = z.object({
 
 const VerifyEmail = () => {
   const { t } = useTranslation();
-  const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -69,10 +70,13 @@ const VerifyEmail = () => {
     error,
   } = useMutation({
     mutationFn: ({ email, code }) => verifyEmail({ email, code }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      dispatch(
+        setCredentials({
+          user: data.user,
+        }),
+      );
       navigate("/", { replace: true });
-      // dispatch(addUser(data?.user));
-      dispatch(getUser());
     },
   });
 
@@ -99,10 +103,28 @@ const VerifyEmail = () => {
     sendOtpMutation(user?.email);
   };
 
+  // Logout
+  const { mutate: logoutMutate, isPending: isLoggingOut } = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      dispatch(logout());
+      const timer = setTimeout(() => {
+        navigate("/register", { replace: true });
+      }, 0);
+      return () => clearTimeout(timer);
+    },
+    onError: (err) => {
+      console.log("Logout Error:", err);
+      dispatch(logout());
+      const timer = setTimeout(() => {
+        navigate("/register", { replace: true });
+      }, 0);
+      return () => clearTimeout(timer);
+    },
+  });
+
   const handleBackToRegister = () => {
-    dispatch(logoutAction());
-    dispatch(clearUser());
-    navigate(`/register`, { replace: true });
+    logoutMutate();
   };
 
   return (
@@ -183,9 +205,13 @@ const VerifyEmail = () => {
         <button
           type="button"
           onClick={handleBackToRegister}
+          disabled={isLoggingOut}
           className="text-sm hover:underline cursor-pointer text-muted-foreground"
         >
-          {t("verifyEmailPage.backToRegister")}
+          {t("verifyEmailPage.backToRegister")}{" "}
+          {isLoggingOut && (
+            <AiOutlineLoading3Quarters className="w-4 h-4 animate-spin inline-block ms-1" />
+          )}
         </button>
 
         {error && (

@@ -21,7 +21,7 @@ import { MdOutlineOndemandVideo } from "react-icons/md";
 import { PiCertificateLight, PiExam, PiMoneyWavyBold } from "react-icons/pi";
 import useAuthGuard from "@/hooks/useAuthGuard";
 
-const ProfileSide = ({ user, loading }) => {
+const ProfileSide = ({ user }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -65,9 +65,7 @@ const ProfileSide = ({ user, loading }) => {
 
   return (
     <>
-      {loading ? (
-        <Skeleton className="h-9 w-9 rounded-full" />
-      ) : user ? (
+      {user ? (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger className="flex items-center gap-1 cursor-pointer">
             <BiSolidDownArrow className="text-sm" />

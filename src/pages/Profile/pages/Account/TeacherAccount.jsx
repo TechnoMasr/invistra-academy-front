@@ -11,19 +11,30 @@ import FormError from "@/components/form/FormError";
 import { FaPen } from "react-icons/fa";
 import { isValidPhoneNumber } from "react-phone-number-input";
 
-import { useMutation } from "@tanstack/react-query";
-import { updateProfile } from "@/api/authServices";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getProfile, updateProfile } from "@/api/authServices";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useRef, useState } from "react";
-import { addUser } from "@/store/user/userSlice";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
+import { setCredentials } from "@/store/auth/authSlice";
+import LoadingPage from "@/components/Loading/LoadingPage";
+import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
-const TeacherAccount = ({ user }) => {
+const TeacherAccount = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+  });
 
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -31,6 +42,10 @@ const TeacherAccount = ({ user }) => {
   const [savedData, setSavedData] = useState(user); // ✅ جديد
 
   const fileInputRef = useRef(null);
+
+  const { categories, categoriesLoading } = useSelector(
+    (state) => state.categories,
+  );
 
   const accountSchema = z.object({
     name_ar: z.string().min(2, t("account.form.nameAr.validation.min")),
@@ -75,11 +90,34 @@ const TeacherAccount = ({ user }) => {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (user) {
+      reset({
+        name_ar: user?.name_ar || "",
+        name_en: user?.name_en || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        image: user?.image || null,
+        category_id: user?.category?.id ? String(user.category.id) : "",
+        job_title_ar: user?.job_title_ar || "",
+        job_title_en: user?.job_title_en || "",
+        bio_ar: user?.bio_ar || "",
+        bio_en: user?.bio_en || "",
+      });
+      setAvatar(user?.image || null);
+      setSavedData(user);
+    }
+  }, [user]);
+
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: (data, variables) => {
       setSavedData(data); // ✅ حدّث آخر بيانات محفوظة
-      dispatch(addUser(data));
+      dispatch(
+        setCredentials({
+          user: data,
+        }),
+      );
       setErrorMsg("");
       setIsEditing(false);
 
@@ -109,6 +147,10 @@ const TeacherAccount = ({ user }) => {
       setErrorMsg(error?.response?.data?.message);
     },
   });
+
+  if (isLoading) return <InputsSkeleton />;
+  if (isError)
+    return <div className="text-red-500 py-20">حصل خطأ في تحميل البيانات</div>;
 
   const onSubmit = (values) => {
     const formData = new FormData();
@@ -151,15 +193,11 @@ const TeacherAccount = ({ user }) => {
     setAvatar(savedData?.image || null);
   };
 
-  const { categories, categoriesLoading } = useSelector(
-    (state) => state.categories,
-  );
-
   return (
     <div className="space-y-6">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4 w-full max-w-md mx-auto"
+        className="space-y-4 w-full"
         style={{
           pointerEvents: updateProfileMutation.isPending ? "none" : "auto",
         }}
@@ -196,143 +234,147 @@ const TeacherAccount = ({ user }) => {
           </div>
         </div>
 
-        <Controller
-          name="name_ar"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              label={t("account.form.nameAr.label")}
-              placeholder={t("account.form.nameAr.placeholder")}
-              error={errors.name_ar?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Controller
+            name="name_ar"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                label={t("account.form.nameAr.label")}
+                placeholder={t("account.form.nameAr.placeholder")}
+                error={errors.name_ar?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="name_en"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              label={t("account.form.nameEn.label")}
-              placeholder={t("account.form.nameEn.placeholder")}
-              error={errors.name_en?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="name_en"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                label={t("account.form.nameEn.label")}
+                placeholder={t("account.form.nameEn.placeholder")}
+                error={errors.name_en?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="email"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              type="email"
-              label={t("account.form.email.label")}
-              placeholder={t("account.form.email.placeholder")}
-              error={errors.email?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="email"
+                label={t("account.form.email.label")}
+                placeholder={t("account.form.email.placeholder")}
+                error={errors.email?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="phone"
-          control={control}
-          render={({ field }) => (
-            <PhoneInputField
-              {...field}
-              label={t("account.form.phone.label")}
-              error={errors.phone?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => (
+              <PhoneInputField
+                {...field}
+                label={t("account.form.phone.label")}
+                error={errors.phone?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="category_id"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              type="select"
-              label={t("account.form.department.label")}
-              placeholder={t("account.form.department.placeholder")}
-              options={
-                categories &&
-                categories.map((option) => ({
-                  value: String(option.id),
-                  label: option.name,
-                }))
-              }
-              error={errors.category_id?.message}
-              disabled={!isEditing || categoriesLoading}
+          <div className="md:col-span-2">
+            <Controller
+              name="category_id"
+              control={control}
+              render={({ field }) => (
+                <MainInput
+                  {...field}
+                  type="select"
+                  label={t("account.form.department.label")}
+                  placeholder={t("account.form.department.placeholder")}
+                  options={
+                    categories &&
+                    categories.map((option) => ({
+                      value: String(option.id),
+                      label: option.name,
+                    }))
+                  }
+                  error={errors.category_id?.message}
+                  disabled={!isEditing || categoriesLoading}
+                />
+              )}
             />
-          )}
-        />
+          </div>
 
-        <Controller
-          name="job_title_ar"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              label={t("account.form.jobTitleAr.label")}
-              placeholder={t("account.form.jobTitleAr.placeholder")}
-              error={errors.job_title_ar?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="job_title_ar"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                label={t("account.form.jobTitleAr.label")}
+                placeholder={t("account.form.jobTitleAr.placeholder")}
+                error={errors.job_title_ar?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="job_title_en"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              label={t("account.form.jobTitleEn.label")}
-              placeholder={t("account.form.jobTitleEn.placeholder")}
-              error={errors.job_title_en?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="job_title_en"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                label={t("account.form.jobTitleEn.label")}
+                placeholder={t("account.form.jobTitleEn.placeholder")}
+                error={errors.job_title_en?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="bio_ar"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              type="textarea"
-              label={t("account.form.bioAr.label")}
-              placeholder={t("account.form.bioAr.placeholder")}
-              error={errors.bio_ar?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="bio_ar"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="textarea"
+                label={t("account.form.bioAr.label")}
+                placeholder={t("account.form.bioAr.placeholder")}
+                error={errors.bio_ar?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
 
-        <Controller
-          name="bio_en"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              {...field}
-              type="textarea"
-              label={t("account.form.bioEn.label")}
-              placeholder={t("account.form.bioEn.placeholder")}
-              error={errors.bio_en?.message}
-              disabled={!isEditing}
-            />
-          )}
-        />
+          <Controller
+            name="bio_en"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="textarea"
+                label={t("account.form.bioEn.label")}
+                placeholder={t("account.form.bioEn.placeholder")}
+                error={errors.bio_en?.message}
+                disabled={!isEditing}
+              />
+            )}
+          />
+        </div>
 
-        <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center flex-wrap gap-2 max-w-md mx-auto">
           <Button
             type="button"
             className="flex-1"

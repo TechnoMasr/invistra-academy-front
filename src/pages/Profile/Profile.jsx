@@ -6,7 +6,7 @@ const Profile = () => {
     <article className="flex flex-col lg:flex-row w-full">
       <ProfileSideBar />
 
-      <section className="flex-1 min-h-[90vh] p-4 lg:p-6">
+      <section className="flex-1 min-h-[90vh] px-4 py-6 md:px-6">
         <Outlet />
       </section>
     </article>

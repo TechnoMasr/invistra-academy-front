@@ -1,18 +1,12 @@
 // hooks/useAuthGuard.js
 import { useSelector } from "react-redux";
-import {
-  selectIsStudent,
-  selectIsInstructor,
-  selectUser,
-} from "@/store/user/userSlice";
 
 const useAuthGuard = () => {
-  const { loading } = useSelector((state) => state.user);
-  const isStudent = useSelector(selectIsStudent);
-  const isInstructor = useSelector(selectIsInstructor);
-  const user = useSelector(selectUser);
+  const { user } = useSelector((state) => state.auth);
+  const isStudent = user?.type === "student";
+  const isInstructor = user?.type === "instructor";
 
-  return { isStudent, isInstructor, user, loading };
+  return { isStudent, isInstructor, user };
 };
 
 export default useAuthGuard;

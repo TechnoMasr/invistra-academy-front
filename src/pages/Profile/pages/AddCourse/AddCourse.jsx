@@ -296,7 +296,7 @@ const AddCourse = () => {
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="absolute top-2 left-2 text-xs text-red-500 hover:underline"
+                  className="absolute top-2 inset-e-2 text-xs text-red-500 hover:underline"
                 >
                   حذف
                 </button>

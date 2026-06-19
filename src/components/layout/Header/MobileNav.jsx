@@ -18,7 +18,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side={lang === "en" ? "right" : "left"}
-        className="w-[300px] sm:w-[400px] flex flex-col gap-6 p-6"
+        className="w-75 sm:w-100 flex flex-col gap-6 p-6"
       >
         {/* رأس القائمة (اللوجو) */}
         <SheetHeader className="border-b border-gray-100 pb-4">
@@ -52,7 +52,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                   <div key={link.id} className="py-3 border-b border-gray-100">
                     <Link
                       to={link.url}
-                      className="text-gray-800 font-bold text-base hover:text-primary transition-colors block w-full text-right"
+                      className="text-gray-800 font-bold text-base hover:text-primary transition-colors block w-full"
                       onClick={() => onOpenChange(false)}
                     >
                       {link.name}
@@ -68,7 +68,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                   value={`link-${link.id}`}
                   className="border-b border-gray-100"
                 >
-                  <AccordionTrigger className="text-gray-800 font-bold text-base hover:text-primary hover:no-underline py-3 text-right">
+                  <AccordionTrigger className="text-gray-800 font-bold text-base hover:text-primary hover:no-underline py-3">
                     {link.name}
                   </AccordionTrigger>
 
@@ -86,7 +86,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                     <Accordion
                       type="single"
                       collapsible
-                      className="w-full mr-2 pr-2 border-r-2 border-gray-100 flex flex-col gap-1"
+                      className="w-full ps-2 border-s-2 border-primary flex flex-col gap-1"
                     >
                       {link.list.map((category) => {
                         const hasSubCategories =
@@ -99,7 +99,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                             <Link
                               key={category.id}
                               to={`/courses?category_id=${category.id}`}
-                              className="text-gray-700 font-medium text-sm hover:text-primary transition-colors py-2 block text-right"
+                              className="text-gray-700 font-medium text-sm hover:text-primary transition-colors py-2 block"
                               onClick={() => onOpenChange(false)}
                             >
                               {category.name}
@@ -112,20 +112,20 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                           <AccordionItem
                             key={category.id}
                             value={`cat-${category.id}`}
-                            className="border-none"
+                            className="border-none outline-none focus:ring-0"
                           >
-                            <AccordionTrigger className="text-gray-700 font-medium text-sm hover:text-primary hover:no-underline py-2 text-right">
+                            <AccordionTrigger className="text-gray-700 font-medium text-sm hover:text-primary hover:no-underline py-2">
                               {category.name}
                             </AccordionTrigger>
 
-                            <AccordionContent className="pt-1 pb-2 flex flex-col gap-1.5 mr-3 pr-2 border-r border-gray-200">
+                            <AccordionContent className="pt-1 pb-2 flex flex-col gap-1.5 ps-2">
                               {/* رابط للذهاب للقسم الرئيسي نفسه */}
                               <Link
                                 to={`/courses?category_id=${category.id}`}
                                 className="text-gray-400 font-medium text-xs hover:text-primary transition-colors py-1 block"
                                 onClick={() => onOpenChange(false)}
                               >
-                                عرض كل {category.name}
+                                - عرض كل {category.name}
                               </Link>
 
                               {/* عرض الأقسام الفرعية (المستوى الثالث) */}

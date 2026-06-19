@@ -315,7 +315,7 @@ const QuestionFieldsGroup = ({
         <button
           type="button"
           onClick={() => removeQuestion(questionIndex)}
-          className="absolute top-3 left-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
+          className="absolute top-3 inset-e-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
         >
           حذف السؤال
         </button>

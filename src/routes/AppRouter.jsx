@@ -70,12 +70,6 @@ const AddExam = React.lazy(
 const EditExam = React.lazy(
   () => import("../pages/Profile/pages/EditExam/EditExam"),
 );
-const MyCourses2 = React.lazy(
-  () => import("../pages/Profile/pages/MyCourses/TeacherCourses"),
-);
-const MyExams2 = React.lazy(
-  () => import("../pages/Profile/pages/MyExams/TeacherExams"),
-);
 
 const Login = React.lazy(() => import("../pages/Login/Login"));
 const Register = React.lazy(() => import("../pages/Register/Register"));

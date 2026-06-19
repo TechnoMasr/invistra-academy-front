@@ -16,6 +16,7 @@ import {
   updateExam,
   getInstructorCoursesForExams,
 } from "@/api/ExamSecvices";
+import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
 const EditExam = () => {
   const { id } = useParams(); // جلب معرف الامتحان من الـ URL
@@ -160,11 +161,7 @@ const EditExam = () => {
     updateExamMutate(formData);
   };
 
-  if (isExamLoading) {
-    return (
-      <div className="text-center py-10">جاري تحميل بيانات الامتحان...</div>
-    );
-  }
+  if (isExamLoading) return <InputsSkeleton />;
 
   return (
     <div className="p-4 max-w-5xl mx-auto" dir="rtl">
@@ -370,7 +367,7 @@ const QuestionFieldsGroup = ({
         <button
           type="button"
           onClick={() => removeQuestion(questionIndex)}
-          className="absolute top-3 left-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
+          className="absolute top-3 inset-e-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
         >
           حذف السؤال
         </button>

@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 const NotificationsPopUp = () => {
   const { t } = useTranslation();
   const [openNotifications, setOpenNotifications] = useState(false);
-  const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.auth);
 
   const { data: notifications, isLoading } = useQuery({
     queryKey: ["notifications"],

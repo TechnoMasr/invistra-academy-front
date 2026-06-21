@@ -71,11 +71,15 @@ const TeacherLectureCard = ({ item }) => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-106" showCloseButton={false}>
             <DialogHeader>
-              <DialogTitle className="text-right">{t("teacherLectureCard.deleteTitle")}</DialogTitle>
+              <DialogTitle className="text-right">
+                {t("teacherLectureCard.deleteTitle")}
+              </DialogTitle>
               <DialogDescription className="text-right mt-2">
-                {t("teacherLectureCard.deleteDescription", { name: item?.title })}
+                {t("teacherLectureCard.deleteDescription", {
+                  name: item?.title,
+                })}
               </DialogDescription>
             </DialogHeader>
 

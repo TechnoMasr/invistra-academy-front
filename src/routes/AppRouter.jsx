@@ -6,6 +6,7 @@ import ProtectedRoute from "@/components/protectRoutes/ProtectedRoute";
 import AuthGuard from "@/components/protectRoutes/AuthGuard";
 import VerifyEmailGuard from "@/components/protectRoutes/VerifyEmailGuard";
 import CheckVerifiedEmailGuard from "@/components/protectRoutes/CheckVerifiedEmailGuard";
+import RoleGuard from "@/components/protectRoutes/RoleGuard";
 
 const Home = React.lazy(() => import("../pages/Home/Home"));
 const Courses = React.lazy(() => import("../pages/Courses/Courses"));
@@ -44,10 +45,10 @@ const LectureDetails = React.lazy(
   () => import("../pages/Profile/pages/LectureDetails/LectureDetails"),
 );
 const ExamResult = React.lazy(
-  () => import("../pages/Profile/pages/MyExamDetails/ExamResult"),
+  () => import("../pages/Profile/pages/ExamResult/ExamResult"),
 );
 const EnterExam = React.lazy(
-  () => import("../pages/Profile/pages/MyExamDetails/EnterExam"),
+  () => import("../pages/Profile/pages/ExamResult/EnterExam"),
 );
 const Notifications = React.lazy(
   () => import("../pages/Profile/pages/Notifications/Notifications"),
@@ -91,7 +92,6 @@ const ForgotPassword = React.lazy(
 
 const Terms = React.lazy(() => import("../pages/Terms/Terms"));
 const Policy = React.lazy(() => import("../pages/Policy/Policy"));
-// const SitePages = React.lazy(() => import("../pages/SitePages/SitePages"));
 
 const NotFound = React.lazy(() => import("../pages/NotFound/NotFound"));
 const ErrorPage = React.lazy(() => import("../pages/ErrorPage/ErrorPage"));
@@ -119,30 +119,115 @@ const router = createBrowserRouter([
             element: <Profile />,
             children: [
               { index: true, element: <Account /> },
-              { path: "orders", element: <Orders /> },
+              {
+                path: "orders",
+                element: (
+                  <RoleGuard allowedRole="student">
+                    <Orders />
+                  </RoleGuard>
+                ),
+              },
               { path: "my-courses", element: <MyCourses /> },
               { path: "exams", element: <MyExams /> },
-              { path: "certificates", element: <MyCertificates /> },
-              { path: "order-details/:id", element: <OrderDetails /> },
+              {
+                path: "certificates",
+                element: (
+                  <RoleGuard allowedRole="student">
+                    <MyCertificates />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "order-details/:id",
+                element: (
+                  <RoleGuard allowedRole="student">
+                    <OrderDetails />
+                  </RoleGuard>
+                ),
+              },
               { path: "lectures/:id", element: <Lectures /> },
-              { path: "lecture-details/:id", element: <LectureDetails /> },
-              { path: "exam-result/:id", element: <ExamResult /> },
-              { path: "enter-exam/:id", element: <EnterExam /> },
-              { path: "transactions", element: <Transactions /> },
+              {
+                path: "lecture-details/:id",
+                element: (
+                  <RoleGuard allowedRole="student">
+                    <LectureDetails />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "exam-result/:id",
+                element: (
+                  <RoleGuard allowedRole="student">
+                    <ExamResult />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "transactions",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <Transactions />
+                  </RoleGuard>
+                ),
+              },
               { path: "notifications", element: <Notifications /> },
-              { path: "add-course", element: <AddCourse /> },
-              { path: "edit-course/:id", element: <EditCourse /> },
-              { path: "add-lecture/:id", element: <AddLecture /> },
-              { path: "edit-lecture/:id", element: <EditLecture /> },
-              { path: "add-exam", element: <AddExam /> },
-              { path: "edit-exam/:id", element: <EditExam /> },
+              {
+                path: "add-course",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <AddCourse />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "edit-course/:id",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <EditCourse />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "add-lecture/:id",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <AddLecture />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "edit-lecture/:id",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <EditLecture />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "add-exam",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <AddExam />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "edit-exam/:id",
+                element: (
+                  <RoleGuard allowedRole="instructor">
+                    <EditExam />
+                  </RoleGuard>
+                ),
+              },
             ],
           },
           {
             path: "/cart",
             element: (
               <CheckVerifiedEmailGuard>
-                <Cart />
+                <RoleGuard allowedRole="student">
+                  <Cart />
+                </RoleGuard>
               </CheckVerifiedEmailGuard>
             ),
           },
@@ -150,7 +235,9 @@ const router = createBrowserRouter([
             path: "payment/:status?",
             element: (
               <CheckVerifiedEmailGuard>
-                <Payment />
+                <RoleGuard allowedRole="student">
+                  <Payment />
+                </RoleGuard>
               </CheckVerifiedEmailGuard>
             ),
           },
@@ -178,6 +265,19 @@ const router = createBrowserRouter([
       },
 
       { path: "*", element: <NotFound /> },
+    ],
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/enter-exam/:id",
+        element: (
+          <RoleGuard allowedRole="student">
+            <EnterExam />
+          </RoleGuard>
+        ),
+      },
     ],
   },
 ]);

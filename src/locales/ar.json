@@ -572,7 +572,8 @@
     "addToCart": "أضف الى السلة",
     "buyNow": "اشتري الان",
     "addedToCart": "تم الإضافة بنجاح",
-    "somethingWrong": "Something went wrong"
+    "somethingWrong": "حدث خطاء ما",
+    "showLectures": "مشاهدة المحاضرات"
   },
 
   "whatLearn": {
@@ -722,6 +723,10 @@
     "optionEn": "الخيار باللغة الانجليزية",
     "optionEnPlaceholder": "ادخل الخيار بالإنجليزي..",
     "addOption": "+ إضافة خيار آخر لهذا السؤال",
+    "displayedQuestionsCount": "عدد الأسئلة التي سيتم عرضها للمختبر",
+    "displayedQuestionsCountPlaceholder": "ادخل عدد الأسئلة المعروضة..",
+    "isAppearsToAllExaminees": "تثبيت هذا السؤال في جميع الاختبارات",
+
     "validation": {
       "courseRequired": "الرجاء اختيار الكورس",
       "nameArRequired": "اسم الاختبار بالعربي مطلوب",
@@ -734,7 +739,8 @@
       "optionEnRequired": "الخيار بالإنجليزي مطلوب",
       "minOptions": "يجب إضافة خيارين على الأقل للسؤال",
       "maxOptions": "الحد الأقصى هو 4 خيارات فقط",
-      "minQuestions": "يجب إضافة سؤال واحد على الأقل"
+      "minQuestions": "يجب إضافة سؤال واحد على الأقل",
+      "displayedQuestionsCountRequired": "عدد الأسئلة المعروضة مطلوب ويجب أن يكون أكبر من 0"
     }
   },
 

@@ -572,7 +572,8 @@
     "addToCart": "Add to Cart",
     "buyNow": "Buy Now",
     "addedToCart": "Added successfully",
-    "somethingWrong": "Something went wrong"
+    "somethingWrong": "Something went wrong",
+    "showLectures": "Show Lectures"
   },
 
   "whatLearn": {
@@ -724,6 +725,9 @@
     "optionEn": "Option (English)",
     "optionEnPlaceholder": "Enter option in English...",
     "addOption": "Add another option for this question",
+    "displayedQuestionsCount": "Number of Displayed Questions",
+    "displayedQuestionsCountPlaceholder": "Enter number of displayed questions...",
+    "isAppearsToAllExaminees": "Pin this question to all exams",
     "validation": {
       "courseRequired": "Please select a course",
       "nameArRequired": "Exam name in Arabic is required",
@@ -736,7 +740,8 @@
       "optionEnRequired": "Option in English is required",
       "minOptions": "At least 2 options are required per question",
       "maxOptions": "Maximum of 4 options allowed",
-      "minQuestions": "At least 1 question is required"
+      "minQuestions": "At least 1 question is required",
+      "displayedQuestionsCountRequired": "Displayed questions count is required and must be greater than 0"
     }
   },
 

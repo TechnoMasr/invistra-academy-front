@@ -1,9 +1,13 @@
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { GoPlay } from "react-icons/go";
-import { MdOndemandVideo, MdOutlineAccessTime } from "react-icons/md";
+import {
+  MdOndemandVideo,
+  MdOutlineAccessTime,
+  MdOutlineOndemandVideo,
+} from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { GrCart } from "react-icons/gr";
 import { IoFlashOutline } from "react-icons/io5";
@@ -14,12 +18,14 @@ import { addToCart } from "@/api/cartServices";
 import { toast } from "sonner";
 import FormError from "@/components/form/FormError";
 import useRequireAuth from "@/hooks/useRequireAuth";
+import useAuthGuard from "@/hooks/useAuthGuard";
 
-const Details = ({ data, hideBtns = false }) => {
+const Details = ({ data }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const requireAuth = useRequireAuth();
+  const { isInstructor } = useAuthGuard();
 
   const {
     mutate: handleAddToCart,
@@ -121,7 +127,7 @@ const Details = ({ data, hideBtns = false }) => {
         </p>
 
         {/* أزرار التحكم */}
-        {!hideBtns && (
+        {!isInstructor && (
           <div className="flex items-center gap-2">
             <Button
               size="lg"
@@ -140,7 +146,7 @@ const Details = ({ data, hideBtns = false }) => {
 
             <Button
               size="lg"
-              variant="ghost"
+              variant="outline"
               className="rounded-full flex-1"
               onClick={handleBuyNow} // الدالة أصبحت محمية بالداخل تلقائياً
               disabled={isPending}
@@ -156,9 +162,23 @@ const Details = ({ data, hideBtns = false }) => {
           </div>
         )}
 
+        {data?.is_purchased && (
+          <Link
+            to={`/profile/lectures/${data?.id}`}
+            className="rounded-full flex-1"
+          >
+            <Button size="lg" className="w-full">
+              {t("courseDetails.showLectures")} <MdOutlineOndemandVideo />
+            </Button>
+          </Link>
+        )}
+
         {error && (
           <FormError
-            errorMsg={error?.response?.data?.message || t("courseDetails.somethingWrong")}
+            errorMsg={
+              error?.response?.data?.message ||
+              t("courseDetails.somethingWrong")
+            }
           />
         )}
       </div>

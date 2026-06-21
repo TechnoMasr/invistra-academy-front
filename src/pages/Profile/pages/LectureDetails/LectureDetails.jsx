@@ -69,16 +69,16 @@ const LectureDetails = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-3 overflow-y-auto">
+          <div className="space-y-3">
             {lecture?.files?.map((file, index) => (
               <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                   <div className="bg-amber-100 text-amber-400 p-2 rounded-lg flex flex-col items-center justify-center min-w-[40px]">
                     <FaFilePdf className="text-2xl" />
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-sm">{file.name}</h4>
+                    <h4 className="font-medium text-sm break-all">{file.name}</h4>
                     <span className="text-xs opacity-70 block font-mono">
                       {file.size}
                     </span>

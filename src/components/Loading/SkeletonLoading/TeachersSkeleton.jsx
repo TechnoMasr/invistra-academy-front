@@ -24,7 +24,7 @@ const TeachersSkeleton = () => {
             {/* مكان الأيقونة الصغيرة */}
             <Skeleton className="w-4 h-4 rounded-sm" />
             {/* اسم التخصص */}
-            <Skeleton className="h-5 w-[80px] rounded-md" />
+            <Skeleton className="h-5 w-20 rounded-md" />
           </div>
         </div>
       ))}

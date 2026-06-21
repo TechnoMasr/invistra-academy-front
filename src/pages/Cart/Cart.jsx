@@ -29,7 +29,11 @@ const Cart = () => {
         <section className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 flex flex-col gap-4">
             {cart?.items?.map((item) => (
-              <CartCard key={item.id} item={item?.course} />
+              <CartCard
+                key={item.id}
+                item={item?.course}
+                course_id={item?.id}
+              />
             ))}
           </div>
 

@@ -8,7 +8,7 @@ const CourseCard = ({ course }) => {
     <Link
       to={`/courses/${course?.slug}`}
       key={course?.id}
-      className="border rounded-lg overflow-hidden bg-white hover:shadow-xl hover:border-primary hover:bg-primary/5 transition duration-300 ease-in-out"
+      className="border rounded-lg overflow-hidden bg-white hover:shadow-xl hover:border-primary hover:bg-gray-100 transition duration-300 ease-in-out"
     >
       <div className="w-full aspect-5/3 overflow-hidden">
         {course?.image && (

@@ -17,7 +17,7 @@ const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
   const { isInstructor } = useAuthGuard();
 
   return (
-    <div className="flex items-center gap-2 2xl:gap-4">
+    <div className="flex items-center gap-2">
       <LanguageSwitcher />
 
       <Button

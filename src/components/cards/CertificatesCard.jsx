@@ -44,9 +44,9 @@ const CertificatesCard = ({ item }) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h3 className="text-lg font-bold line-clamp-2">{item?.course_name}</h3>
+        <h3 className="text-xl font-bold line-clamp-2">{item?.course_name}</h3>
 
-        <p className="flex items-center gap-1 font-semibold">
+        <p className="flex items-center gap-1 font-semibold text-sm">
           <SlLayers />
           {item?.category_name}
         </p>

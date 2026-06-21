@@ -47,17 +47,24 @@ const ExamResult = () => {
             ) : (
               <XCircle className="w-4 h-4" />
             )}
-            <span>{isPassed ? t("examResult.passed") : t("examResult.failed")}</span>
+            <span>
+              {isPassed ? t("examResult.passed") : t("examResult.failed")}
+            </span>
           </span>
 
           <p className="font-medium py-1 px-4 text-amber-600 border border-amber-600 rounded-full flex items-center gap-1.5">
             <HelpCircle className="w-4 h-4" />
-            <span>{questionsList.length} {t("examResult.questions")}</span>
+            <span>
+              {t("examResult.questions", { count: questionsList.length })}
+            </span>
           </p>
 
           <p className="font-medium py-1 px-4 border rounded-full flex items-center gap-1.5">
             <span>
-              {t("examResult.score")}: {examData?.score} / {examData?.full_mark}
+              {t("examResult.score", {
+                score: examData?.score,
+                total: examData?.full_mark,
+              })}
             </span>
           </p>
         </div>
@@ -129,7 +136,9 @@ const ExamResult = () => {
                       >
                         {(isStudentSelection || isCorrectAnswer) && "●"}
                       </span>
-                      <span className="flex-1 break-all wrap-break-word">{optionText}</span>
+                      <span className="flex-1 break-all wrap-break-word">
+                        {optionText}
+                      </span>
                     </div>
                   );
                 })}

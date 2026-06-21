@@ -68,7 +68,7 @@ const ExamCard = ({ item }) => {
             </Button>
           </Link>
         ) : (
-          <Link to={`/profile/enter-exam/${item?.id}`} className="rounded-full">
+          <Link to={`/enter-exam/${item?.id}`} className="rounded-full">
             <Button>
               <GrEdit />
               {t("examCard.startExam")}

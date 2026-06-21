@@ -171,7 +171,7 @@ const AddLecture = () => {
 
           <div
             onClick={() => videoInputRef.current.click()}
-            className="w-full max-w-xl aspect-[2/1] bg-[#F3F4F6] border border-dashed border-gray-300 rounded-2xl cursor-pointer flex flex-col items-center justify-center p-6 hover:bg-gray-100 transition-all text-center"
+            className="w-full max-w-xl aspect-2/1 bg-[#F3F4F6] border border-dashed border-gray-300 rounded-2xl cursor-pointer flex flex-col items-center justify-center p-6 hover:bg-gray-100 transition-all text-center"
           >
             <div className="bg-gray-300/60 p-4 rounded-xl text-gray-700 mb-3">
               <RiVideoUploadLine className="text-3xl" />

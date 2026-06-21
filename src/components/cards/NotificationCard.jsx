@@ -30,11 +30,11 @@ const NotificationCard = ({ notification }) => {
     <div
       key={notification.id}
       onClick={() => handleRead(notification)}
-      className={`flex gap-2 py-2 px-4 cursor-pointer transition rounded-md
+      className={`flex gap-2 py-2 px-4 transition rounded-md
               ${
                 notification.read_at
                   ? "bg-muted border"
-                  : "bg-primary text-white"
+                  : "bg-primary text-white cursor-pointer"
               }
               ${
                 isPending

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FaRegEdit } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -22,10 +22,10 @@ import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton"
 const EditExam = () => {
   const { t } = useTranslation();
   const { id } = useParams(); // جلب معرف الامتحان من الـ URL
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
 
-  // 1. بناء الـ Schema الديناميكي المتوافق مع هيكل الـ options الجديد
+
+  // 1. بناء الـ Schema الديناميكي المتوافق مع حقل العرض وخيار تثبيت السؤال الجديد
   const examSchema = z.object({
     exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
     exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
@@ -37,16 +37,31 @@ const EditExam = () => {
       (val) => Number(val),
       z.number().min(1, t("addExam.validation.fullMarkRequired")),
     ),
+    displayed_questions_count: z.preprocess(
+      (val) => Number(val),
+      z
+        .number()
+        .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
+    ),
     questions: z
       .array(
         z.object({
-          question_title_ar: z.string().min(5, t("addExam.validation.questionArRequired")),
-          question_title_en: z.string().min(5, t("addExam.validation.questionEnRequired")),
+          question_title_ar: z
+            .string()
+            .min(5, t("addExam.validation.questionArRequired")),
+          question_title_en: z
+            .string()
+            .min(5, t("addExam.validation.questionEnRequired")),
+          is_appears_to_all_examinees: z.boolean().default(false),
           options: z
             .array(
               z.object({
-                option_ar: z.string().min(1, t("addExam.validation.optionArRequired")),
-                option_en: z.string().min(1, t("addExam.validation.optionEnRequired")),
+                option_ar: z
+                  .string()
+                  .min(1, t("addExam.validation.optionArRequired")),
+                option_en: z
+                  .string()
+                  .min(1, t("addExam.validation.optionEnRequired")),
               }),
             )
             .min(2, t("addExam.validation.minOptions"))
@@ -56,7 +71,7 @@ const EditExam = () => {
       .min(1, t("addExam.validation.minQuestions")),
   });
 
-  // 2. إعداد الـ Form
+  // 2. إعداد الـ Form بالقيم الافتراضية المبدئية
   const {
     handleSubmit,
     control,
@@ -69,6 +84,7 @@ const EditExam = () => {
       exam_title_en: "",
       min_degree: "",
       max_degree: "",
+      displayed_questions_count: "",
       questions: [],
     },
   });
@@ -86,25 +102,34 @@ const EditExam = () => {
     queryFn: getInstructorCoursesForExams,
   });
 
+  // تابع مساعد لصياغة البيانات القادمة من الـ API بشكل متوافق مع المدخلات والـ Types
+  const getFormattedExamData = (details) => {
+    if (!details) return {};
+    return {
+      exam_title_ar: details.title?.ar || "",
+      exam_title_en: details.title?.en || "",
+      min_degree: details.pass_mark || "",
+      max_degree: details.full_mark || "",
+      displayed_questions_count: details.displayed_questions_count || "",
+      questions: (details.questions || []).map((q) => ({
+        question_title_ar: q.title?.ar || "",
+        question_title_en: q.title?.en || "",
+        // تحويل القيمة القادمة من السيرفر (سواء 1/0 أو Boolean) إلى Boolean صريح متوافق مع الـ Checkbox
+        is_appears_to_all_examinees: Boolean(
+          Number(q.is_appears_to_all_examinees),
+        ),
+        options: (q.options || []).map((opt) => ({
+          option_ar: opt.option?.ar || "",
+          option_en: opt.option?.en || "",
+        })),
+      })),
+    };
+  };
+
   // عمل تعبئة (Reset) للـ Form فور وصول البيانات من الـ API
   useEffect(() => {
     if (examDetails) {
-      const formattedData = {
-        exam_title_ar: examDetails.title?.ar || "",
-        exam_title_en: examDetails.title?.en || "",
-        min_degree: examDetails.pass_mark || "",
-        max_degree: examDetails.full_mark || "",
-        // تحويل الأسئلة والخيارات من الشكل القادم من السيرفر إلى شكل المصفوفات المتداخلة
-        questions: (examDetails.questions || []).map((q) => ({
-          question_title_ar: q.title?.ar || "",
-          question_title_en: q.title?.en || "",
-          options: (q.options || []).map((opt) => ({
-            option_ar: opt.option?.ar || "",
-            option_en: opt.option?.en || "",
-          })),
-        })),
-      };
-      reset(formattedData);
+      reset(getFormattedExamData(examDetails));
     }
   }, [examDetails, reset]);
 
@@ -130,7 +155,6 @@ const EditExam = () => {
     onSuccess: () => {
       toast.success(t("editExam.success"));
       setIsEditing(false);
-      // navigate(`/profile/exams`);
     },
   });
 
@@ -142,10 +166,21 @@ const EditExam = () => {
     formData.append("title[ar]", data.exam_title_ar);
     formData.append("pass_mark", String(data.min_degree));
     formData.append("full_mark", String(data.max_degree));
+    formData.append(
+      "displayed_questions_count",
+      String(data.displayed_questions_count),
+    );
 
     data.questions.forEach((q, qIndex) => {
       formData.append(`questions[${qIndex}][title][en]`, q.question_title_en);
       formData.append(`questions[${qIndex}][title][ar]`, q.question_title_ar);
+
+      // تحويل قيمة الـ Boolean إلى 0 أو 1 ليتم إرسالها بالمفتاح المطلوب
+      const isAppearsValue = q.is_appears_to_all_examinees ? "1" : "0";
+      formData.append(
+        `questions[${qIndex}][is_appears_to_all_examinees]`,
+        isAppearsValue,
+      );
 
       q.options.forEach((opt, optIndex) => {
         formData.append(
@@ -214,8 +249,8 @@ const EditExam = () => {
           />
         </div>
 
-        {/* الحد الأدنى للنجاح والدرجة النهائية */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* الحد الأدنى للنجاح، الدرجة النهائية، وعدد الأسئلة المعروضة */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Controller
             name="min_degree"
             control={control}
@@ -241,6 +276,20 @@ const EditExam = () => {
                 label={t("addExam.fullMark")}
                 placeholder={t("addExam.fullMarkPlaceholder")}
                 error={errors.max_degree?.message}
+              />
+            )}
+          />
+          <Controller
+            name="displayed_questions_count"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                disabled={!isEditing}
+                label={t("addExam.displayedQuestionsCount")}
+                placeholder={t("addExam.displayedQuestionsCountPlaceholder")}
+                error={errors.displayed_questions_count?.message}
               />
             )}
           />
@@ -277,6 +326,7 @@ const EditExam = () => {
                 appendQuestion({
                   question_title_ar: "",
                   question_title_en: "",
+                  is_appears_to_all_examinees: false,
                   options: [
                     { option_ar: "", option_en: "" },
                     { option_ar: "", option_en: "" },
@@ -307,20 +357,7 @@ const EditExam = () => {
               onClick={() => {
                 // إعادة تعيين الحقول إلى تفاصيل الامتحان الأصلية المجلوبة من الـ API
                 if (examDetails) {
-                  reset({
-                    exam_title_ar: examDetails.title?.ar || "",
-                    exam_title_en: examDetails.title?.en || "",
-                    min_degree: examDetails.pass_mark || "",
-                    max_degree: examDetails.full_mark || "",
-                    questions: (examDetails.questions || []).map((q) => ({
-                      question_title_ar: q.title?.ar || "",
-                      question_title_en: q.title?.en || "",
-                      options: (q.options || []).map((opt) => ({
-                        option_ar: opt.option?.ar || "",
-                        option_en: opt.option?.en || "",
-                      })),
-                    })),
-                  });
+                  reset(getFormattedExamData(examDetails));
                 }
                 setIsEditing(false);
               }}
@@ -333,10 +370,7 @@ const EditExam = () => {
         {error && (
           <div className="flex justify-center mt-4">
             <FormError
-              errorMsg={
-                error?.response?.data?.message ||
-                t("addExam.error")
-              }
+              errorMsg={error?.response?.data?.message || t("addExam.error")}
             />
           </div>
         )}
@@ -345,7 +379,7 @@ const EditExam = () => {
   );
 };
 
-// المكون الفرعي المتنقل لإدارة خيارات كل سؤال بشكل ديناميكي مع ميزة تعطيل وتفعيل المدخلات بناءً على وضع التعديل
+// المكون الفرعي المتنقل لإدارة خيارات كل سؤال بشكل ديناميكي
 const QuestionFieldsGroup = ({
   questionIndex,
   control,
@@ -354,6 +388,7 @@ const QuestionFieldsGroup = ({
   totalQuestions,
   isEditing,
 }) => {
+  const { t } = useTranslation();
   const {
     fields: optionFields,
     append: appendOption,
@@ -375,9 +410,30 @@ const QuestionFieldsGroup = ({
         </button>
       )}
 
-      <h4 className="text-sm font-bold text-primary">
-        {t("addExam.questionNumber", { number: questionIndex + 1 })}
-      </h4>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b pb-2">
+        <h4 className="text-sm font-bold text-primary">
+          {t("addExam.questionNumber", { number: questionIndex + 1 })}
+        </h4>
+
+        {/* حقل الـ Checkbox لتثبيت السؤال مدمج بشكل منظم ومتوافق مع الـ isEditing */}
+        <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">
+          <Controller
+            name={`questions.${questionIndex}.is_appears_to_all_examinees`}
+            control={control}
+            render={({ field: { value, onChange, ...field } }) => (
+              <input
+                {...field}
+                type="checkbox"
+                disabled={!isEditing}
+                checked={!!value}
+                onChange={(e) => onChange(e.target.checked)}
+                className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300 disabled:opacity-70 disabled:cursor-not-allowed"
+              />
+            )}
+          />
+          {t("addExam.isAppearsToAllExaminees")}
+        </label>
+      </div>
 
       {/* عنوان السؤال (عربي وإنجليزي) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -417,7 +473,9 @@ const QuestionFieldsGroup = ({
 
       {/* حقول الإجابات (الخيارات المضافة ديناميكياً) */}
       <div className="space-y-4 border-t pt-4 mt-2">
-        <h5 className="text-xs font-bold text-gray-700">{t("addExam.answerOptions")}</h5>
+        <h5 className="text-xs font-bold text-gray-700">
+          {t("addExam.answerOptions")}
+        </h5>
 
         {optionFields.map((optItem, optIndex) => (
           <div
@@ -428,7 +486,9 @@ const QuestionFieldsGroup = ({
               <span className="text-xs text-gray-500 font-semibold">
                 {t("addExam.optionNumber", { number: optIndex + 1 })}{" "}
                 {optIndex === 0 && (
-                  <span className="text-green-600">{t("addExam.correctAnswer")}</span>
+                  <span className="text-green-600">
+                    {t("addExam.correctAnswer")}
+                  </span>
                 )}
               </span>
               {/* إمكانية حذف الخيار فقط في وضع التعديل ولو زاد عن خيارين */}

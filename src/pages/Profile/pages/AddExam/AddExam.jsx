@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { useTranslation } from "react-i18next";
 import MainInput from "@/components/form/MainInput";
@@ -15,7 +15,6 @@ import { useNavigate } from "react-router";
 
 const AddExam = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   const examSchema = z.object({
@@ -30,19 +29,34 @@ const AddExam = () => {
       (val) => Number(val),
       z.number().min(1, t("addExam.validation.fullMarkRequired")),
     ),
+    displayed_questions_count: z.preprocess(
+      (val) => Number(val),
+      z
+        .number()
+        .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
+    ),
 
     questions: z
       .array(
         z.object({
-          question_title_ar: z.string().min(5, t("addExam.validation.questionArRequired")),
-          question_title_en: z.string().min(5, t("addExam.validation.questionEnRequired")),
+          question_title_ar: z
+            .string()
+            .min(5, t("addExam.validation.questionArRequired")),
+          question_title_en: z
+            .string()
+            .min(5, t("addExam.validation.questionEnRequired")),
+          is_appears_to_all_examinees: z.boolean().default(false),
 
           // مصفوفة الخيارات لكل سؤال (إجباري 2 على الأقل، والحد الأقصى 4)
           options: z
             .array(
               z.object({
-                option_ar: z.string().min(1, t("addExam.validation.optionArRequired")),
-                option_en: z.string().min(1, t("addExam.validation.optionEnRequired")),
+                option_ar: z
+                  .string()
+                  .min(1, t("addExam.validation.optionArRequired")),
+                option_en: z
+                  .string()
+                  .min(1, t("addExam.validation.optionEnRequired")),
               }),
             )
             .min(2, t("addExam.validation.minOptions"))
@@ -52,7 +66,7 @@ const AddExam = () => {
       .min(1, t("addExam.validation.minQuestions")),
   });
 
-  // 2. إعداد الـ Form مع القيم الافتراضية (سؤال واحد يحتوي على خيارين إجباريين)
+  // 2. إعداد الـ Form مع القيم الافتراضية
   const {
     handleSubmit,
     control,
@@ -66,10 +80,12 @@ const AddExam = () => {
       exam_title_en: "",
       min_degree: "",
       max_degree: "",
+      displayed_questions_count: "",
       questions: [
         {
           question_title_ar: "",
           question_title_en: "",
+          is_appears_to_all_examinees: false,
           options: [
             { option_ar: "", option_en: "" }, // الخيار الأول (الصحيح)
             { option_ar: "", option_en: "" }, // الخيار الثاني
@@ -89,7 +105,7 @@ const AddExam = () => {
     name: "questions",
   });
 
-  // 4. إدارة الـ Mutation لربطها بالـ API المكتوب برقم الـ ID
+  // 4. إدارة الـ Mutation لربطها بالـ API
   const {
     mutate: createExamMutate,
     isPending,
@@ -101,12 +117,11 @@ const AddExam = () => {
     onSuccess: () => {
       toast.success(t("addExam.success"));
       reset();
-      queryClient.invalidateQueries(["examsInstructor", 1]);
       navigate(`/profile/exams`);
     },
   });
 
-  // 5. تحويل البيانات لشكل Form Data بالمفاتيح المطابقة للصورة تماماً
+  // 5. تحويل البيانات لشكل Form Data بالمفاتيح المطابقة
   const onSubmit = (data) => {
     const formData = new FormData();
 
@@ -115,11 +130,22 @@ const AddExam = () => {
     formData.append("title[ar]", data.exam_title_ar);
     formData.append("pass_mark", String(data.min_degree));
     formData.append("full_mark", String(data.max_degree));
+    formData.append(
+      "displayed_questions_count",
+      String(data.displayed_questions_count),
+    );
 
-    // تركيب أسئلة الامتحان وخياراتها بناءً على الشكل المطلوب بالصورة
+    // تركيب أسئلة الامتحان وخياراتها
     data.questions.forEach((q, qIndex) => {
       formData.append(`questions[${qIndex}][title][en]`, q.question_title_en);
       formData.append(`questions[${qIndex}][title][ar]`, q.question_title_ar);
+
+      // تحويل الـ boolean إلى 0 أو 1 كما هو مطلوب
+      const isAppearsValue = q.is_appears_to_all_examinees ? "1" : "0";
+      formData.append(
+        `questions[${qIndex}][is_appears_to_all_examinees]`,
+        isAppearsValue,
+      );
 
       q.options.forEach((opt, optIndex) => {
         formData.append(
@@ -201,8 +227,8 @@ const AddExam = () => {
           />
         </div>
 
-        {/* الحد الأدنى للنجاح والدرجة النهائية */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* الحد الأدنى للنجاح، الدرجة النهائية، وعدد الأسئلة المعروضة */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Controller
             name="min_degree"
             control={control}
@@ -226,6 +252,19 @@ const AddExam = () => {
                 label={t("addExam.fullMark")}
                 placeholder={t("addExam.fullMarkPlaceholder")}
                 error={errors.max_degree?.message}
+              />
+            )}
+          />
+          <Controller
+            name="displayed_questions_count"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                label={t("addExam.displayedQuestionsCount")}
+                placeholder={t("addExam.displayedQuestionsCountPlaceholder")}
+                error={errors.displayed_questions_count?.message}
               />
             )}
           />
@@ -260,6 +299,7 @@ const AddExam = () => {
               appendQuestion({
                 question_title_ar: "",
                 question_title_en: "",
+                is_appears_to_all_examinees: false,
                 options: [
                   { option_ar: "", option_en: "" },
                   { option_ar: "", option_en: "" },
@@ -284,10 +324,7 @@ const AddExam = () => {
 
           {error && (
             <FormError
-              errorMsg={
-                error?.response?.data?.message ||
-                t("addExam.error")
-              }
+              errorMsg={error?.response?.data?.message || t("addExam.error")}
             />
           )}
         </div>
@@ -296,7 +333,7 @@ const AddExam = () => {
   );
 };
 
-// مكون فرعي (Sub-component) لإدارة حقول كل سؤال والخيارات التابعة له بشكل منفصل وديناميكي
+// مكون فرعي (Sub-component) لإدارة حقول كل سؤال
 const QuestionFieldsGroup = ({
   questionIndex,
   control,
@@ -326,9 +363,29 @@ const QuestionFieldsGroup = ({
         </button>
       )}
 
-      <h4 className="text-sm font-bold text-primary">
-        {t("addExam.questionNumber", { number: questionIndex + 1 })}
-      </h4>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b pb-2">
+        <h4 className="text-sm font-bold text-primary">
+          {t("addExam.questionNumber", { number: questionIndex + 1 })}
+        </h4>
+
+        {/* الـ Checkbox لتثبيت السؤال */}
+        <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">
+          <Controller
+            name={`questions.${questionIndex}.is_appears_to_all_examinees`}
+            control={control}
+            render={({ field: { value, onChange, ...field } }) => (
+              <input
+                {...field}
+                type="checkbox"
+                checked={value}
+                onChange={(e) => onChange(e.target.checked)}
+                className="w-4 h-4 rounded text-primary focus:ring-primary border-gray-300"
+              />
+            )}
+          />
+          {t("addExam.isAppearsToAllExaminees")}
+        </label>
+      </div>
 
       {/* عنوان السؤال (عربي وإنجليزي) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -366,7 +423,9 @@ const QuestionFieldsGroup = ({
 
       {/* حقول الإجابات (الخيارات المضافة ديناميكياً) */}
       <div className="space-y-4 border-t pt-4 mt-2">
-        <h5 className="text-xs font-bold text-gray-700">{t("addExam.answerOptions")}</h5>
+        <h5 className="text-xs font-bold text-gray-700">
+          {t("addExam.answerOptions")}
+        </h5>
 
         {optionFields.map((optItem, optIndex) => (
           <div
@@ -377,10 +436,11 @@ const QuestionFieldsGroup = ({
               <span className="text-xs text-gray-500 font-semibold">
                 {t("addExam.optionNumber", { number: optIndex + 1 })}{" "}
                 {optIndex === 0 && (
-                  <span className="text-green-600">{t("addExam.correctAnswer")}</span>
+                  <span className="text-green-600">
+                    {t("addExam.correctAnswer")}
+                  </span>
                 )}
               </span>
-              {/* إمكانية حذف الخيار فقط لو زاد عن خيارين إجباريين */}
               {optionFields.length > 2 && (
                 <button
                   type="button"
@@ -427,7 +487,6 @@ const QuestionFieldsGroup = ({
           </div>
         ))}
 
-        {/* زر إضافة خيار جديد للسؤال الحالي بشرط ألا يتعدى الـ 4 خيارات */}
         {optionFields.length < 4 && (
           <button
             type="button"

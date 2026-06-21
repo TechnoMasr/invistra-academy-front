@@ -15,7 +15,7 @@ const WhatLearn = ({ data }) => {
             key={item.id}
             className="flex flex-col gap-1 border border-primary rounded-lg p-3"
           >
-            <p className="font-bold">{item.title}</p>
+            <h3 className="text-lg font-bold">{item.title}</h3>
             <p>{item.description}</p>
           </li>
         ))}

@@ -229,7 +229,7 @@ const EditLecture = () => {
 
           <div
             onClick={() => isEditing && videoInputRef.current.click()}
-            className={`w-full max-w-xl aspect-[2/1] bg-[#F3F4F6] border border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 transition-all text-center ${
+            className={`w-full max-w-xl aspect-2/1 bg-[#F3F4F6] border border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 transition-all text-center ${
               isEditing
                 ? "cursor-pointer hover:bg-gray-100"
                 : "cursor-not-allowed opacity-90"

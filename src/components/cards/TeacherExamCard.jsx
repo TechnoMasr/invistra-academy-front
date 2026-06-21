@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SlLayers } from "react-icons/sl";
-import { Link, useParams } from "react-router";
+import { Link } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -54,7 +54,8 @@ const TeacherExamCard = ({ item }) => {
       </p>
 
       <p className="text-sm flex items-center gap-1 font-semibold text-amber-500">
-        <RiErrorWarningLine /> {t("teacherExamCard.passMark", { mark: item?.pass_mark })}
+        <RiErrorWarningLine />{" "}
+        {t("teacherExamCard.passMark", { mark: item?.pass_mark })}
       </p>
 
       <p className="text-sm flex items-center gap-1 font-semibold text-orange-600">
@@ -94,9 +95,11 @@ const TeacherExamCard = ({ item }) => {
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-106" showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle className="text-right">{t("teacherExamCard.deleteTitle")}</DialogTitle>
+            <DialogTitle className="text-right">
+              {t("teacherExamCard.deleteTitle")}
+            </DialogTitle>
             <DialogDescription className="text-right mt-2">
               {t("teacherExamCard.deleteDescription", { name: item?.title })}
             </DialogDescription>

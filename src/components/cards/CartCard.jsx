@@ -20,7 +20,7 @@ import {
 
 import { removeFromCart } from "@/api/cartServices";
 
-const CartCard = ({ item }) => {
+const CartCard = ({ item, course_id }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
@@ -103,7 +103,7 @@ const CartCard = ({ item }) => {
               </button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-106" showCloseButton={false}>
               <DialogHeader>
                 <DialogTitle className="text-right">
                   {t("cartCard.deleteTitle")}
@@ -118,7 +118,7 @@ const CartCard = ({ item }) => {
                   type="button"
                   variant="destructive"
                   className="flex-1 sm:flex-none"
-                  onClick={() => handleDeleteItem(item.id)}
+                  onClick={() => handleDeleteItem(course_id)}
                   disabled={isPending}
                 >
                   {isPending ? (

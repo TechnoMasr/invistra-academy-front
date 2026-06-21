@@ -5,7 +5,7 @@ import { Link } from "react-router";
 import { LuCirclePlus } from "react-icons/lu";
 import MyExamsSkeleton from "@/components/Loading/SkeletonLoading/MyExamsSkeleton";
 import { useQuery } from "@tanstack/react-query";
-import { getExamsInstructor } from "@/api/ExamSecvices";
+import { getExamsInstructor } from "@/api/ExamServices";
 import { useState } from "react";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import MainPagination from "@/components/common/MainPagination";

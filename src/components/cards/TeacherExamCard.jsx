@@ -18,7 +18,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { deleteExam } from "@/api/ExamSecvices";
+import { deleteExam } from "@/api/ExamServices";
 
 const TeacherExamCard = ({ item }) => {
   const queryClient = useQueryClient();

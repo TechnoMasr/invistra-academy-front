@@ -92,12 +92,12 @@ const Details = ({ data, hideBtns = false }) => {
           <div className="w-10 aspect-square overflow-hidden rounded-full">
             <img
               loading="lazy"
-              src={userImg}
+              src={data?.instructor?.image}
               alt={""}
               className="w-full h-full object-cover"
             />
           </div>
-          <h4 className="font-medium">بودا سلطان</h4>
+          <h4 className="font-medium">{data?.instructor?.name}</h4>
         </div>
 
         <ul className="flex flex-wrap items-center gap-4">

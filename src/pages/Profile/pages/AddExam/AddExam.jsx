@@ -2,18 +2,19 @@ import React from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
 import ProfileTitle from "@/components/common/ProfileTitle";
-import { addExam, getInstructorCoursesForExams } from "@/api/ExamSecvices";
+import { addExam, getInstructorCoursesForExams } from "@/api/ExamServices";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
 const AddExam = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const examSchema = z.object({
     course_id: z.string().min(1, "الرجاء اختيار الكورس"),
@@ -98,6 +99,7 @@ const AddExam = () => {
     onSuccess: () => {
       toast.success("تم اضافة الامتحان بنجاح");
       reset();
+      queryClient.invalidateQueries(["examsInstructor", 1]);
       navigate(`/profile/exams`);
     },
   });

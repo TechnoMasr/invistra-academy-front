@@ -42,7 +42,7 @@ export const getInstructorWallet = async () => {
 
 // student
 export const getExamsStudent = async (filters = {}) => {
-  const { data } = await api.get("/instructor-profile/exams", {
+  const { data } = await api.get("/student-profile/exams", {
     params: filters,
   });
   return data?.data || [];
@@ -59,4 +59,9 @@ export const submitAnswer = async (formData, id) => {
     formData,
   );
   return data?.data || null;
+};
+
+export const getExamsResult = async (id) => {
+  const { data } = await api.get(`student-profile/exams/${id}/result`);
+  return data?.data || [];
 };

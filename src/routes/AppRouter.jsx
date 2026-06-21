@@ -43,8 +43,11 @@ const Lectures = React.lazy(
 const LectureDetails = React.lazy(
   () => import("../pages/Profile/pages/LectureDetails/LectureDetails"),
 );
-const MyExamDetails = React.lazy(
-  () => import("../pages/Profile/pages/MyExamDetails/MyExamDetails"),
+const ExamResult = React.lazy(
+  () => import("../pages/Profile/pages/MyExamDetails/ExamResult"),
+);
+const EnterExam = React.lazy(
+  () => import("../pages/Profile/pages/MyExamDetails/EnterExam"),
 );
 const Notifications = React.lazy(
   () => import("../pages/Profile/pages/Notifications/Notifications"),
@@ -123,7 +126,8 @@ const router = createBrowserRouter([
               { path: "order-details/:id", element: <OrderDetails /> },
               { path: "lectures/:id", element: <Lectures /> },
               { path: "lecture-details/:id", element: <LectureDetails /> },
-              { path: "exam-details/:id", element: <MyExamDetails /> },
+              { path: "exam-result/:id", element: <ExamResult /> },
+              { path: "enter-exam/:id", element: <EnterExam /> },
               { path: "transactions", element: <Transactions /> },
               { path: "notifications", element: <Notifications /> },
               { path: "add-course", element: <AddCourse /> },

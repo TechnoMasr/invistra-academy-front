@@ -140,7 +140,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
   const isComponentLoading = isSummaryLoading || orderMutation.isPending;
 
   return (
-    <div className="w-full lg:w-80 xl:w-96 p-5 space-y-4 border rounded-2xl h-max bg-primary/10 shadow-xl sticky top-24 transition-all duration-300">
+    <div className="w-full lg:w-80 xl:w-96 p-3 space-y-4 border rounded-2xl h-max bg-primary/10 shadow-xl sticky top-24 transition-all duration-300">
       {/* Loading Overlay */}
       {isComponentLoading && (
         <div className="absolute inset-0 bg-white/80 backdrop-blur-md z-50 flex flex-col items-center justify-center rounded-2xl gap-3 animate-fade-in">

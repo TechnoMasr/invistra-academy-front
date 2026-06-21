@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import MyExamsSkeleton from "@/components/Loading/SkeletonLoading/MyExamsSkeleton";
 import { useQuery } from "@tanstack/react-query";
-import { getExamsInstructor } from "@/api/ExamSecvices";
+import { getExamsStudent } from "@/api/ExamServices";
 import { useState } from "react";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import MainPagination from "@/components/common/MainPagination";
@@ -13,8 +13,8 @@ const StudentExams = () => {
   const [page, setPage] = useState(1);
 
   const { data: exams, isLoading } = useQuery({
-    queryKey: ["examsInstructor", page],
-    queryFn: () => getExamsInstructor({ page }),
+    queryKey: ["examsStudent", page],
+    queryFn: () => getExamsStudent({ page }),
   });
 
   const isEmpty = !isLoading && (!exams?.items || exams?.items?.length === 0);

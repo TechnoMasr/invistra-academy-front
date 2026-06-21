@@ -15,7 +15,7 @@ const MyCertificates = () => {
   });
 
   const isEmpty =
-    !isLoading && (myCertificates?.length === 0 || !myCertificates);
+    !isLoading && (myCertificates?.items?.length === 0 || !myCertificates);
 
   return (
     <div className="space-y-6">

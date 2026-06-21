@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import { FaWallet, FaRegCircleCheck } from "react-icons/fa6";
 import { PiHandDepositBold } from "react-icons/pi";
-import { getInstructorWallet } from "@/api/ExamSecvices"; // انتبه للسبيلنج إذا كان ExamServices
+import { getInstructorWallet } from "@/api/ExamServices"; // انتبه للسبيلنج إذا كان ExamServices
 import { useQuery } from "@tanstack/react-query";
 import MainPagination from "@/components/common/MainPagination";
 import TransactionsSkeleton from "@/components/Loading/SkeletonLoading/TransactionsSkeleton";

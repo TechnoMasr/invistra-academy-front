@@ -15,7 +15,7 @@ import {
   getExamDetailsInstructor,
   updateExam,
   getInstructorCoursesForExams,
-} from "@/api/ExamSecvices";
+} from "@/api/ExamServices";
 import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
 const EditExam = () => {
@@ -164,7 +164,7 @@ const EditExam = () => {
   if (isExamLoading) return <InputsSkeleton />;
 
   return (
-    <div className="p-4 max-w-5xl mx-auto" dir="rtl">
+    <div className="space-y-6">
       {/* الهيدر العلوي */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
         <ProfileTitle title="تفاصيل الاختبار" />

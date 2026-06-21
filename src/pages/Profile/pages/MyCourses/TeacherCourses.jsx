@@ -27,21 +27,21 @@ const TeacherCourses = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <ProfileTitle title="كورساتي" />
+        <ProfileTitle title={t("teacherCourses.title")} />
 
         <Link
           to="/profile/add-course"
           className="font-medium py-1 px-4 text-primary border border-primary rounded-full flex items-center gap-1.5 text-sm"
         >
           <LuCirclePlus className="w-4 h-4" />
-          <span>إضافة كورس</span>
+          <span>{t("teacherCourses.addCourse")}</span>
         </Link>
       </div>
 
       {isLoading ? (
         <MyCoursesSkeleton />
       ) : isEmpty ? (
-        <EmptyDataSection msg={t("myCourses.emptyMessage")} />
+        <EmptyDataSection msg={t("teacherCourses.emptyMessage")} />
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

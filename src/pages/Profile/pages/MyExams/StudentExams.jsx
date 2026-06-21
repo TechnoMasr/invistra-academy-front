@@ -23,12 +23,12 @@ const StudentExams = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="اختباراتي" />
+      <ProfileTitle title={t("myExams.title")} />
 
       {isLoading ? (
         <MyExamsSkeleton />
       ) : isEmpty ? (
-        <EmptyDataSection msg={t("exams.emptyMessage")} />
+        <EmptyDataSection msg={t("myExams.emptyMessage")} />
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

@@ -6,15 +6,17 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Link } from "react-router"; // أو react-router-dom حسب النسخة المستخدمة لديك
+import { Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "@/store/modals/modalsSlice";
 import { Button } from "@/components/ui/button";
 import { FiCheckCircle } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const SuccessesPaymentModal = () => {
   const { modalName } = useSelector((state) => state.modals);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const onClose = () => {
     dispatch(closeModal());
@@ -22,34 +24,31 @@ const SuccessesPaymentModal = () => {
 
   return (
     <Dialog open={modalName === "SuccessesPaymentModal"} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md p-6 text-center dir-rtl">
+      <DialogContent className="sm:max-w-md p-6 text-center">
         <DialogHeader className="flex flex-col items-center justify-center space-y-3">
-          {/* أيقونة النجاح */}
           <FiCheckCircle className="animate-pulse text-green-600" size={100} />
 
           <DialogTitle className="text-xl font-bold text-gray-900">
-            تم تسجيل طلبك بنجاح!
+            {t("successPaymentModal.title")}
           </DialogTitle>
 
           <DialogDescription className="text-sm text-gray-700 text-center max-w-xs">
-            شكراً لك! تم استلام بيانات الدفع والطلب بنجاح، وجاري مراجعة التحويل
-            وتأكيد الطلب من قبل الإدارة في أقرب وقت.
+            {t("successPaymentModal.description")}
           </DialogDescription>
         </DialogHeader>
 
-        {/* أزرار التحكم */}
         <div className="flex flex-col sm:flex-row gap-2 mt-5 w-full"></div>
 
         <DialogFooter>
           <Link
             to="/profile/orders"
-            onClick={onClose} // غلق المودال عند الانتقال للرابط
+            onClick={onClose}
           >
-            <Button className="w-full font-medium">الذهاب إلى طلباتي</Button>
+            <Button className="w-full font-medium">{t("successPaymentModal.goToOrders")}</Button>
           </Link>
 
           <Button variant="outline" onClick={onClose}>
-            حسناً
+            {t("successPaymentModal.ok")}
           </Button>
         </DialogFooter>
       </DialogContent>

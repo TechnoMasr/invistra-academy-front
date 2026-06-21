@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { SlLayers } from "react-icons/sl";
-import { Link, useParams } from "react-router"; // جلب الـ id من الرابط إذا لزم الأمر
+import { Link, useParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { PiExam } from "react-icons/pi";
+import { useTranslation } from "react-i18next";
 
-// استيراد مكونات الـ Dialog من Shadcn
 import {
   Dialog,
   DialogContent,
@@ -23,8 +23,8 @@ import { deleteExam } from "@/api/ExamServices";
 const TeacherExamCard = ({ item }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
-  // إعداد mutation حذف الاختبار
   const { mutate: handleDeleteExam, isPending } = useMutation({
     mutationFn: (examId) => deleteExam(examId),
     onSuccess: () => {
@@ -32,12 +32,12 @@ const TeacherExamCard = ({ item }) => {
         queryKey: ["examsInstructor"],
       });
 
-      toast.success("تم حذف الاختبار بنجاح");
+      toast.success(t("teacherExamCard.deleteSuccess"));
       setOpen(false);
     },
     onError: (error) => {
       toast.error(
-        error?.response?.data?.message || "حدث خطأ أثناء حذف الاختبار",
+        error?.response?.data?.message || t("teacherExamCard.deleteError"),
       );
     },
   });
@@ -54,12 +54,12 @@ const TeacherExamCard = ({ item }) => {
       </p>
 
       <p className="text-sm flex items-center gap-1 font-semibold text-amber-500">
-        <RiErrorWarningLine /> يجب ان يتجاوز {item?.pass_mark} للنجاح
+        <RiErrorWarningLine /> {t("teacherExamCard.passMark", { mark: item?.pass_mark })}
       </p>
 
       <p className="text-sm flex items-center gap-1 font-semibold text-orange-600">
         <PiExam />
-        درجة الاختبار من {item?.full_mark}
+        {t("teacherExamCard.examScore", { mark: item?.full_mark })}
       </p>
 
       <div className="flex items-center gap-2">
@@ -79,29 +79,26 @@ const TeacherExamCard = ({ item }) => {
         className="flex-1 rounded-full"
       >
         <Button variant="outline" className="w-full">
-          عرض تفاصيل الاختبار
+          {t("teacherExamCard.viewExamDetails")}
         </Button>
       </Link>
 
-      {/* دمج الـ Dialog لتأكيد حذف الاختبار */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="destructive" disabled={isPending}>
             {isPending ? (
               <Loader2 className="animate-spin h-4 w-4" />
             ) : (
-              "حذف الاختبار"
+              t("teacherExamCard.deleteExam")
             )}
           </Button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-right">حذف الاختبار</DialogTitle>
+            <DialogTitle className="text-right">{t("teacherExamCard.deleteTitle")}</DialogTitle>
             <DialogDescription className="text-right mt-2">
-              هل أنت متأكد من رغبتك في حذف اختبار{" "}
-              <span className="font-bold text-foreground">"{item?.title}"</span>
-              ؟ لا يمكن التراجع عن هذا الإجراء بعد إتمامه.
+              {t("teacherExamCard.deleteDescription", { name: item?.title })}
             </DialogDescription>
           </DialogHeader>
 
@@ -116,7 +113,7 @@ const TeacherExamCard = ({ item }) => {
               {isPending ? (
                 <Loader2 className="animate-spin h-4 w-4" />
               ) : (
-                "تأكيد الحذف"
+                t("teacherExamCard.confirmDelete")
               )}
             </Button>
 
@@ -127,7 +124,7 @@ const TeacherExamCard = ({ item }) => {
               onClick={() => setOpen(false)}
               disabled={isPending}
             >
-              إلغاء
+              {t("teacherExamCard.cancel")}
             </Button>
           </DialogFooter>
         </DialogContent>

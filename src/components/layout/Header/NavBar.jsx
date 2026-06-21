@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const NavBar = ({ links }) => {
+  const { t } = useTranslation();
   // نضيف State للتحكم في فتح وإغلاق القائمة الرئيسية
   const [open, setOpen] = useState(false);
 
@@ -45,7 +47,7 @@ const NavBar = ({ links }) => {
               <DropdownMenuContent className="min-w-[14rem]">
                 <DropdownMenuItem asChild>
                   <NavLink to={link.url} className="w-full font-bold">
-                    كل {link.name}
+                    {t("header.all")} {link.name}
                   </NavLink>
                 </DropdownMenuItem>
 

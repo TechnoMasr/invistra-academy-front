@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import SectionTitle from "@/components/common/SectionTitle";
 import { useState } from "react";
 import CourseCard from "@/components/cards/CourseCard";
@@ -8,6 +9,7 @@ import { getCategories, getCourses } from "@/api/homeServices";
 import CoursesSectionSkeleton from "@/components/Loading/SkeletonLoading/CoursesSectionSkeleton";
 
 const CoursesSection = ({ data, loading }) => {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleCategoryClick = (categoryId) => {
@@ -28,7 +30,7 @@ const CoursesSection = ({ data, loading }) => {
     return <CoursesSectionSkeleton />;
 
   const categoriesList = [
-    { id: null, name: "الكل" },
+    { id: null, name: t("coursesSection.all") },
     ...(Array.isArray(categories) ? categories : []),
   ];
 
@@ -61,7 +63,7 @@ const CoursesSection = ({ data, loading }) => {
 
         <div className="flex justify-center mt-6">
           <Link to="/courses" className="rounded-full">
-            <Button className="px-6">المزيد من الكورسات</Button>
+            <Button className="px-6">{t("coursesSection.moreCourses")}</Button>
           </Link>
         </div>
       </div>

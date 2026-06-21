@@ -26,21 +26,21 @@ const TeacherExams = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <ProfileTitle title="اختباراتي" />
+        <ProfileTitle title={t("teacherExams.title")} />
 
         <Link
           to="/profile/add-exam"
           className="font-medium py-1 px-4 text-primary border border-primary rounded-full flex items-center gap-1.5 text-sm"
         >
           <LuCirclePlus className="w-4 h-4" />
-          <span>إضافة اختبار</span>
+          <span>{t("teacherExams.addExam")}</span>
         </Link>
       </div>
 
       {isLoading ? (
         <MyExamsSkeleton />
       ) : isEmpty ? (
-        <EmptyDataSection msg={t("exams.emptyMessage")} />
+        <EmptyDataSection msg={t("teacherExams.emptyMessage")} />
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

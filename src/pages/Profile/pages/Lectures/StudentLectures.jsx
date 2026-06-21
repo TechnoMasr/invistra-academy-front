@@ -21,12 +21,12 @@ const Lectures = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="محاضرات الكورس" />
+      <ProfileTitle title={t("studentLectures.title")} />
 
       {isLoading ? (
         <LecturesPageSkeleton />
       ) : isEmpty ? (
-        <EmptyDataSection msg={t("lectures.emptyMessage")} />
+        <EmptyDataSection msg={t("studentLectures.emptyMessage")} />
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {lectures?.map((item) => (

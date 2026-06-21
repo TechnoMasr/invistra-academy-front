@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import CourseCard from "@/components/cards/CourseCard";
 import {
   Select,
@@ -30,6 +31,7 @@ function useDebounce(value, delay) {
 }
 
 const Courses = () => {
+  const { t } = useTranslation();
   // استخدام useSearchParams الخاصة بـ react-router
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -138,11 +140,11 @@ const Courses = () => {
             {/* حقل البحث */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
-                البحث
+                {t("coursesPage.search")}
               </label>
               <Input
                 type="text"
-                placeholder="ابحث عن دورة"
+                placeholder={t("coursesPage.searchPlaceholder")}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -151,7 +153,7 @@ const Courses = () => {
             {/* فلتر المحاضرين */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
-                المحاضر
+                {t("coursesPage.instructor")}
               </label>
               <Select
                 disabled={instructorsLoading}
@@ -159,11 +161,11 @@ const Courses = () => {
                 onValueChange={(val) => updateFilters("instructor_id", val)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="اختر المحاضر" />
+                  <SelectValue placeholder={t("coursesPage.instructorPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectGroup>
-                    <SelectItem value="all">كل المحاضرين</SelectItem>
+                    <SelectItem value="all">{t("coursesPage.allInstructors")}</SelectItem>
                     {instructors?.map((ins) => (
                       <SelectItem key={ins.id} value={String(ins.id)}>
                         {ins.name}
@@ -177,7 +179,7 @@ const Courses = () => {
             {/* فلتر الأقسام الرئيسية */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
-                القسم الرئيسي
+                {t("coursesPage.mainCategory")}
               </label>
               <Select
                 disabled={categoriesLoading}
@@ -185,11 +187,11 @@ const Courses = () => {
                 onValueChange={(val) => updateFilters("category_id", val)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="اختر القسم" />
+                  <SelectValue placeholder={t("coursesPage.mainCategoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectGroup>
-                    <SelectItem value="all">كل الأقسام</SelectItem>
+                    <SelectItem value="all">{t("coursesPage.allCategories")}</SelectItem>
                     {categories?.map((cat) => (
                       <SelectItem key={cat.id} value={String(cat.id)}>
                         {cat.name}
@@ -203,7 +205,7 @@ const Courses = () => {
             {/* فلتر الأقسام الفرعية */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
-                القسم الفرعي
+                {t("coursesPage.subCategory")}
               </label>
               <Select
                 disabled={
@@ -214,11 +216,11 @@ const Courses = () => {
                 onValueChange={(val) => updateFilters("sub_category_id", val)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="اختر القسم الفرعي" />
+                  <SelectValue placeholder={t("coursesPage.subCategoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectGroup>
-                    <SelectItem value="all">كل الأقسام الفرعية</SelectItem>
+                    <SelectItem value="all">{t("coursesPage.allSubCategories")}</SelectItem>
                     {availableSubCategories.map((subCat) => (
                       <SelectItem key={subCat.id} value={String(subCat.id)}>
                         {subCat.name}
@@ -242,7 +244,7 @@ const Courses = () => {
               </div>
 
               {courses?.items?.length === 0 && (
-                <EmptyDataSection msg={"لا يوجد كورسات"} />
+                <EmptyDataSection msg={t("coursesPage.noCourses")} />
               )}
             </>
           )}

@@ -1,8 +1,10 @@
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { SlLayers } from "react-icons/sl";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const OrdersDetailsCard = ({ item }) => {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg overflow-hidden bg-white flex items-start gap-3 p-3">
       <div className="w-1/3 aspect-square rounded-md overflow-hidden border">
@@ -24,7 +26,9 @@ const OrdersDetailsCard = ({ item }) => {
         <div className="flex flex-wrap items-center gap-2 font-semibold text-sm">
           <p className="flex items-center gap-1">
             <HiOutlineSquares2X2 />
-            {item?.lectures_count} محاضرات
+            {t("ordersDetailsCard.lecturesCount", {
+              count: item?.lectures_count,
+            })}
           </p>
           <p className="flex items-center gap-1">
             <SlLayers />
@@ -33,7 +37,7 @@ const OrdersDetailsCard = ({ item }) => {
         </div>
 
         <div className="flex items-center flex-wrap gap-1">
-          <p className="font-medium">حالة الكورس:</p>
+          <p className="font-medium">{t("ordersDetailsCard.courseStatus")}</p>
           <span>{item?.status}</span>
         </div>
 
@@ -67,7 +71,7 @@ const OrdersDetailsCard = ({ item }) => {
             to={`/profile/lectures/${item?.id}`}
             className="flex items-center gap-2 py-1 px-4 border border-primary rounded-full text-xs font-semibold hover:bg-primary/10 transition"
           >
-            عرض المحاضرات
+            {t("ordersDetailsCard.viewLectures")}
           </Link>
         </div>
       </div>

@@ -20,12 +20,12 @@ const OrderDetails = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="تفاصيل الطلب" />
+      <ProfileTitle title={t("orderDetails.title")} />
 
       {isLoading ? (
         <OrderDetailsSkeleton />
       ) : isEmpty ? (
-        <EmptyDataSection msg={t("Orders.emptyMessage")} />
+        <EmptyDataSection msg={t("orderDetails.emptyMessage")} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {orders?.items?.map((item) => (

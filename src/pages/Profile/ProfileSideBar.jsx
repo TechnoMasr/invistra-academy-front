@@ -32,37 +32,37 @@ const ProfileSideBar = () => {
   const dispatch = useDispatch();
 
   const links = [
-    { name: "البيانات الشخصية", href: "/profile", icon: FaRegUser },
+    { name: t("profileSidebar.personalInfo"), href: "/profile", icon: FaRegUser },
     {
-      name: "الطلبات",
+      name: t("profileSidebar.orders"),
       href: "/profile/orders",
       icon: FiShoppingCart,
       hideForInstructor: true,
     },
     {
-      name: "الكورسات",
+      name: t("profileSidebar.myCourses"),
       href: "/profile/my-courses",
       icon: MdOutlineOndemandVideo,
     },
     {
-      name: "الاختبارات",
+      name: t("profileSidebar.exams"),
       href: "/profile/exams",
       icon: PiExam,
     },
     {
-      name: "الشهادات",
+      name: t("profileSidebar.certificates"),
       href: "/profile/certificates",
       icon: PiCertificateLight,
       hideForInstructor: true,
     },
     {
-      name: "التحويلات المالية",
+      name: t("profileSidebar.financialTransfers"),
       href: "/profile/transactions",
       icon: PiMoneyWavyBold,
       hideForStudent: true,
     },
     {
-      name: "الاشعارات",
+      name: t("profileSidebar.notifications"),
       href: "/profile/notifications",
       icon: FaRegBell,
     },
@@ -92,7 +92,7 @@ const ProfileSideBar = () => {
         className="sideBarLink danger"
       >
         <IoIosLogOut />
-        تسجيل الخروج
+        {t("profileSidebar.logout")}
       </button>
     </div>
   );
@@ -107,7 +107,7 @@ const ProfileSideBar = () => {
         <SheetTrigger asChild className="lg:hidden w-fit mt-4 ms-4">
           <Button variant="outline">
             <HiOutlineBars3 />
-            القائمة
+            {t("profileSidebar.menu")}
           </Button>
         </SheetTrigger>
 

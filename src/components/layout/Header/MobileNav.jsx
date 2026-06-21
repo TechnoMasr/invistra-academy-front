@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   Sheet,
   SheetContent,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/accordion";
 
 const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
+  const { t } = useTranslation();
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -79,7 +81,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                       className="text-primary font-semibold text-sm py-2 block border-b border-dashed border-gray-100"
                       onClick={() => onOpenChange(false)}
                     >
-                      كل {link.name}
+                      {t("header.all")} {link.name}
                     </Link>
 
                     {/* الأكورديون الثاني للمستوى الثاني (الأقسام الرئيسية) */}
@@ -125,7 +127,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                                 className="text-gray-400 font-medium text-xs hover:text-primary transition-colors py-1 block"
                                 onClick={() => onOpenChange(false)}
                               >
-                                - عرض كل {category.name}
+                                - {t("header.all")} {category.name}
                               </Link>
 
                               {/* عرض الأقسام الفرعية (المستوى الثالث) */}

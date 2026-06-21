@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import userImg from "@/assets/icons/Icon (1).png";
 
 import { GoPlay } from "react-icons/go";
 import { MdOndemandVideo, MdOutlineAccessTime } from "react-icons/md";
@@ -16,6 +16,7 @@ import FormError from "@/components/form/FormError";
 import useRequireAuth from "@/hooks/useRequireAuth";
 
 const Details = ({ data, hideBtns = false }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const requireAuth = useRequireAuth();
@@ -29,7 +30,7 @@ const Details = ({ data, hideBtns = false }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cartItemsCount"] });
-      toast("تم الإضافة بنجاح");
+      toast(t("courseDetails.addedToCart"));
     },
   });
 
@@ -58,19 +59,19 @@ const Details = ({ data, hideBtns = false }) => {
   const list = [
     {
       id: 1,
-      label: "مدة الكورس",
+      label: t("courseDetails.duration"),
       value: data?.duration,
       icon: <MdOutlineAccessTime size={40} />,
     },
     {
       id: 2,
-      label: "عدد المحاضرات",
+      label: t("courseDetails.lecturesCount"),
       value: data?.lectures_count,
       icon: <MdOndemandVideo size={40} />,
     },
     {
       id: 3,
-      label: "القسم",
+      label: t("courseDetails.category"),
       value: data?.category,
       icon: <LuLayers3 size={40} />,
     },
@@ -113,8 +114,8 @@ const Details = ({ data, hideBtns = false }) => {
         </ul>
 
         <p className="text-lg font-bold">
-          السعر:{" "}
-          <span className="text-green-600 text-5xl">
+          {t("courseDetails.price")}{" "}
+          <span className="text-green-600 text-4xl">
             {data?.price} {data?.currency}
           </span>
         </p>
@@ -132,7 +133,7 @@ const Details = ({ data, hideBtns = false }) => {
                 <Loader2 className="animate-spin h-5 w-5" />
               ) : (
                 <>
-                  أضف الى السلة <GrCart />
+                  {t("courseDetails.addToCart")} <GrCart />
                 </>
               )}
             </Button>
@@ -148,7 +149,7 @@ const Details = ({ data, hideBtns = false }) => {
                 <Loader2 className="animate-spin h-5 w-5" />
               ) : (
                 <>
-                  اشتري الان <IoFlashOutline />
+                  {t("courseDetails.buyNow")} <IoFlashOutline />
                 </>
               )}
             </Button>
@@ -157,7 +158,7 @@ const Details = ({ data, hideBtns = false }) => {
 
         {error && (
           <FormError
-            errorMsg={error?.response?.data?.message || "Something went wrong"}
+            errorMsg={error?.response?.data?.message || t("courseDetails.somethingWrong")}
           />
         )}
       </div>

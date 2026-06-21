@@ -1,4 +1,4 @@
-import { useState } from "react"; // لإغلاق الدايلوج يدوياً بعد الحذف
+import { useState } from "react";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { MdOutlineDelete } from "react-icons/md";
 import { SlLayers } from "react-icons/sl";
@@ -6,8 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
-// استيراد مكونات الـ Dialog من Shadcn
 import {
   Dialog,
   DialogContent,
@@ -18,23 +18,23 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-import { removeFromCart } from "@/api/cartServices"; // تأكد من المسار الخاص بك
+import { removeFromCart } from "@/api/cartServices";
 
 const CartCard = ({ item }) => {
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false); // التحكم في فتح وغلق الدايلوج
+  const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
-  // تعريف الـ Mutation الخاص بحذف العنصر من السلة
   const { mutate: handleDeleteItem, isPending } = useMutation({
     mutationFn: (courseId) => removeFromCart(courseId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cartItemsCount"] });
-      toast.success("تم حذف الكورس من السلة بنجاح");
-      setOpen(false); // إغلاق الدايلوج بعد النجاح
+      toast.success(t("cartCard.deleteSuccess"));
+      setOpen(false);
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.message || "حدث خطأ أثناء الحذف");
+      toast.error(error?.response?.data?.message || t("cartCard.deleteError"));
     },
   });
 
@@ -59,7 +59,7 @@ const CartCard = ({ item }) => {
         <div className="flex flex-wrap items-center gap-2 font-medium text-sm lg:text-base mb-3">
           <p className="flex items-center gap-1">
             <HiOutlineSquares2X2 />
-            {item.lectures_count} محاضرات
+            {t("cartCard.lecturesCount", { count: item.lectures_count })}
           </p>
           <p className="flex items-center gap-1">
             <SlLayers />
@@ -86,7 +86,6 @@ const CartCard = ({ item }) => {
             {item.price} {item.currency}
           </p>
 
-          {/* استخدام الـ Dialog من Shadcn */}
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <button
@@ -97,7 +96,8 @@ const CartCard = ({ item }) => {
                   <Loader2 className="animate-spin h-5 w-5" />
                 ) : (
                   <>
-                    حذف <MdOutlineDelete className="text-xl" />
+                    {t("cartCard.delete")}{" "}
+                    <MdOutlineDelete className="text-xl" />
                   </>
                 )}
               </button>
@@ -105,13 +105,11 @@ const CartCard = ({ item }) => {
 
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle className="text-right">حذف من السلة</DialogTitle>
+                <DialogTitle className="text-right">
+                  {t("cartCard.deleteTitle")}
+                </DialogTitle>
                 <DialogDescription className="text-right mt-2">
-                  هل أنت متأكد من رغبتك في حذف كورس{" "}
-                  <span className="font-bold text-foreground">
-                    "{item.name}"
-                  </span>
-                  ؟ لا يمكن التراجع عن هذا الإجراء.
+                  {t("cartCard.deleteDescription", { name: item.name })}
                 </DialogDescription>
               </DialogHeader>
 
@@ -126,7 +124,7 @@ const CartCard = ({ item }) => {
                   {isPending ? (
                     <Loader2 className="animate-spin h-4 w-4" />
                   ) : (
-                    "تأكيد الحذف"
+                    t("cartCard.confirmDelete")
                   )}
                 </Button>
 
@@ -137,7 +135,7 @@ const CartCard = ({ item }) => {
                   onClick={() => setOpen(false)}
                   disabled={isPending}
                 >
-                  إلغاء
+                  {t("cartCard.cancel")}
                 </Button>
               </DialogFooter>
             </DialogContent>

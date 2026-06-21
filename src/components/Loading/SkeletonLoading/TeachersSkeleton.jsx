@@ -4,7 +4,10 @@ const TeachersSkeleton = () => {
   return (
     <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {Array.from({ length: 8 }).map((_, index) => (
-        <div className="border rounded-lg overflow-hidden bg-white flex flex-col p-2 gap-0">
+        <div
+          key={index}
+          className="border rounded-lg overflow-hidden bg-white flex flex-col p-2 gap-0"
+        >
           <div className="flex-1 w-full flex flex-col items-center">
             {/* سكلتون صورة المحاضر بنفس الأبعاد aspect-5/4 */}
             <Skeleton className="w-full aspect-5/4 rounded-md mb-3" />

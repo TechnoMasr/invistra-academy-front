@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import { FaWallet, FaRegCircleCheck } from "react-icons/fa6";
 import { PiHandDepositBold } from "react-icons/pi";
-import { getInstructorWallet } from "@/api/ExamServices"; // انتبه للسبيلنج إذا كان ExamServices
+import { getInstructorWallet } from "@/api/ExamServices";
 import { useQuery } from "@tanstack/react-query";
 import MainPagination from "@/components/common/MainPagination";
 import TransactionsSkeleton from "@/components/Loading/SkeletonLoading/TransactionsSkeleton";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 
 const Transactions = () => {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
 
   // تمرير رقم الصفحة الحالية إلى الـ API وتحديث الـ queryKey عند تغييرها
@@ -77,14 +79,14 @@ const Transactions = () => {
   if (isError) {
     return (
       <div className="text-center text-red-500 font-semibold py-8">
-        حدث خطأ أثناء تحميل البيانات المالية.
+        {t("transactions.loadError")}
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="التحويلات المالية" />
+      <ProfileTitle title={t("transactions.title")} />
 
       {/* قسم الكروت الإحصائية العلوية مأخوذة من كائن extra */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -95,7 +97,7 @@ const Transactions = () => {
           </div>
           <div className="space-y-1">
             <span className="text-sm font-medium text-gray-500 block">
-              الرصيد المحول
+              {t("transactions.transferredBalance")}
             </span>
             <span className="text-2xl font-bold text-[#1E293B]">
               {extra.transferred}{" "}
@@ -111,7 +113,7 @@ const Transactions = () => {
           </div>
           <div className="space-y-1">
             <span className="text-sm font-medium text-gray-500 block">
-              الرصيد الحالي (المستحق)
+              {t("transactions.currentBalance")}
             </span>
             <span className="text-2xl font-bold text-[#1E293B]">
               {extra.due}{" "}
@@ -127,7 +129,7 @@ const Transactions = () => {
           </div>
           <div className="space-y-1">
             <span className="text-sm font-medium text-gray-500 block">
-              اجمالي الرصيد (الأرباح)
+              {t("transactions.totalEarnings")}
             </span>
             <span className="text-2xl font-bold text-[#1E293B]">
               {extra.earned}{" "}
@@ -139,13 +141,13 @@ const Transactions = () => {
 
       {/* عنوان قسم قائمة التحويلات */}
       <div className="pt-4">
-        <h3 className="text-2xl font-bold text-[#1E2229]">التحويلات</h3>
+        <h3 className="text-2xl font-bold text-[#1E2229]">{t("transactions.transfers")}</h3>
       </div>
 
       {/* قائمة التحويلات الديناميكية */}
       <div className="flex flex-col gap-4">
         {transactions.length === 0 ? (
-          <EmptyDataSection msg="لا يوجد تحويلات متاحة" />
+          <EmptyDataSection msg={t("transactions.noTransfers")} />
         ) : (
           transactions.map((item) => (
             <div
@@ -154,7 +156,7 @@ const Transactions = () => {
             >
               {/* قيمة التحويل */}
               <div className="flex flex-col gap-1">
-                <span className="font-bold">قيمة التحويل</span>
+                <span className="font-bold">{t("transactions.transferValue")}</span>
                 <span className="text-base font-bold text-[#22C55E]">
                   {parseFloat(item.amount).toLocaleString()} {item.currency}
                 </span>
@@ -162,25 +164,25 @@ const Transactions = () => {
 
               {/* رقم الحساب */}
               <div className="flex flex-col gap-1">
-                <span className="font-bold">رقم الحساب</span>
+                <span className="font-bold">{t("transactions.accountNumber")}</span>
                 <span className="text-sm font-medium text-gray-700">
-                  {item.account_number || "غير محدد"}
+                  {item.account_number || t("transactions.notSpecified")}
                 </span>
               </div>
 
               {/* طريقة التحويل */}
               <div className="flex flex-col gap-1">
-                <span className="font-bold">طريقة التحويل</span>
+                <span className="font-bold">{t("transactions.transferMethod")}</span>
                 <span className="text-sm font-medium text-gray-700">
                   {item.payment_method === "Vodafone Cash"
-                    ? "فودافون كاش"
+                    ? t("transactions.vodafoneCash")
                     : item.payment_method}
                 </span>
               </div>
 
               {/* التاريخ والوقت */}
               <div className="flex flex-col gap-1">
-                <span className="font-bold">التاريخ والوقت</span>
+                <span className="font-bold">{t("transactions.dateTime")}</span>
                 <span className="text-xs text-gray-600 font-medium">
                   {formatDate(item.created_at)}
                 </span>

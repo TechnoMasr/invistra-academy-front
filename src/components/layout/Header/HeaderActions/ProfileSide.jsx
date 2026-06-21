@@ -28,31 +28,31 @@ const ProfileSide = ({ user }) => {
   const { isInstructor, isStudent } = useAuthGuard();
 
   const links = [
-    { name: "البيانات الشخصية", href: "/profile", icon: FaRegUser },
+    { name: t("profileSide.personalInfo"), href: "/profile", icon: FaRegUser },
     {
-      name: "الطلبات",
+      name: t("profileSide.orders"),
       href: "/profile/orders",
       icon: FiShoppingCart,
       hideForInstructor: true,
     },
     {
-      name: "الكورسات",
+      name: t("profileSide.myCourses"),
       href: "/profile/my-courses",
       icon: MdOutlineOndemandVideo,
     },
     {
-      name: "الاختبارات",
+      name: t("profileSide.exams"),
       href: "/profile/exams",
       icon: PiExam,
     },
     {
-      name: "الشهادات",
+      name: t("profileSide.certificates"),
       href: "/profile/certificates",
       icon: PiCertificateLight,
       hideForInstructor: true,
     },
     {
-      name: "التحويلات المالية",
+      name: t("profileSide.financialTransfers"),
       href: "/profile/transactions",
       icon: PiMoneyWavyBold,
       hideForStudent: true,
@@ -105,17 +105,17 @@ const ProfileSide = ({ user }) => {
               }}
             >
               <IoIosLogOut />
-              {"تسجيل الخروج"}
+              {t("profileSide.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
         <>
           <Link to="/login" className="rounded-full">
-            <Button>تسجيل الدخول</Button>
+            <Button>{t("profileSide.login")}</Button>
           </Link>
           <Link to="/register/teacher" className="rounded-full hidden md:block">
-            <Button variant="outline">انضم كمحاضر</Button>
+            <Button variant="outline">{t("profileSide.joinAsInstructor")}</Button>
           </Link>
         </>
       )}

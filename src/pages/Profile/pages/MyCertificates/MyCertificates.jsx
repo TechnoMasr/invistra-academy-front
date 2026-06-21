@@ -19,7 +19,7 @@ const MyCertificates = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="شهاداتي" />
+      <ProfileTitle title={t("myCertificates.title")} />
 
       {isLoading ? (
         <MyCertificatesSkeleton />

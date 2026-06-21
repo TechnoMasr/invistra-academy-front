@@ -7,8 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyLectureDetails } from "@/api/ordersServices";
 import { useParams } from "react-router";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
+import { useTranslation } from "react-i18next";
 
 const LectureDetails = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   const { data: lecture, isLoading } = useQuery({
@@ -20,7 +22,7 @@ const LectureDetails = () => {
 
   const isEmpty = !isLoading && !lecture;
 
-  if (isEmpty) return <EmptyDataSection msg="لا يوجد بيانات" />;
+  if (isEmpty) return <EmptyDataSection msg={t("lectureDetails.noData")} />;
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -32,7 +34,7 @@ const LectureDetails = () => {
             className="w-full h-full object-cover"
             poster=""
           >
-            متصفحك لا يدعم تشغيل هذا الفيديو.
+            {t("lectureDetails.videoNotSupported")}
           </video>
         </div>
 
@@ -54,17 +56,16 @@ const LectureDetails = () => {
       <div className="border rounded-2xl p-4 h-fit">
         <div className="flex items-start gap-2 mb-1">
           <FaRegFolderOpen className="text-xl mt-1" />
-          <h2 className="text-lg font-bold">ملفات ومرفقات المحاضرة</h2>
+          <h2 className="text-lg font-bold">{t("lectureDetails.attachments")}</h2>
         </div>
         <p className="opacity-80 text-sm mb-4">
-          يمكنك تحميل الملخصات والملفات التعليمية المعتمدة لهذه المحاضرة
-          للمذاكرة لاحقاً.
+          {t("lectureDetails.attachmentsDesc")}
         </p>
 
         {!lecture?.files?.length ? (
           <div className="h-full flex items-center justify-center">
             <p className="text-white bg-primary rounded-lg px-4 py-1 text-center font-semibold">
-              لا يوجد ملفات حاليا
+              {t("lectureDetails.noFiles")}
             </p>
           </div>
         ) : (
@@ -91,7 +92,7 @@ const LectureDetails = () => {
                   className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
                 >
                   <FiDownloadCloud className="text-base" />
-                  <span>تحميل</span>
+                  <span>{t("lectureDetails.download")}</span>
                 </a>
               </div>
             ))}

@@ -150,7 +150,7 @@ const TeacherAccount = () => {
 
   if (isLoading) return <InputsSkeleton />;
   if (isError)
-    return <div className="text-red-500 py-20">حصل خطأ في تحميل البيانات</div>;
+    return <div className="text-red-500 py-20">{t("teacherAccount.loadError")}</div>;
 
   const onSubmit = (values) => {
     const formData = new FormData();

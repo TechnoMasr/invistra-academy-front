@@ -5,10 +5,12 @@ import SearchInput from "./SearchInput";
 import NavBar from "./NavBar";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import MobileNav from "./MobileNav";
 
 const Header = () => {
+  const { t } = useTranslation();
   const [showMobileNav, setShowMobileNav] = useState(false);
   const { settings } = useSelector((state) => state.settings);
   const { lang } = useSelector((state) => state.language);
@@ -17,13 +19,13 @@ const Header = () => {
   const links = [
     {
       id: 1,
-      name: "المحاضرين",
+      name: t("header.instructors"),
       url: "/instructors",
       list: [],
     },
     {
       id: 2,
-      name: "الكورسات",
+      name: t("header.courses"),
       url: "/courses",
       list: categories || [],
     },

@@ -19,12 +19,12 @@ const Orders = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="طلباتي" />
+      <ProfileTitle title={t("orders.title")} />
 
       {isLoading ? (
         <OrdersSkeleton />
       ) : isEmpty ? (
-        <EmptyDataSection msg={t("Orders.emptyMessage")} />
+        <EmptyDataSection msg={t("orders.emptyMessage")} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {orders?.items?.map((item) => (

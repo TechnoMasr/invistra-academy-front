@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router"; // للتأكد من مطابقة نفس إصدار راوتر صفحة الكورسات
+import { useSearchParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import TeacherCard from "@/components/cards/TeacherCard";
 import {
   Select,
@@ -30,6 +31,7 @@ function useDebounce(value, delay) {
 }
 
 const Teachers = () => {
+  const { t } = useTranslation();
   // استخدام useSearchParams للتحكم في الـ URL params
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -111,11 +113,11 @@ const Teachers = () => {
             {/* حقل البحث عن محاضر */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
-                البحث
+                {t("teachersPage.search")}
               </label>
               <Input
                 type="text"
-                placeholder="ابحث عن محاضر"
+                placeholder={t("teachersPage.searchPlaceholder")}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -124,7 +126,7 @@ const Teachers = () => {
             {/* فلتر الأقسام */}
             <div>
               <label className="text-sm font-medium inline-block mb-2">
-                القسم
+                {t("teachersPage.category")}
               </label>
               <Select
                 disabled={categoriesLoading}
@@ -132,11 +134,11 @@ const Teachers = () => {
                 onValueChange={(val) => updateFilters("category_id", val)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="اختر القسم" />
+                  <SelectValue placeholder={t("teachersPage.categoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectGroup>
-                    <SelectItem value="all">كل الأقسام</SelectItem>
+                    <SelectItem value="all">{t("teachersPage.allCategories")}</SelectItem>
                     {categories?.map((cat) => (
                       <SelectItem key={cat.id} value={String(cat.id)}>
                         {cat.name}
@@ -160,7 +162,7 @@ const Teachers = () => {
               </div>
 
               {instructors?.items?.length === 0 && (
-                <EmptyDataSection msg="لا يوجد محاضرين" />
+                <EmptyDataSection msg={t("teachersPage.noTeachers")} />
               )}
             </>
           )}

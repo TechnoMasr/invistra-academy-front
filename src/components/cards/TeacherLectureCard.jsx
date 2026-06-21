@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { FaPlay } from "react-icons/fa";
-import { Link, useParams } from "react-router"; // أو react-router-dom حسب مشروعك
+import { Link, useParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useTranslation } from "react-i18next";
 
-// استيراد مكونات الـ Dialog من Shadcn
 import {
   Dialog,
   DialogContent,
@@ -15,28 +15,28 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog"; // تأكد من صحة مسار مكونات shadcn لديك
+} from "@/components/ui/dialog";
 import { deleteLecture } from "@/api/lectureServices";
 
 const TeacherLectureCard = ({ item }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const { id } = useParams(); // 2. جلب الـ id من الرابط الحالي
+  const { id } = useParams();
+  const { t } = useTranslation();
 
   const { mutate: handleDeleteLecture, isPending } = useMutation({
     mutationFn: (lectureId) => deleteLecture(lectureId),
     onSuccess: () => {
-      // 3. تحديث الـ queryKey ليتطابق تماماً مع صفحة العرض
       queryClient.invalidateQueries({
         queryKey: ["lecturesInstructor", id],
       });
 
-      toast.success("تم حذف المحاضرة بنجاح");
+      toast.success(t("teacherLectureCard.deleteSuccess"));
       setOpen(false);
     },
     onError: (error) => {
       toast.error(
-        error?.response?.data?.message || "حدث خطأ أثناء حذف المحاضرة",
+        error?.response?.data?.message || t("teacherLectureCard.deleteError"),
       );
     },
   });
@@ -56,31 +56,26 @@ const TeacherLectureCard = ({ item }) => {
       <div className="flex items-center gap-2">
         <Link to={`/profile/edit-lecture/${item?.id}`} className="rounded-full">
           <Button variant="outline" className="w-full">
-            عرض تفاصيل المحاضرة
+            {t("teacherLectureCard.viewLectureDetails")}
           </Button>
         </Link>
 
-        {/* دمج الـ Dialog لتأكيد حذف المحاضرة */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="destructive" disabled={isPending}>
               {isPending ? (
                 <Loader2 className="animate-spin h-4 w-4" />
               ) : (
-                "حذف المحاضرة"
+                t("teacherLectureCard.deleteLecture")
               )}
             </Button>
           </DialogTrigger>
 
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle className="text-right">حذف المحاضرة</DialogTitle>
+              <DialogTitle className="text-right">{t("teacherLectureCard.deleteTitle")}</DialogTitle>
               <DialogDescription className="text-right mt-2">
-                هل أنت متأكد من رغبتك في حذف محاضرة{" "}
-                <span className="font-bold text-foreground">
-                  "{item?.title}"
-                </span>
-                ؟ لا يمكن التراجع عن هذا الإجراء بعد إتمامه.
+                {t("teacherLectureCard.deleteDescription", { name: item?.title })}
               </DialogDescription>
             </DialogHeader>
 
@@ -95,7 +90,7 @@ const TeacherLectureCard = ({ item }) => {
                 {isPending ? (
                   <Loader2 className="animate-spin h-4 w-4" />
                 ) : (
-                  "تأكيد الحذف"
+                  t("teacherLectureCard.confirmDelete")
                 )}
               </Button>
 
@@ -106,7 +101,7 @@ const TeacherLectureCard = ({ item }) => {
                 onClick={() => setOpen(false)}
                 disabled={isPending}
               >
-                إلغاء
+                {t("teacherLectureCard.cancel")}
               </Button>
             </DialogFooter>
           </DialogContent>

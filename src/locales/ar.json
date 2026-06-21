@@ -5,9 +5,24 @@
   "termsAndConditions": "الشروط والأحكام",
   "contactUs": "تواصل معنا",
 
+  "noDataFound": "لا توجد بيانات",
+  "teachers": "المحاضرين",
+  "courses": "الكورسات",
+  "registerAsTeacher": "التسجيل كمحاضر",
+  "phone": "اتصال",
+  "whatsapp": "واتساب",
+
   "NotificationsPopUp": {
     "notFound": "لا توجد إشعارات",
     "seeAll": "عرض كل الإشعارات"
+  },
+
+  "notifications": {
+    "title": "الإشعارات",
+    "subtitle": "اطلع على الإشعارات الخاصة بك",
+    "empty": "لا توجد إشعارات حالياً.",
+    "markAllRead": "قراءة الكل",
+    "loading": "جاري القراءة..."
   },
 
   "logOutModal": {
@@ -170,15 +185,6 @@
     "messages": {
       "success": "تم تغيير كلمة المرور بنجاح"
     }
-  },
-
-  "notifications": {
-    "title": "الإشعارات",
-    "subtitle": "اطلع على الإشعارات الخاصة بك",
-
-    "empty": "لا توجد إشعارات حالياً.",
-    "markAllRead": "قراءة الكل",
-    "loading": "جاري القراءة..."
   },
 
   "verifyEmailPage": {
@@ -397,5 +403,485 @@
     "description": "حدثت مشكلة أثناء تحميل الصفحة، برجاء المحاولة مرة أخرى",
     "reload": "إعادة تحميل الصفحة",
     "goHome": "العودة للرئيسية"
+  },
+
+  "header": {
+    "instructors": "المحاضرين",
+    "courses": "الكورسات",
+    "all": "الكل"
+  },
+
+  "search": {
+    "placeholder": "ابحث فى المنصة",
+    "searching": "جاري البحث...",
+    "noResults": "لا توجد نتائج لـ",
+    "instructor": "المحاضر",
+    "courses": "الكورسات",
+    "instructors": "المحاضرين",
+    "categories": "الأقسام"
+  },
+
+  "courseCard": {
+    "lecturesCount": "{{count}} محاضرة",
+    "lecturesCount_plural": "{{count}} محاضرات"
+  },
+
+  "cartCard": {
+    "lecturesCount": "{{count}} محاضرة",
+    "lecturesCount_plural": "{{count}} محاضرات",
+    "delete": "حذف",
+    "deleteTitle": "حذف من السلة",
+    "deleteDescription": "هل أنت متأكد من رغبتك في حذف كورس \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "confirmDelete": "تأكيد الحذف",
+    "cancel": "إلغاء",
+    "deleteSuccess": "تم حذف الكورس من السلة بنجاح",
+    "deleteError": "حدث خطأ أثناء الحذف"
+  },
+
+  "examCard": {
+    "exam": "اختبار",
+    "questions": "{{count}} سؤال",
+    "questions_plural": "{{count}} اسئلة",
+    "testScore": "درجة الاختبار: {{score}}",
+    "viewExam": "عرض الاختبار",
+    "startExam": "ابدأ الاختبار"
+  },
+
+  "teacherCourseCard": {
+    "orders": "{{count}} طلب",
+    "orders_plural": "{{count}} طلبات",
+    "price": "السعر:",
+    "viewLectures": "عرض المحاضرات",
+    "viewCourseDetails": "عرض تفاصيل الكورس",
+    "addLecture": "اضافة محاضرة"
+  },
+
+  "teacherLectureCard": {
+    "viewLectureDetails": "عرض تفاصيل المحاضرة",
+    "deleteLecture": "حذف المحاضرة",
+    "deleteTitle": "حذف المحاضرة",
+    "deleteDescription": "هل أنت متأكد من رغبتك في حذف محاضرة \"{{name}}\"? لا يمكن التراجع عن هذا الإجراء بعد إتمامه.",
+    "confirmDelete": "تأكيد الحذف",
+    "cancel": "إلغاء",
+    "deleteSuccess": "تم حذف المحاضرة بنجاح",
+    "deleteError": "حدث خطأ أثناء حذف المحاضرة"
+  },
+
+  "teacherExamCard": {
+    "passMark": "يجب ان يتجاوز {{mark}} للنجاح",
+    "examScore": "درجة الاختبار من {{mark}}",
+    "viewExamDetails": "عرض تفاصيل الاختبار",
+    "deleteExam": "حذف الاختبار",
+    "deleteTitle": "حذف الاختبار",
+    "deleteDescription": "هل أنت متأكد من رغبتك في حذف اختبار \"{{name}}\"? لا يمكن التراجع عن هذا الإجراء بعد إتمامه.",
+    "confirmDelete": "تأكيد الحذف",
+    "cancel": "إلغاء",
+    "deleteSuccess": "تم حذف الاختبار بنجاح",
+    "deleteError": "حدث خطأ أثناء حذف الاختبار"
+  },
+
+  "orderCard": {
+    "orderCode": "كود الطلب:",
+    "paymentStatus": "حالة الدفع:",
+    "orderStatus": "حالة الطلب:",
+    "paymentMethod": "طريقة الدفع:",
+    "price": "السعر:",
+    "viewDetails": "عرض تفاصيل الطلب"
+  },
+
+  "ordersDetailsCard": {
+    "lecturesCount": "{{count}} محاضرة",
+    "lecturesCount_plural": "{{count}} محاضرات",
+    "courseStatus": "حالة الكورس:",
+    "viewLectures": "عرض المحاضرات"
+  },
+
+  "certificatesCard": {
+    "downloadCertificate": "تحميل الشهادة",
+    "shareOnLinkedIn": "مشاركة في لينكدإن"
+  },
+
+  "profileSide": {
+    "personalInfo": "البيانات الشخصية",
+    "orders": "الطلبات",
+    "myCourses": "الكورسات",
+    "exams": "الاختبارات",
+    "certificates": "الشهادات",
+    "financialTransfers": "التحويلات المالية",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "joinAsInstructor": "انضم كمحاضر"
+  },
+
+  "successPaymentModal": {
+    "title": "تم تسجيل طلبك بنجاح!",
+    "description": "شكراً لك! تم استلام بيانات الدفع والطلب بنجاح، وجاري مراجعة التحويل وتأكيد الطلب من قبل الإدارة في أقرب وقت.",
+    "goToOrders": "الذهاب إلى طلباتي",
+    "ok": "حسناً"
+  },
+
+  "paymentModal": {
+    "title": "اختر طريقة الدفع",
+    "description": "يرجى اختيار الوسيلة الأنسب لك لإتمام العملية",
+    "vodafoneCash": "فودافون كاش",
+    "vodafoneCashDesc": "تحويل فوري عبر المحفظة",
+    "instaPay": "إنستا باي (Insta Pay)",
+    "instaPayDesc": "تحويل بنكي لحظي",
+    "onlinePayment": "دفع اونلاين",
+    "onlinePaymentDesc": "بطاقات فيزا أو ماستركارد"
+  },
+
+  "cart": {
+    "title": "سلة المشتريات",
+    "emptyMessage": "سلة المشتريات فارغة"
+  },
+
+  "orderSummary": {
+    "title": "ملخص الطلب",
+    "count": "العدد:",
+    "mainTotal": "الإجمالي الرئيسي:",
+    "choosePayment": "اختر طريقة الدفع",
+    "vodafoneCash": "فودافون كاش",
+    "instaPay": "إنستا باي",
+    "onlinePayment": "دفع أونلاين",
+    "subtotal": "الإجمالي الفرعي:",
+    "serviceFee": "رسوم الخدمة ({{percent}}%):",
+    "finalTotal": "الإجمالي النهائي:",
+    "transferTo": "قم بتحويل مبلغ الطلب إلى الرقم التالي:",
+    "copyNumber": "نسخ الرقم",
+    "copied": "تم النسخ!",
+    "attachReceipt": "إرفاق صورة التحويل (إيصال الدفع):",
+    "clickToUpload": "اضغط هنا لرفع صورة الإيصال",
+    "deleteImage": "حذف الصورة",
+    "processing": "جاري تنفيذ طلبك...",
+    "updating": "جاري تحديث الفاتورة...",
+    "confirmPayment": "تأكيد الدفع وإرسال الطلب",
+    "continueShopping": "استكمال الشراء",
+    "selectPaymentError": "برجاء اختيار طريقة الدفع أولاً للاستمرار",
+    "uploadImageError": "برجاء رفع صورة التحويل أولاً لتأكيد الدفع",
+    "orderError": "حدث خطأ أثناء إتمام الطلب، برجاء المحاولة مرة أخرى.",
+    "copySuccess": "تم نسخ الرقم بنجاح!",
+    "copyFailed": "فشل نسخ الرقم"
+  },
+
+  "courseDetails": {
+    "duration": "مدة الكورس",
+    "lecturesCount": "عدد المحاضرات",
+    "category": "القسم",
+    "price": "السعر:",
+    "addToCart": "أضف الى السلة",
+    "buyNow": "اشتري الان",
+    "addedToCart": "تم الإضافة بنجاح",
+    "somethingWrong": "Something went wrong"
+  },
+
+  "whatLearn": {
+    "title": "ماذا ستتعلم في الكورس؟"
+  },
+
+  "coursesPage": {
+    "search": "البحث",
+    "searchPlaceholder": "ابحث عن دورة",
+    "instructor": "المحاضر",
+    "instructorPlaceholder": "اختر المحاضر",
+    "allInstructors": "كل المحاضرين",
+    "mainCategory": "القسم الرئيسي",
+    "mainCategoryPlaceholder": "اختر القسم",
+    "allCategories": "كل الأقسام",
+    "subCategory": "القسم الفرعي",
+    "subCategoryPlaceholder": "اختر القسم الفرعي",
+    "allSubCategories": "كل الأقسام الفرعية",
+    "noCourses": "لا يوجد كورسات"
+  },
+
+  "teachersPage": {
+    "search": "البحث",
+    "searchPlaceholder": "ابحث عن محاضر",
+    "category": "القسم",
+    "categoryPlaceholder": "اختر القسم",
+    "allCategories": "كل الأقسام",
+    "noTeachers": "لا يوجد محاضرين"
+  },
+
+  "hero": {
+    "exploreCourses": "استكشف الكورسات"
+  },
+
+  "coursesSection": {
+    "all": "الكل",
+    "moreCourses": "المزيد من الكورسات"
+  },
+
+  "profileSidebar": {
+    "personalInfo": "البيانات الشخصية",
+    "orders": "الطلبات",
+    "myCourses": "الكورسات",
+    "exams": "الاختبارات",
+    "certificates": "الشهادات",
+    "financialTransfers": "التحويلات المالية",
+    "notifications": "الاشعارات",
+    "logout": "تسجيل الخروج",
+    "menu": "القائمة"
+  },
+
+  "addCourse": {
+    "title": "إضافة كورس",
+    "courseImage": "صورة الكورس",
+    "videoLink": "رابط الفيديو التعريفي",
+    "videoLinkPlaceholder": "https://example.com",
+    "nameAr": "اسم الكورس باللغة العربية",
+    "nameArPlaceholder": "ادخل اسم الكورس...",
+    "nameEn": "اسم الكورس باللغة الانجليزية",
+    "nameEnPlaceholder": "ادخل اسم الكورس...",
+    "descAr": "وصف الكورس باللغة العربية",
+    "descArPlaceholder": "أضف وصف للكورس...",
+    "descEn": "وصف الكورس باللغة الانجليزية",
+    "descEnPlaceholder": "أضف وصف للكورس...",
+    "learningsTitle": "إضافة ميزات تعلم الكورس",
+    "delete": "حذف",
+    "featureTitleAr": "عنوان الميزة باللغة العربية",
+    "featureTitleArPlaceholder": "ادخل عنوان الميزة...",
+    "featureTitleEn": "عنوان الميزة باللغة الانجليزية",
+    "featureTitleEnPlaceholder": "ادخل عنوان الميزة...",
+    "featureDescAr": "وصف الميزة باللغة العربية",
+    "featureDescArPlaceholder": "أضف وصف للميزة...",
+    "featureDescEn": "وصف الميزة باللغة الانجليزية",
+    "featureDescEnPlaceholder": "أضف وصف للميزة...",
+    "addFeature": "+ إضافة ميزة جديدة",
+    "duration": "مدة الكورس",
+    "durationPlaceholder": "مثال: 05:30",
+    "priceEg": "سعر الكورس بالجنيه المصري",
+    "priceEgPlaceholder": "ادخل سعر الكورس بالجنيه المصري...",
+    "priceUsd": "سعر الكورس بالدولار الأمريكي",
+    "priceUsdPlaceholder": "ادخل سعر الكورس بالدولار الأمريكي...",
+    "priceBeforeDiscountEg": "السعر قبل الخصم بالجنيه المصري",
+    "priceBeforeDiscountUsd": "السعر قبل الخصم بالدولار الأمريكي",
+    "priceBeforeDiscountPlaceholder": "ادخل السعر قبل الخصم...",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ",
+    "success": "تم انشاء الكورس بنجاح",
+    "error": "حدث خطأ ما، يرجى المحاولة مرة أخرى",
+    "validation": {
+      "invalidLink": "رابط الفيديو غير صالح",
+      "nameArRequired": "اسم الكورس بالعربي مطلوب (3 أحرف على الأقل)",
+      "nameEnRequired": "اسم الكورس بالإنجليزي مطلوب (3 أحرف على الأقل)",
+      "descArRequired": "وصف الكورس بالعربي مطلوب (10 أحرف على الأقل)",
+      "descEnRequired": "وصف الكورس بالإنجليزي مطلوب (10 أحرف على الأقل)",
+      "featureTitleAr": "عنوان الميزة بالعربي مطلوب",
+      "featureTitleEn": "عنوان الميزة بالإنجليزي مطلوب",
+      "featureDescAr": "وصف الميزة بالعربي مطلوب",
+      "featureDescEn": "وصف الميزة بالإنجليزي مطلوب",
+      "durationRequired": "مدة الكورس مطلوبة",
+      "durationFormat": "صيغة المدة يجب أن تكون HH:MM مثل 05:30",
+      "priceRequired": "السعر مطلوب",
+      "invalidDiscount": "السعر قبل الخصم غير صالح"
+    }
+  },
+
+  "editCourse": {
+    "title": "تفاصيل الكورس",
+    "editData": "تعديل البيانات",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ التعديلات",
+    "cancel": "إلغاء",
+    "success": "تم تحديث الكورس بنجاح",
+    "addFeature": "+ إضافة ميزة جديدة"
+  },
+
+  "addExam": {
+    "title": "إضافة امتحان",
+    "course": "الكورس",
+    "coursePlaceholder": "اختر الكورس",
+    "nameAr": "اسم الاختبار باللغة العربية",
+    "nameArPlaceholder": "ادخل اسم الاختبار..",
+    "nameEn": "اسم الاختبار باللغة الانجليزية",
+    "nameEnPlaceholder": "ادخل اسم الاختبار..",
+    "passMark": "الحد الأدنى للنجاح",
+    "passMarkPlaceholder": "ادخل الحد الأدنى للنجاح..",
+    "fullMark": "الدرجة النهائية للاختبار",
+    "fullMarkPlaceholder": "ادخل الدرجة النهائية للاختبار..",
+    "questionsBank": "بنك الأسئلة الخاصة بالاختبارات",
+    "questionsBankHint": "* يتم الاختيار منها عشوائياً في الاختبار",
+    "addQuestion": "+ إضافة سؤال جديد",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ",
+    "success": "تم اضافة الامتحان بنجاح",
+    "error": "حدث خطأ ما، يرجى المحاولة مرة أخرى",
+    "deleteQuestion": "حذف السؤال",
+    "questionNumber": "السؤال رقم ({{number}})",
+    "questionAr": "عنوان السؤال باللغة العربية",
+    "questionArPlaceholder": "أضف عنوان السؤال..",
+    "questionEn": "عنوان السؤال باللغة الانجليزية",
+    "questionEnPlaceholder": "أضف عنوان السؤال..",
+    "answerOptions": "خيارات الإجابة:",
+    "optionNumber": "الخيار رقم ({{number}})",
+    "correctAnswer": "(الإجابة الصحيحة)",
+    "deleteOption": "حذف الخيار",
+    "optionAr": "الخيار باللغة العربية",
+    "optionArPlaceholder": "ادخل الخيار بالعربي..",
+    "optionEn": "الخيار باللغة الانجليزية",
+    "optionEnPlaceholder": "ادخل الخيار بالإنجليزي..",
+    "addOption": "+ إضافة خيار آخر لهذا السؤال",
+    "validation": {
+      "courseRequired": "الرجاء اختيار الكورس",
+      "nameArRequired": "اسم الاختبار بالعربي مطلوب",
+      "nameEnRequired": "اسم الاختبار بالإنجليزي مطلوب",
+      "passMarkRequired": "الحد الأدنى للنجاح مطلوب ويجب أن يكون أكبر من 0",
+      "fullMarkRequired": "الدرجة النهائية للاختبار مطلوبة",
+      "questionArRequired": "عنوان السؤال بالعربي مطلوب",
+      "questionEnRequired": "عنوان السؤال بالإنجليزي مطلوب",
+      "optionArRequired": "الخيار بالعربي مطلوب",
+      "optionEnRequired": "الخيار بالإنجليزي مطلوب",
+      "minOptions": "يجب إضافة خيارين على الأقل للسؤال",
+      "maxOptions": "الحد الأقصى هو 4 خيارات فقط",
+      "minQuestions": "يجب إضافة سؤال واحد على الأقل"
+    }
+  },
+
+  "editExam": {
+    "title": "تفاصيل الاختبار",
+    "editData": "تعديل البيانات",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ التعديلات",
+    "cancel": "إلغاء",
+    "success": "تم تحديث الامتحان بنجاح"
+  },
+
+  "addLecture": {
+    "title": "إضافة محاضرة",
+    "uploadVideo": "رفع فيديو المحاضرة",
+    "videoLink": "رابط المحاضرة",
+    "videoLinkPlaceholder": "ادخل رابط المحاضرة..",
+    "nameAr": "عنوان المحاضرة باللغة العربية",
+    "nameArPlaceholder": "ادخل عنوان المحاضرة..",
+    "nameEn": "عنوان المحاضرة باللغة الانجليزية",
+    "nameEnPlaceholder": "ادخل عنوان المحاضرة..",
+    "descAr": "وصف المحاضرة باللغة العربية",
+    "descArPlaceholder": "أضف وصف للمحاضرة..",
+    "descEn": "وصف المحاضرة باللغة الانجليزية",
+    "descEnPlaceholder": "أضف وصف للمحاضرة..",
+    "attachments": "ملفات المحاضرة",
+    "attachmentNote": "(الحد الأقصى للملف 2MB)",
+    "uploadFiles": "رفع ملفات المحاضرة",
+    "selectedFiles": "الملفات المختارة ({{count}}):",
+    "deleteFile": "حذف الملف",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ",
+    "success": "تم إضافة المحاضرة بنجاح",
+    "error": "حدث خطأ ما، يرجى المحاولة مرة أخرى",
+    "videoOrLinkRequired": "يرجى رفع ملف فيديو أو إضافة رابط للمحاضرة",
+    "fileTooLarge": "عذراً، بعض الملفات تتجاوز الحد الأقصى المسموح به (2 ميجابايت)",
+    "validation": {
+      "invalidLink": "رابط الفيديو غير صالح",
+      "nameArRequired": "عنوان المحاضرة بالعربي مطلوب",
+      "nameEnRequired": "عنوان المحاضرة بالإنجليزي مطلوب",
+      "descArRequired": "وصف المحاضرة بالعربي مطلوب",
+      "descEnRequired": "وصف المحاضرة بالإنجليزي مطلوب"
+    }
+  },
+
+  "editLecture": {
+    "title": "تفاصيل المحاضرة",
+    "editData": "تعديل البيانات",
+    "lectureVideo": "فيديو المحاضرة",
+    "saving": "جاري الحفظ...",
+    "save": "حفظ التعديلات",
+    "cancel": "إلغاء",
+    "success": "تم تحديث المحاضرة بنجاح"
+  },
+
+  "lectureDetails": {
+    "noData": "لا يوجد بيانات",
+    "videoNotSupported": "متصفحك لا يدعم تشغيل هذا الفيديو.",
+    "attachments": "ملفات ومرفقات المحاضرة",
+    "attachmentsDesc": "يمكنك تحميل الملخصات والملفات التعليمية المعتمدة لهذه المحاضرة للمذاكرة لاحقاً.",
+    "noFiles": "لا يوجد ملفات حاليا",
+    "download": "تحميل"
+  },
+
+  "enterExam": {
+    "title": "اختبار تقييم المستوى",
+    "questions": "{{count}} أسئلة",
+    "passMark": "درجة النجاح: {{mark}}",
+    "chooseCorrect": "Choose the correct answer:",
+    "submit": "تسليم الإجابات",
+    "submitSuccess": "تم تسليم الاختبار بنجاح!",
+    "submitError": "حدث خطأ أثناء إرسال الإجابات، يرجى المحاولة مرة أخرى."
+  },
+
+  "examResult": {
+    "title": "نتيجة الاختبار",
+    "passed": "ناجح",
+    "failed": "لم يجتز",
+    "questions": "{{count}} أسئلة",
+    "score": "النتيجة: {{score}} / {{total}}",
+    "reviewAnswers": "مراجعة الإجابات:"
+  },
+
+  "studentLectures": {
+    "title": "محاضرات الكورس",
+    "emptyMessage": "لا توجد محاضرات متاحة"
+  },
+
+  "teacherLectures": {
+    "title": "محاضرات الكورس",
+    "emptyMessage": "لا توجد محاضرات متاحة"
+  },
+
+  "myCertificates": {
+    "title": "شهاداتي",
+    "emptyMessage": "لا توجد شهادات حتى الآن"
+  },
+
+  "myCourses": {
+    "title": "كورساتي",
+    "emptyMessage": "لا توجد كورسات حتى الآن"
+  },
+
+  "teacherCourses": {
+    "title": "كورساتي",
+    "addCourse": "إضافة كورس",
+    "emptyMessage": "لا توجد كورسات حتى الآن"
+  },
+
+  "myExams": {
+    "title": "اختباراتي",
+    "emptyMessage": "لا توجد اختبارات حتى الآن"
+  },
+
+  "teacherExams": {
+    "title": "اختباراتي",
+    "addExam": "إضافة اختبار",
+    "emptyMessage": "لا توجد اختبارات حتى الآن"
+  },
+
+  "orders": {
+    "title": "طلباتي",
+    "emptyMessage": "لا توجد طلبات حتى الآن"
+  },
+
+  "orderDetails": {
+    "title": "تفاصيل الطلب",
+    "emptyMessage": "لا توجد طلبات حتى الآن"
+  },
+
+  "transactions": {
+    "title": "التحويلات المالية",
+    "transferredBalance": "الرصيد المحول",
+    "currentBalance": "الرصيد الحالي (المستحق)",
+    "totalEarnings": "اجمالي الرصيد (الأرباح)",
+    "transfers": "التحويلات",
+    "noTransfers": "لا يوجد تحويلات متاحة",
+    "transferValue": "قيمة التحويل",
+    "accountNumber": "رقم الحساب",
+    "notSpecified": "غير محدد",
+    "transferMethod": "طريقة التحويل",
+    "vodafoneCash": "فودافون كاش",
+    "dateTime": "التاريخ والوقت",
+    "loadError": "حدث خطأ أثناء تحميل البيانات المالية."
+  },
+
+  "teacherAccount": {
+    "loadError": "حصل خطأ في تحميل البيانات"
   }
 }

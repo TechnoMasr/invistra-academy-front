@@ -5,6 +5,26 @@
   "termsAndConditions": "Terms and Conditions",
   "contactUs": "Contact Us",
 
+  "noDataFound": "No data found",
+  "teachers": "Teachers",
+  "courses": "Courses",
+  "registerAsTeacher": "Register as Teacher",
+  "phone": "Phone",
+  "whatsapp": "WhatsApp",
+
+  "NotificationsPopUp": {
+    "notFound": "No notifications found",
+    "seeAll": "See All Notifications"
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "View your notifications",
+    "empty": "No notifications yet.",
+    "markAllRead": "Mark all as read",
+    "loading": "Reading..."
+  },
+
   "logOutModal": {
     "logoutConfirm": "Are you sure you want to logout?",
     "cancel": "Cancel",
@@ -169,7 +189,7 @@
 
   "verifyEmailPage": {
     "title": "Check Your Messages",
-    "description": "For your security, we’ve sent a one-time password (OTP) to your registered contact details. Enter the code below to verify your identity and proceed.",
+    "description": "For your security, we've sent a one-time password (OTP) to your registered contact details. Enter the code below to verify your identity and proceed.",
     "verifyButton": "Verify Email",
     "checking": "Checking...",
     "didntReceive": "Didn't receive the code?",
@@ -383,5 +403,487 @@
     "title": "404",
     "subtitle": "Page Not Found",
     "goHome": "Go Home"
+  },
+
+  "header": {
+    "instructors": "Instructors",
+    "courses": "Courses",
+    "all": "All"
+  },
+
+  "search": {
+    "placeholder": "Search the platform",
+    "searching": "Searching...",
+    "noResults": "No results for",
+    "instructor": "Instructor",
+    "courses": "Courses",
+    "instructors": "Instructors",
+    "categories": "Categories"
+  },
+
+  "courseCard": {
+    "lecturesCount": "{{count}} lecture",
+    "lecturesCount_plural": "{{count}} lectures"
+  },
+
+  "cartCard": {
+    "lecturesCount": "{{count}} lecture",
+    "lecturesCount_plural": "{{count}} lectures",
+    "delete": "Delete",
+    "deleteTitle": "Delete from cart",
+    "deleteDescription": "Are you sure you want to delete course \"{{name}}\"? This action cannot be undone.",
+    "confirmDelete": "Confirm Delete",
+    "cancel": "Cancel",
+    "deleteSuccess": "Course deleted from cart successfully",
+    "deleteError": "An error occurred while deleting"
+  },
+
+  "examCard": {
+    "exam": "Exam",
+    "questions": "{{count}} question",
+    "questions_plural": "{{count}} questions",
+    "testScore": "Test score: {{score}}",
+    "viewExam": "View Exam",
+    "startExam": "Start Exam"
+  },
+
+  "teacherCourseCard": {
+    "orders": "{{count}} order",
+    "orders_plural": "{{count}} orders",
+    "price": "Price:",
+    "viewLectures": "View Lectures",
+    "viewCourseDetails": "View Course Details",
+    "addLecture": "Add Lecture"
+  },
+
+  "teacherLectureCard": {
+    "viewLectureDetails": "View Lecture Details",
+    "deleteLecture": "Delete Lecture",
+    "deleteTitle": "Delete Lecture",
+    "deleteDescription": "Are you sure you want to delete lecture \"{{name}}\"? This action cannot be undone after completion.",
+    "confirmDelete": "Confirm Delete",
+    "cancel": "Cancel",
+    "deleteSuccess": "Lecture deleted successfully",
+    "deleteError": "An error occurred while deleting the lecture"
+  },
+
+  "teacherExamCard": {
+    "passMark": "Must exceed {{mark}} to pass",
+    "examScore": "Exam score out of {{mark}}",
+    "viewExamDetails": "View Exam Details",
+    "deleteExam": "Delete Exam",
+    "deleteTitle": "Delete Exam",
+    "deleteDescription": "Are you sure you want to delete exam \"{{name}}\"? This action cannot be undone after completion.",
+    "confirmDelete": "Confirm Delete",
+    "cancel": "Cancel",
+    "deleteSuccess": "Exam deleted successfully",
+    "deleteError": "An error occurred while deleting the exam"
+  },
+
+  "orderCard": {
+    "orderCode": "Order code:",
+    "paymentStatus": "Payment status:",
+    "orderStatus": "Order status:",
+    "paymentMethod": "Payment method:",
+    "price": "Price:",
+    "viewDetails": "View Order Details"
+  },
+
+  "ordersDetailsCard": {
+    "lecturesCount": "{{count}} lecture",
+    "lecturesCount_plural": "{{count}} lectures",
+    "courseStatus": "Course status:",
+    "viewLectures": "View Lectures"
+  },
+
+  "certificatesCard": {
+    "downloadCertificate": "Download Certificate",
+    "shareOnLinkedIn": "Share on LinkedIn"
+  },
+
+  "profileSide": {
+    "personalInfo": "Personal Information",
+    "orders": "Orders",
+    "myCourses": "My Courses",
+    "exams": "Exams",
+    "certificates": "Certificates",
+    "financialTransfers": "Financial Transfers",
+    "logout": "Logout",
+    "login": "Login",
+    "joinAsInstructor": "Join as Instructor"
+  },
+
+  "successPaymentModal": {
+    "title": "Your order has been registered successfully!",
+    "description": "Thank you! Your payment and order data have been received successfully. Your transfer is being reviewed and the order will be confirmed by the administration as soon as possible.",
+    "goToOrders": "Go to My Orders",
+    "ok": "OK"
+  },
+
+  "paymentModal": {
+    "title": "Choose Payment Method",
+    "description": "Please choose the most suitable method for you to complete the process",
+    "vodafoneCash": "Vodafone Cash",
+    "vodafoneCashDesc": "Instant transfer via wallet",
+    "instaPay": "Insta Pay",
+    "instaPayDesc": "Instant bank transfer",
+    "onlinePayment": "Online Payment",
+    "onlinePaymentDesc": "Visa or Mastercard cards"
+  },
+
+  "cart": {
+    "title": "Shopping Cart",
+    "emptyMessage": "Your cart is empty"
+  },
+
+  "orderSummary": {
+    "title": "Order Summary",
+    "count": "Count:",
+    "mainTotal": "Main Total:",
+    "choosePayment": "Choose Payment Method",
+    "vodafoneCash": "Vodafone Cash",
+    "instaPay": "Insta Pay",
+    "onlinePayment": "Online Payment",
+    "subtotal": "Subtotal:",
+    "serviceFee": "Service fee ({{percent}}%):",
+    "finalTotal": "Final Total:",
+    "transferTo": "Please transfer the order amount to the following number:",
+    "copyNumber": "Copy number",
+    "copied": "Copied!",
+    "attachReceipt": "Attach transfer image (payment receipt):",
+    "clickToUpload": "Click here to upload receipt image",
+    "deleteImage": "Delete image",
+    "processing": "Processing your order...",
+    "updating": "Updating invoice...",
+    "confirmPayment": "Confirm Payment and Send Order",
+    "continueShopping": "Continue Shopping",
+    "selectPaymentError": "Please select a payment method first to continue",
+    "uploadImageError": "Please upload a transfer image first to confirm payment",
+    "orderError": "An error occurred while completing the order, please try again.",
+    "copySuccess": "Number copied successfully!",
+    "copyFailed": "Failed to copy number"
+  },
+
+  "courseDetails": {
+    "duration": "Course Duration",
+    "lecturesCount": "Number of Lectures",
+    "category": "Category",
+    "price": "Price:",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "addedToCart": "Added successfully",
+    "somethingWrong": "Something went wrong"
+  },
+
+  "whatLearn": {
+    "title": "What will you learn in this course?"
+  },
+
+  "coursesPage": {
+    "title": "Courses",
+    "search": "Search",
+    "searchPlaceholder": "Search for a course",
+    "instructor": "Instructor",
+    "instructorPlaceholder": "Select instructor",
+    "allInstructors": "All Instructors",
+    "mainCategory": "Main Category",
+    "mainCategoryPlaceholder": "Select category",
+    "allCategories": "All Categories",
+    "subCategory": "Sub Category",
+    "subCategoryPlaceholder": "Select sub category",
+    "allSubCategories": "All Sub Categories",
+    "noCourses": "No courses found"
+  },
+
+  "teachersPage": {
+    "title": "Teachers",
+    "search": "Search",
+    "searchPlaceholder": "Search for an instructor",
+    "category": "Category",
+    "categoryPlaceholder": "Select category",
+    "allCategories": "All Categories",
+    "noTeachers": "No instructors found"
+  },
+
+  "hero": {
+    "exploreCourses": "Explore Courses"
+  },
+
+  "coursesSection": {
+    "all": "All",
+    "moreCourses": "More Courses"
+  },
+
+  "profileSidebar": {
+    "personalInfo": "Personal Information",
+    "orders": "Orders",
+    "myCourses": "My Courses",
+    "exams": "Exams",
+    "certificates": "Certificates",
+    "financialTransfers": "Financial Transfers",
+    "notifications": "Notifications",
+    "logout": "Logout",
+    "menu": "Menu"
+  },
+
+  "addCourse": {
+    "title": "Add Course",
+    "courseImage": "Course Image",
+    "videoLink": "Intro Video Link",
+    "videoLinkPlaceholder": "https://example.com",
+    "nameAr": "Course Name (Arabic)",
+    "nameArPlaceholder": "Enter course name...",
+    "nameEn": "Course Name (English)",
+    "nameEnPlaceholder": "Enter course name...",
+    "descAr": "Course Description (Arabic)",
+    "descArPlaceholder": "Add course description...",
+    "descEn": "Course Description (English)",
+    "descEnPlaceholder": "Add course description...",
+    "learningsTitle": "Add Course Learning Features",
+    "delete": "Delete",
+    "featureTitleAr": "Feature Title (Arabic)",
+    "featureTitleArPlaceholder": "Enter feature title...",
+    "featureTitleEn": "Feature Title (English)",
+    "featureTitleEnPlaceholder": "Enter feature title...",
+    "featureDescAr": "Feature Description (Arabic)",
+    "featureDescArPlaceholder": "Add feature description...",
+    "featureDescEn": "Feature Description (English)",
+    "featureDescEnPlaceholder": "Add feature description...",
+    "addFeature": "Add New Feature",
+    "duration": "Course Duration",
+    "durationPlaceholder": "Example: 05:30",
+    "priceEg": "Price (EGP)",
+    "priceEgPlaceholder": "Enter course price in EGP...",
+    "priceUsd": "Price (USD)",
+    "priceUsdPlaceholder": "Enter course price in USD...",
+    "priceBeforeDiscountEg": "Price Before Discount (EGP)",
+    "priceBeforeDiscountUsd": "Price Before Discount (USD)",
+    "priceBeforeDiscountPlaceholder": "Enter price before discount...",
+    "saving": "Saving...",
+    "save": "Save",
+    "success": "Course created successfully",
+    "error": "Something went wrong, please try again",
+    "validation": {
+      "invalidLink": "Invalid video link",
+      "nameArRequired": "Course name in Arabic is required (at least 3 characters)",
+      "nameEnRequired": "Course name in English is required (at least 3 characters)",
+      "descArRequired": "Course description in Arabic is required (at least 10 characters)",
+      "descEnRequired": "Course description in English is required (at least 10 characters)",
+      "featureTitleAr": "Feature title in Arabic is required",
+      "featureTitleEn": "Feature title in English is required",
+      "featureDescAr": "Feature description in Arabic is required",
+      "featureDescEn": "Feature description in English is required",
+      "durationRequired": "Course duration is required",
+      "durationFormat": "Duration format must be HH:MM like 05:30",
+      "priceRequired": "Price is required",
+      "invalidDiscount": "Invalid discount price"
+    }
+  },
+
+  "editCourse": {
+    "title": "Course Details",
+    "editData": "Edit Data",
+    "saving": "Saving...",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "success": "Course updated successfully",
+    "addFeature": "Add New Feature"
+  },
+
+  "addExam": {
+    "title": "Add Exam",
+    "course": "Course",
+    "coursePlaceholder": "Select course",
+    "nameAr": "Exam Name (Arabic)",
+    "nameArPlaceholder": "Enter exam name...",
+    "nameEn": "Exam Name (English)",
+    "nameEnPlaceholder": "Enter exam name...",
+    "passMark": "Minimum Pass Mark",
+    "passMarkPlaceholder": "Enter minimum pass mark...",
+    "fullMark": "Full Mark",
+    "fullMarkPlaceholder": "Enter full mark...",
+    "questionsBank": "Exam Question Bank",
+    "questionsBankHint": "* Questions are randomly selected from the bank",
+    "addQuestion": "Add New Question",
+    "saving": "Saving...",
+    "save": "Save",
+    "success": "Exam added successfully",
+    "error": "Something went wrong, please try again",
+    "deleteQuestion": "Delete Question",
+    "questionNumber": "Question No. ({{number}})",
+    "questionAr": "Question Title (Arabic)",
+    "questionArPlaceholder": "Add question title...",
+    "questionEn": "Question Title (English)",
+    "questionEnPlaceholder": "Add question title...",
+    "answerOptions": "Answer Options:",
+    "optionNumber": "Option No. ({{number}})",
+    "correctAnswer": "(Correct Answer)",
+    "deleteOption": "Delete Option",
+    "optionAr": "Option (Arabic)",
+    "optionArPlaceholder": "Enter option in Arabic...",
+    "optionEn": "Option (English)",
+    "optionEnPlaceholder": "Enter option in English...",
+    "addOption": "Add another option for this question",
+    "validation": {
+      "courseRequired": "Please select a course",
+      "nameArRequired": "Exam name in Arabic is required",
+      "nameEnRequired": "Exam name in English is required",
+      "passMarkRequired": "Minimum pass mark is required and must be greater than 0",
+      "fullMarkRequired": "Full mark is required",
+      "questionArRequired": "Question title in Arabic is required",
+      "questionEnRequired": "Question title in English is required",
+      "optionArRequired": "Option in Arabic is required",
+      "optionEnRequired": "Option in English is required",
+      "minOptions": "At least 2 options are required per question",
+      "maxOptions": "Maximum of 4 options allowed",
+      "minQuestions": "At least 1 question is required"
+    }
+  },
+
+  "editExam": {
+    "title": "Exam Details",
+    "editData": "Edit Data",
+    "saving": "Saving...",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "success": "Exam updated successfully"
+  },
+
+  "addLecture": {
+    "title": "Add Lecture",
+    "uploadVideo": "Upload Lecture Video",
+    "videoLink": "Lecture Link",
+    "videoLinkPlaceholder": "Enter lecture link...",
+    "nameAr": "Lecture Title (Arabic)",
+    "nameArPlaceholder": "Enter lecture title...",
+    "nameEn": "Lecture Title (English)",
+    "nameEnPlaceholder": "Enter lecture title...",
+    "descAr": "Lecture Description (Arabic)",
+    "descArPlaceholder": "Add lecture description...",
+    "descEn": "Lecture Description (English)",
+    "descEnPlaceholder": "Add lecture description...",
+    "attachments": "Lecture Attachments",
+    "attachmentNote": "(Max file size 2MB)",
+    "uploadFiles": "Upload Lecture Files",
+    "selectedFiles": "Selected files ({{count}}):",
+    "deleteFile": "Delete file",
+    "saving": "Saving...",
+    "save": "Save",
+    "success": "Lecture added successfully",
+    "error": "Something went wrong, please try again",
+    "videoOrLinkRequired": "Please upload a video file or add a lecture link",
+    "fileTooLarge": "Sorry, some files exceed the maximum allowed size (2MB)",
+    "validation": {
+      "invalidLink": "Invalid video link",
+      "nameArRequired": "Lecture title in Arabic is required",
+      "nameEnRequired": "Lecture title in English is required",
+      "descArRequired": "Lecture description in Arabic is required",
+      "descEnRequired": "Lecture description in English is required"
+    }
+  },
+
+  "editLecture": {
+    "title": "Lecture Details",
+    "editData": "Edit Data",
+    "lectureVideo": "Lecture Video",
+    "saving": "Saving...",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "success": "Lecture updated successfully"
+  },
+
+  "lectureDetails": {
+    "title": "No data available",
+    "videoNotSupported": "Your browser does not support this video.",
+    "attachments": "Lecture Files and Attachments",
+    "attachmentsDesc": "You can download the summaries and educational files for this lecture to study later.",
+    "noFiles": "No files available",
+    "download": "Download"
+  },
+
+  "enterExam": {
+    "title": "Assessment Exam",
+    "questions": "{{count}} Questions",
+    "passMark": "Pass mark: {{mark}}",
+    "chooseCorrect": "Choose the correct answer:",
+    "submit": "Submit Answers",
+    "submitSuccess": "Exam submitted successfully!",
+    "submitError": "An error occurred while submitting answers, please try again."
+  },
+
+  "examResult": {
+    "title": "Exam Result",
+    "passed": "Passed",
+    "failed": "Failed",
+    "questions": "{{count}} Questions",
+    "score": "Score: {{score}} / {{total}}",
+    "reviewAnswers": "Review Answers:"
+  },
+
+  "studentLectures": {
+    "title": "Course Lectures",
+    "emptyMessage": "No lectures available"
+  },
+
+  "teacherLectures": {
+    "title": "Course Lectures",
+    "emptyMessage": "No lectures available"
+  },
+
+  "myCertificates": {
+    "title": "My Certificates",
+    "emptyMessage": "No certificates yet"
+  },
+
+  "myCourses": {
+    "title": "My Courses",
+    "emptyMessage": "No courses yet"
+  },
+
+  "teacherCourses": {
+    "title": "My Courses",
+    "addCourse": "Add Course",
+    "emptyMessage": "No courses yet"
+  },
+
+  "myExams": {
+    "title": "My Exams",
+    "emptyMessage": "No exams yet"
+  },
+
+  "teacherExams": {
+    "title": "My Exams",
+    "addExam": "Add Exam",
+    "emptyMessage": "No exams yet"
+  },
+
+  "orders": {
+    "title": "My Orders",
+    "emptyMessage": "No orders yet"
+  },
+
+  "orderDetails": {
+    "title": "Order Details",
+    "emptyMessage": "No orders yet"
+  },
+
+  "transactions": {
+    "title": "Financial Transfers",
+    "transferredBalance": "Transferred Balance",
+    "currentBalance": "Current Balance (Due)",
+    "totalEarnings": "Total Balance (Earnings)",
+    "transfers": "Transfers",
+    "noTransfers": "No transfers available",
+    "transferValue": "Transfer Value",
+    "accountNumber": "Account Number",
+    "notSpecified": "Not specified",
+    "transferMethod": "Transfer Method",
+    "vodafoneCash": "Vodafone Cash",
+    "dateTime": "Date & Time",
+    "loadError": "An error occurred while loading financial data."
+  },
+
+  "teacherAccount": {
+    "loadError": "Error loading data"
   }
 }

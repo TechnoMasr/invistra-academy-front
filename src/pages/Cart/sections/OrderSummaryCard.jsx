@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-// Components & UI
 import { Button } from "@/components/ui/button";
 import { createOrder, getCartSummary } from "@/api/cartServices";
 
-// Icons
 import { GrCart } from "react-icons/gr";
 import { PiMoneyWavyBold, PiSpinnerGapBold } from "react-icons/pi";
 import {
@@ -18,7 +17,6 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 
-// Assets
 import instaPay from "@/assets/icons/insta-pay.jpg";
 import vodafoneCash from "@/assets/icons/vodafone-cash.webp";
 import online from "@/assets/icons/online.jpg";
@@ -26,12 +24,13 @@ import { useDispatch } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
 
 const STATIC_PAYMENT_METHODS = [
-  { id: 1, title: "فودافون كاش", image: vodafoneCash, key: "vodafone_cash" },
-  { id: 2, title: "إنستا باي", image: instaPay, key: "instapay" },
-  { id: 3, title: "دفع أونلاين", image: online, key: "online" },
+  { id: 1, title: "orderSummary.vodafoneCash", image: vodafoneCash, key: "vodafone_cash" },
+  { id: 2, title: "orderSummary.instaPay", image: instaPay, key: "instapay" },
+  { id: 3, title: "orderSummary.onlinePayment", image: online, key: "online" },
 ];
 
 const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
@@ -86,7 +85,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
     onError: (error) => {
-      toast.error("حدث خطأ أثناء إتمام الطلب، برجاء المحاولة مرة أخرى.");
+      toast.error(t("orderSummary.orderError"));
       console.error(error);
     },
   });
@@ -97,10 +96,10 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
       .writeText(number)
       .then(() => {
         setCopied(true);
-        toast.success("تم نسخ الرقم بنجاح!");
+        toast.success(t("orderSummary.copySuccess"));
         setTimeout(() => setCopied(false), 2000);
       })
-      .catch((err) => console.error("فشل نسخ الرقم: ", err));
+      .catch((err) => console.error(t("orderSummary.copyFailed"), err));
   };
 
   const handleImageChange = (e) => {
@@ -118,13 +117,13 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
   const handleFinalPayment = () => {
     // التعديل هنا: إذا لم يتم اختيار طريقة دفع، يظهر الخطأ ولا يكمل الدالة
     if (!selectedMethod) {
-      setPaymentMethodError("برجاء اختيار طريقة الدفع أولاً للاستمرار");
+      setPaymentMethodError(t("orderSummary.selectPaymentError"));
       // toast.warning("برجاء اختيار طريقة الدفع أولاً");
       return;
     }
 
     if (selectedMethod !== "online" && !imageFile) {
-      setImageError("برجاء رفع صورة التحويل أولاً لتأكيد الدفع");
+      setImageError(t("orderSummary.uploadImageError"));
       return;
     }
 
@@ -147,24 +146,24 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
           <PiSpinnerGapBold className="w-10 h-10 text-primary animate-spin" />
           <p className="text-sm font-bold text-gray-700 selection:bg-transparent">
             {orderMutation.isPending
-              ? "جاري تنفيذ طلبك..."
-              : "جاري تحديث الفاتورة..."}
+              ? t("orderSummary.processing")
+              : t("orderSummary.updating")}
           </p>
         </div>
       )}
 
-      <h2 className="text-xl font-bold pb-2 border-b">ملخص الطلب</h2>
+      <h2 className="text-xl font-bold pb-2 border-b">{t("orderSummary.title")}</h2>
 
       {/* Summary Info */}
       <div className="space-y-2">
         <div className="flex justify-between items-center text-gray-700">
-          <span className="text-sm font-medium">العدد:</span>
+          <span className="text-sm font-medium">{t("orderSummary.count")}</span>
           <span className="text-lg font-bold">{summary?.count}</span>
         </div>
 
         <div className="flex justify-between items-center">
           <span className="text-sm font-medium text-gray-700">
-            الإجمالي الرئيسي:
+            {t("orderSummary.mainTotal")}
           </span>
           <span className="text-2xl font-bold text-green-600 tracking-tight">
             {summary?.total} {summary?.currency}
@@ -175,7 +174,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
       {/* Payment Methods Selection */}
       {filteredPaymentList.length > 0 && (
         <div className="pt-2">
-          <h3 className="font-bold mb-2.5">اختر طريقة الدفع</h3>
+          <h3 className="font-bold mb-2.5">{t("orderSummary.choosePayment")}</h3>
           <div className="grid grid-cols-3 gap-2">
             {filteredPaymentList.map((item) => {
               const isSelected = selectedMethod === item.key;
@@ -203,7 +202,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                     />
                   </div>
                   <span className="text-xs font-bold tracking-tight">
-                    {item.title}
+                    {t(item.title)}
                   </span>
                 </div>
               );
@@ -218,7 +217,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
           {summaryData && (
             <div className="space-y-2 pb-2.5 border-b border-gray-100">
               <div className="flex justify-between items-center text-gray-700">
-                <span>الإجمالي الفرعي:</span>
+                <span>{t("orderSummary.subtotal")}</span>
                 <span className="font-semibold text-gray-700">
                   {summaryData.total} {summaryData.currency}
                 </span>
@@ -227,7 +226,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
               {summaryData.service_fee > 0 && (
                 <div className="flex justify-between items-center text-amber-600 font-medium">
                   <span>
-                    رسوم الخدمة ({currentMethodDetails?.service_fee}%):
+                    {t("orderSummary.serviceFee", { percent: currentMethodDetails?.service_fee })}
                   </span>
                   <span>
                     +{summaryData.service_fee} {summaryData.currency}
@@ -236,7 +235,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
               )}
 
               <div className="flex justify-between items-center pt-2 border-t border-dotted border-gray-200">
-                <span className="text-sm font-bold">الإجمالي النهائي:</span>
+                <span className="text-sm font-bold">{t("orderSummary.finalTotal")}</span>
                 <span className="text-lg font-bold text-green-600">
                   {summaryData.total_with_fee} {summaryData.currency}
                 </span>
@@ -248,7 +247,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
           {currentMethodDetails?.transfer_number && (
             <div className="bg-gray-100 p-2.5 rounded-xl border border-gray-100 text-center space-y-1.5">
               <p className="text-sm text-gray-600 font-medium">
-                قم بتحويل مبلغ الطلب إلى الرقم التالي:
+                {t("orderSummary.transferTo")}
               </p>
               <div className="flex items-center justify-between gap-3 bg-white border border-gray-200 rounded-lg pl-1.5 pr-3 py-1 w-full shadow-sm">
                 <span className="text-base font-extrabold text-primary tracking-widest font-mono select-all">
@@ -264,7 +263,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                       ? "text-green-600 bg-green-50"
                       : "text-gray-600 hover:text-primary hover:bg-gray-50 active:scale-95"
                   }`}
-                  title="نسخ الرقم"
+                  title={t("orderSummary.copyNumber")}
                 >
                   {copied ? (
                     <FiCheck className="w-3.5 h-3.5" />
@@ -280,7 +279,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
           {selectedMethod !== "online" && (
             <div className="space-y-1.5">
               <label className="block text-sm font-bold text-gray-600">
-                إرفاق صورة التحويل (إيصال الدفع):
+                {t("orderSummary.attachReceipt")}
               </label>
 
               {!imageFile ? (
@@ -302,7 +301,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                     <p
                       className={`text-[11px] font-bold ${imageError ? "text-red-600" : "text-gray-500 group-hover:text-gray-700"}`}
                     >
-                      اضغط هنا لرفع صورة الإيصال
+                      {t("orderSummary.clickToUpload")}
                     </p>
                   </div>
                   <input
@@ -324,7 +323,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                     type="button"
                     onClick={handleRemoveImage}
                     className="absolute top-2 inset-e-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-transform duration-200 hover:scale-110"
-                    title="حذف الصورة"
+                    title={t("orderSummary.deleteImage")}
                   >
                     <FiX className="w-3.5 h-3.5" />
                   </button>
@@ -361,14 +360,14 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
           disabled={isComponentLoading}
         >
           {orderMutation.isPending
-            ? "جاري تنفيذ الطلب..."
-            : "تأكيد الدفع وإرسال الطلب"}
+            ? t("orderSummary.processing")
+            : t("orderSummary.confirmPayment")}
           <PiMoneyWavyBold className="mr-1.5 w-4 h-4" />
         </Button>
 
         <Link to="/courses" className="block w-full">
           <Button className={`w-full`} variant="outline">
-            استكمال الشراء
+            {t("orderSummary.continueShopping")}
             <GrCart className="mr-1.5 w-3.5 h-3.5" />
           </Button>
         </Link>

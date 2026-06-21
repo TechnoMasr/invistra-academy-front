@@ -3,8 +3,10 @@ import ProfileTitle from "@/components/common/ProfileTitle";
 import { useQuery } from "@tanstack/react-query";
 import { HelpCircle, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const ExamResult = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   // 1. جلب بيانات النتيجة الحقيقية
@@ -29,7 +31,7 @@ const ExamResult = () => {
     <div className="space-y-6">
       {/* الهيدر العلوي وعرض حالة النتيجة */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4">
-        <ProfileTitle title={examData?.title || "نتيجة الاختبار"} />
+        <ProfileTitle title={examData?.title || t("examResult.title")} />
 
         <div className="flex flex-wrap items-center gap-3 text-sm">
           {/* حالة النجاح أو الرسوب */}
@@ -45,17 +47,17 @@ const ExamResult = () => {
             ) : (
               <XCircle className="w-4 h-4" />
             )}
-            <span>{isPassed ? "ناجح" : "لم يجتز"}</span>
+            <span>{isPassed ? t("examResult.passed") : t("examResult.failed")}</span>
           </span>
 
           <p className="font-medium py-1 px-4 text-amber-600 border border-amber-600 rounded-full flex items-center gap-1.5">
             <HelpCircle className="w-4 h-4" />
-            <span>{questionsList.length} أسئلة</span>
+            <span>{questionsList.length} {t("examResult.questions")}</span>
           </p>
 
           <p className="font-medium py-1 px-4 border rounded-full flex items-center gap-1.5">
             <span>
-              النتيجة: {examData?.score} / {examData?.full_mark}
+              {t("examResult.score")}: {examData?.score} / {examData?.full_mark}
             </span>
           </p>
         </div>
@@ -64,7 +66,7 @@ const ExamResult = () => {
       {/* محتوى الأسئلة */}
       <div className="space-y-6">
         <h3 className="text-gray-800 font-bold text-lg mb-4">
-          مراجعة الإجابات:
+          {t("examResult.reviewAnswers")}
         </h3>
 
         <div className="space-y-4">

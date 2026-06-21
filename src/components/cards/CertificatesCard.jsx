@@ -2,8 +2,10 @@ import { FiDownloadCloud } from "react-icons/fi";
 import { Button } from "../ui/button";
 import { SlLayers } from "react-icons/sl";
 import { ImLinkedin } from "react-icons/im";
+import { useTranslation } from "react-i18next";
 
 const CertificatesCard = ({ item }) => {
+  const { t } = useTranslation();
   const handleLinkedInShare = () => {
     const params = new URLSearchParams({
       startTask: "CERTIFICATION_NAME",
@@ -71,11 +73,11 @@ const CertificatesCard = ({ item }) => {
           className="w-full rounded-full"
         >
           <Button className="w-full">
-            تحميل الشهادة <FiDownloadCloud />
+            {t("certificatesCard.downloadCertificate")} <FiDownloadCloud />
           </Button>
         </a>
         <Button variant="outline" onClick={handleLinkedInShare}>
-          مشاركة في لينكدإن
+          {t("certificatesCard.shareOnLinkedIn")}
           <ImLinkedin className="w-5 h-5 text-[#0077B5]" />
         </Button>
       </div>

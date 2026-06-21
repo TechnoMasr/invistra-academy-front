@@ -1,7 +1,9 @@
 import { HiOutlineCollection } from "react-icons/hi";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const CourseCard = ({ course }) => {
+  const { t } = useTranslation();
   return (
     <Link
       to={`/courses/${course?.slug}`}
@@ -44,7 +46,7 @@ const CourseCard = ({ course }) => {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 py-1 px-4 border border-primary rounded-full text-xs font-semibold">
             <HiOutlineCollection size={18} />
-            {course?.lectures_count} محاضرة
+            {t("courseCard.lecturesCount", { count: course?.lectures_count })}
           </div>
 
           <p className="text-2xl font-bold text-green-500">

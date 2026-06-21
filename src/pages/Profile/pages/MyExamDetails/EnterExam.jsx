@@ -5,8 +5,10 @@ import { useState } from "react";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import { HelpCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const EnterExam = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -23,12 +25,12 @@ const EnterExam = () => {
   const { mutate: submitExam, isPending: isSubmitting } = useMutation({
     mutationFn: (formData) => submitAnswer(formData, id),
     onSuccess: () => {
-      alert("تم تسليم الاختبار بنجاح!");
+      alert(t("enterExam.submitSuccess"));
       navigate(`/profile/exam-result/${id}`);
     },
     onError: (error) => {
       console.error(error);
-      alert("حدث خطأ أثناء إرسال الإجابات، يرجى المحاولة مرة أخرى.");
+      alert(t("enterExam.submitError"));
     },
   });
 
@@ -71,15 +73,15 @@ const EnterExam = () => {
     <div className="space-y-6">
       {/* الهيدر العلوي */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-4">
-        <ProfileTitle title={exam?.title || "اختبار تقييم المستوى"} />
+        <ProfileTitle title={exam?.title || t("enterExam.title")} />
 
         <div className="flex gap-3 text-sm">
           <p className="font-medium py-1 px-4 text-amber-500 border border-amber-500 rounded-full flex items-center gap-1.5">
             <HelpCircle className="w-4 h-4" />
-            <span>{questionsList.length} أسئلة</span>
+            <span>{questionsList.length} {t("enterExam.questions")}</span>
           </p>
           <p className="font-medium py-1 px-4 text-gray-600 border rounded-full flex items-center gap-1.5">
-            <span>درجة النجاح: {exam?.pass_mark}</span>
+            <span>{t("enterExam.passMark")}: {exam?.pass_mark}</span>
           </p>
         </div>
       </div>
@@ -87,7 +89,7 @@ const EnterExam = () => {
       {/* محتوى الأسئلة */}
       <form onSubmit={handleSubmit} className="space-y-8">
         <h3 className="text-gray-800 font-bold text-lg mb-4">
-          Choose the correct answer:
+          {t("enterExam.chooseCorrect")}
         </h3>
 
         <div className="space-y-6">
@@ -143,7 +145,7 @@ const EnterExam = () => {
             disabled={isSubmitting || Object.keys(selectedAnswers).length === 0}
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            تسليم الإجابات
+            {t("enterExam.submit")}
           </Button>
         </div>
       </form>

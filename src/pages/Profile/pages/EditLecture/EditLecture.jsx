@@ -8,6 +8,7 @@ import { FiUploadCloud } from "react-icons/fi";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import MainInput from "@/components/form/MainInput";
@@ -24,6 +25,7 @@ import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton"
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 const EditLecture = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -46,12 +48,12 @@ const EditLecture = () => {
   const lectureSchema = z.object({
     video_url: z
       .string()
-      .url("رابط الفيديو غير صالح")
+      .url(t("addLecture.validation.invalidLink"))
       .or(z.string().optional()),
-    title_ar: z.string().min(3, "عنوان المحاضرة بالعربي مطلوب"),
-    title_en: z.string().min(3, "عنوان المحاضرة بالإنجليزي مطلوب"),
-    description_ar: z.string().min(10, "وصف المحاضرة بالعربي مطلوب"),
-    description_en: z.string().min(10, "وصف المحاضرة بالإنجليزي مطلوب"),
+    title_ar: z.string().min(3, t("addLecture.validation.nameArRequired")),
+    title_en: z.string().min(3, t("addLecture.validation.nameEnRequired")),
+    description_ar: z.string().min(10, t("addLecture.validation.descArRequired")),
+    description_en: z.string().min(10, t("addLecture.validation.descEnRequired")),
   });
 
   const {
@@ -105,7 +107,7 @@ const EditLecture = () => {
   } = useMutation({
     mutationFn: (formData) => updateLecture(formData, id),
     onSuccess: () => {
-      toast.success("تم تحديث المحاضرة بنجاح");
+      toast.success(t("editLecture.success"));
       setIsEditing(false);
       setAttachedFiles([]);
       setDeletedOldFiles([]);
@@ -127,7 +129,7 @@ const EditLecture = () => {
       if (oversizedFiles.length > 0) {
         // 👈 تعيين رسالة الخطأ هنا بدلاً من الـ toast
         setFileSizeError(
-          "عذراً، بعض الملفات تتجاوز الحد الأقصى المسموح به (2 ميجابايت)",
+          t("addLecture.fileTooLarge"),
         );
         return;
       }
@@ -193,7 +195,7 @@ const EditLecture = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-        <ProfileTitle title="تفاصيل المحاضرة" />
+        <ProfileTitle title={t("editLecture.title")} />
 
         {!isEditing && (
           <button
@@ -202,7 +204,7 @@ const EditLecture = () => {
             className="font-medium py-1.5 px-4 text-primary border border-primary rounded-full flex items-center gap-1.5 text-sm hover:bg-primary/5 transition-all"
           >
             <FaRegEdit className="w-4 h-4" />
-            <span>تعديل البيانات</span>
+            <span>{t("editLecture.editData")}</span>
           </button>
         )}
       </div>
@@ -237,7 +239,7 @@ const EditLecture = () => {
               <RiVideoUploadLine className="text-3xl" />
             </div>
             <span className="text-lg font-bold text-[#1A202C]">
-              {videoPreview ? videoPreview : "فيديو المحاضرة"}
+              {videoPreview ? videoPreview : t("editLecture.lectureVideo")}
             </span>
           </div>
         </div>
@@ -252,8 +254,8 @@ const EditLecture = () => {
               value={field.value}
               onChange={field.onChange}
               disabled={!isEditing}
-              label="رابط المحاضرة"
-              placeholder="ادخل رابط المحاضرة.."
+              label={t("addLecture.videoLink")}
+              placeholder={t("addLecture.videoLinkPlaceholder")}
               error={errors.video_url?.message}
             />
           )}
@@ -270,8 +272,8 @@ const EditLecture = () => {
                 value={field.value}
                 onChange={field.onChange}
                 disabled={!isEditing}
-                label="عنوان المحاضرة باللغة العربية"
-                placeholder="ادخل عنوان المحاضرة.."
+                label={t("addLecture.nameAr")}
+                placeholder={t("addLecture.nameArPlaceholder")}
                 error={errors.title_ar?.message}
               />
             )}
@@ -285,8 +287,8 @@ const EditLecture = () => {
                 value={field.value}
                 onChange={field.onChange}
                 disabled={!isEditing}
-                label="عنوان المحاضرة باللغة الانجليزية"
-                placeholder="ادخل عنوان المحاضرة.."
+                label={t("addLecture.nameEn")}
+                placeholder={t("addLecture.nameEnPlaceholder")}
                 error={errors.title_en?.message}
               />
             )}
@@ -304,8 +306,8 @@ const EditLecture = () => {
                 value={field.value}
                 onChange={field.onChange}
                 disabled={!isEditing}
-                label="وصف المحاضرة باللغة العربية"
-                placeholder="أضف وصف للمحاضرة.."
+                label={t("addLecture.descAr")}
+                placeholder={t("addLecture.descArPlaceholder")}
                 error={errors.description_ar?.message}
                 type="textarea"
               />
@@ -320,8 +322,8 @@ const EditLecture = () => {
                 value={field.value}
                 onChange={field.onChange}
                 disabled={!isEditing}
-                label="وصف المحاضرة باللغة الانجليزية"
-                placeholder="أضف وصف للمحاضرة.."
+                label={t("addLecture.descEn")}
+                placeholder={t("addLecture.descEnPlaceholder")}
                 error={errors.description_en?.message}
                 type="textarea"
               />
@@ -332,9 +334,9 @@ const EditLecture = () => {
         {/* قسم ملفات المحاضرة المرفقة */}
         <div className="flex flex-col gap-2 w-full max-w-xl mx-auto">
           <label className="text-lg font-medium text-[#1A202C] text-right mb-1">
-            ملفات المحاضرة المرفقة{" "}
+            {t("addLecture.attachments")}{" "}
             <span className="text-xs text-gray-400">
-              (الحد الأقصى للملف 2MB)
+              {t("addLecture.attachmentNote")}
             </span>
           </label>
 
@@ -357,7 +359,7 @@ const EditLecture = () => {
             }`}
           >
             <span className="text-sky-600 font-medium text-base">
-              رفع ملفات جديدة
+              {t("addLecture.uploadFiles")}
             </span>
             <FiUploadCloud className="text-sky-600 text-2xl" />
           </div>
@@ -373,7 +375,7 @@ const EditLecture = () => {
           {oldFiles.length > 0 && (
             <div className="mt-3 flex flex-col gap-2 bg-gray-100/70 p-3 rounded-xl border border-gray-200/50">
               <p className="text-xs font-semibold text-gray-500 mb-1">
-                الملفات الحالية على السيرفر ({oldFiles.length}):
+                {t("addLecture.selectedFiles", { count: oldFiles.length })}
               </p>
               {oldFiles.map((fileUrl, index) => (
                 <div
@@ -393,7 +395,7 @@ const EditLecture = () => {
                       type="button"
                       onClick={() => handleRemoveOldFile(fileUrl)}
                       className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
-                      title="حذف الملف من السيرفر"
+                      title={t("addLecture.deleteFile")}
                     >
                       <IoCloseCircleSharp className="text-xl" />
                     </button>
@@ -407,7 +409,7 @@ const EditLecture = () => {
           {attachedFiles.length > 0 && (
             <div className="mt-3 flex flex-col gap-2 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
               <p className="text-xs font-semibold text-emerald-600 mb-1">
-                الملفات الجديدة المختارة للحفظ ({attachedFiles.length}):
+                {t("addLecture.selectedFiles", { count: attachedFiles.length })}
               </p>
               {attachedFiles.map((file, index) => (
                 <div
@@ -424,7 +426,7 @@ const EditLecture = () => {
                     type="button"
                     onClick={() => removeNewFile(index)}
                     className="text-red-500 hover:text-red-700 transition-colors flex items-colors p-1"
-                    title="حذف الملف"
+                    title={t("addLecture.deleteFile")}
                   >
                     <IoCloseCircleSharp className="text-xl" />
                   </button>
@@ -442,7 +444,7 @@ const EditLecture = () => {
               className="w-full md:w-60 bg-[#1E2229] hover:bg-[#111418] text-white rounded-full py-3"
               disabled={isPending || !!fileSizeError} // تعطيل الزر إذا كان هناك خطأ في الحجم
             >
-              {isPending ? "جاري الحفظ..." : "حفظ التعديلات"}
+              {isPending ? t("editLecture.saving") : t("editLecture.save")}
             </Button>
             <Button
               type="button"
@@ -462,7 +464,7 @@ const EditLecture = () => {
                 setIsEditing(false);
               }}
             >
-              إلغاء
+              {t("editLecture.cancel")}
             </Button>
           </div>
         )}
@@ -472,7 +474,7 @@ const EditLecture = () => {
             <FormError
               errorMsg={
                 error?.response?.data?.message ||
-                "حدث خطأ ما، يرجى المحاولة مرة أخرى"
+                t("addLecture.error")
               }
             />
           </div>

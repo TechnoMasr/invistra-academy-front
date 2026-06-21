@@ -19,12 +19,12 @@ const Cart = () => {
 
   return (
     <main className="container pagePadding space-y-6">
-      <ProfileTitle title="سلة المشتريات" />
+      <ProfileTitle title={t("cart.title")} />
 
       {isLoading ? (
         <CartPageSkeleton />
       ) : isCartEmpty ? (
-        <EmptyDataSection msg={t("Cart.emptyMessage")} />
+        <EmptyDataSection msg={t("cart.emptyMessage")} />
       ) : (
         <section className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 flex flex-col gap-4">

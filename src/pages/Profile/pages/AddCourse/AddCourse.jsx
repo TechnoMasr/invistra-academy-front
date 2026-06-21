@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { IoImageOutline } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
 
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
@@ -18,50 +19,51 @@ const AddCourse = () => {
   const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // بناء الـ Schema باللغة العربية مباشرة
   const courseSchema = z.object({
-    link: z.string().url("رابط الفيديو غير صالح").or(z.string().optional()),
+    link: z.string().url(t("addCourse.validation.invalidLink")).or(z.string().optional()),
 
     // بيانات الكورس الأساسية باللغتين
-    name_ar: z.string().min(3, "اسم الكورس بالعربي مطلوب (3 أحرف على الأقل)"),
+    name_ar: z.string().min(3, t("addCourse.validation.nameArRequired")),
     name_en: z
       .string()
-      .min(3, "اسم الكورس بالإنجليزي مطلوب (3 أحرف على الأقل)"),
+      .min(3, t("addCourse.validation.nameEnRequired")),
     description_ar: z
       .string()
-      .min(10, "وصف الكورس بالعربي مطلوب (10 أحرف على الأقل)"),
+      .min(10, t("addCourse.validation.descArRequired")),
     description_en: z
       .string()
-      .min(10, "وصف الكورس بالإنجليزي مطلوب (10 أحرف على الأقل)"),
+      .min(10, t("addCourse.validation.descEnRequired")),
 
     // ميزات تعلم الكورس (مصفوفة ديناميكية)
     learnings: z.array(
       z.object({
-        title_ar: z.string().min(3, "عنوان الميزة بالعربي مطلوب"),
-        title_en: z.string().min(3, "عنوان الميزة بالإنجليزي مطلوب"),
-        description_ar: z.string().min(5, "وصف الميزة بالعربي مطلوب"),
-        description_en: z.string().min(5, "وصف الميزة بالإنجليزي مطلوب"),
+        title_ar: z.string().min(3, t("addCourse.validation.featureTitleAr")),
+        title_en: z.string().min(3, t("addCourse.validation.featureTitleEn")),
+        description_ar: z.string().min(5, t("addCourse.validation.featureDescAr")),
+        description_en: z.string().min(5, t("addCourse.validation.featureDescEn")),
       }),
     ),
 
     // الحقول السفلية للكورس
     duration: z
       .string()
-      .min(1, "مدة الكورس مطلوبة")
-      .regex(/^\d{2}:\d{2}$/, "صيغة المدة يجب أن تكون HH:MM مثل 05:30"),
-    price: z.preprocess((val) => Number(val), z.number().min(0, "السعر مطلوب")),
+      .min(1, t("addCourse.validation.durationRequired"))
+      .regex(/^\d{2}:\d{2}$/, t("addCourse.validation.durationFormat")),
+    price: z.preprocess((val) => Number(val), z.number().min(0, t("addCourse.validation.priceRequired"))),
     dollar_price: z.preprocess(
       (val) => Number(val),
-      z.number().min(0, "السعر مطلوب"),
+      z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
     price_before_discount: z.preprocess(
       (val) => (val === "" || val === undefined ? undefined : Number(val)),
-      z.number().min(0, "السعر قبل الخصم غير صالح").optional(),
+      z.number().min(0, t("addCourse.validation.invalidDiscount")).optional(),
     ),
     dollar_price_before_discount: z.preprocess(
       (val) => (val === "" || val === undefined ? undefined : Number(val)),
-      z.number().min(0, "السعر قبل الخصم غير صالح").optional(),
+      z.number().min(0, t("addCourse.validation.invalidDiscount")).optional(),
     ),
   });
 
@@ -109,7 +111,7 @@ const AddCourse = () => {
     mutationFn: createCourse,
     onSuccess: () => {
       reset();
-      toast.success("تم انشاء الكورس بنجاح");
+      toast.success(t("addCourse.success"));
       navigate("/profile/my-courses");
     },
   });
@@ -160,7 +162,7 @@ const AddCourse = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="إضافة كورس" />
+      <ProfileTitle title={t("addCourse.title")} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* قسم رفع صورة الكورس */}
@@ -193,7 +195,7 @@ const AddCourse = () => {
             ) : (
               <div className="flex flex-col items-center gap-2 text-gray-400">
                 <IoImageOutline className="text-7xl" />
-                <span className="">صورة الكورس</span>
+                <span className="">{t("addCourse.courseImage")}</span>
               </div>
             )}
           </div>
@@ -208,8 +210,8 @@ const AddCourse = () => {
               name={field.name}
               value={field.value}
               onChange={field.onChange}
-              label="رابط الفيديو التعريفي"
-              placeholder="https://example.com"
+              label={t("addCourse.videoLink")}
+              placeholder={t("addCourse.videoLinkPlaceholder")}
               error={errors.link?.message}
             />
           )}
@@ -225,8 +227,8 @@ const AddCourse = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="اسم الكورس باللغة العربية"
-                placeholder="ادخل اسم الكورس..."
+                label={t("addCourse.nameAr")}
+                placeholder={t("addCourse.nameArPlaceholder")}
                 error={errors.name_ar?.message}
               />
             )}
@@ -239,8 +241,8 @@ const AddCourse = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="اسم الكورس باللغة الانجليزية"
-                placeholder="ادخل اسم الكورس..."
+                label={t("addCourse.nameEn")}
+                placeholder={t("addCourse.nameEnPlaceholder")}
                 error={errors.name_en?.message}
               />
             )}
@@ -257,8 +259,8 @@ const AddCourse = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="وصف الكورس باللغة العربية"
-                placeholder="أضف وصف للكورس..."
+                label={t("addCourse.descAr")}
+                placeholder={t("addCourse.descArPlaceholder")}
                 error={errors.description_ar?.message}
                 type="textarea"
               />
@@ -272,8 +274,8 @@ const AddCourse = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="وصف الكورس باللغة الانجليزية"
-                placeholder="أضف وصف للكورس..."
+                label={t("addCourse.descEn")}
+                placeholder={t("addCourse.descEnPlaceholder")}
                 error={errors.description_en?.message}
                 type="textarea"
               />
@@ -284,7 +286,7 @@ const AddCourse = () => {
         {/* قسم إضافة ميزات تعلم الكورس الديناميكي (learnings) */}
         <div className="border-t pt-4">
           <h3 className="text-lg font-semibold mb-4">
-            إضافة ميزات تعلم الكورس
+            {t("addCourse.learningsTitle")}
           </h3>
 
           {fields.map((item, index) => (
@@ -298,7 +300,7 @@ const AddCourse = () => {
                   onClick={() => remove(index)}
                   className="absolute top-2 inset-e-2 text-xs text-red-500 hover:underline"
                 >
-                  حذف
+                  {t("addCourse.delete")}
                 </button>
               )}
 
@@ -312,8 +314,8 @@ const AddCourse = () => {
                       name={field.name}
                       value={field.value}
                       onChange={field.onChange}
-                      label="عنوان الميزة باللغة العربية"
-                      placeholder="ادخل عنوان الميزة..."
+                      label={t("addCourse.featureTitleAr")}
+                      placeholder={t("addCourse.featureTitleArPlaceholder")}
                       error={errors.learnings?.[index]?.title_ar?.message}
                     />
                   )}
@@ -326,8 +328,8 @@ const AddCourse = () => {
                       name={field.name}
                       value={field.value}
                       onChange={field.onChange}
-                      label="عنوان الميزة باللغة الانجليزية"
-                      placeholder="ادخل عنوان الميزة..."
+                      label={t("addCourse.featureTitleEn")}
+                      placeholder={t("addCourse.featureTitleEnPlaceholder")}
                       error={errors.learnings?.[index]?.title_en?.message}
                     />
                   )}
@@ -344,8 +346,8 @@ const AddCourse = () => {
                       name={field.name}
                       value={field.value}
                       onChange={field.onChange}
-                      label="وصف الميزة باللغة العربية"
-                      placeholder="أضف وصف للميزة..."
+                      label={t("addCourse.featureDescAr")}
+                      placeholder={t("addCourse.featureDescArPlaceholder")}
                       error={errors.learnings?.[index]?.description_ar?.message}
                       type="textarea"
                     />
@@ -359,8 +361,8 @@ const AddCourse = () => {
                       name={field.name}
                       value={field.value}
                       onChange={field.onChange}
-                      label="وصف الميزة باللغة الانجليزية"
-                      placeholder="أضف وصف للميزة..."
+                      label={t("addCourse.featureDescEn")}
+                      placeholder={t("addCourse.featureDescEnPlaceholder")}
                       error={errors.learnings?.[index]?.description_en?.message}
                       type="textarea"
                     />
@@ -383,7 +385,7 @@ const AddCourse = () => {
             }
             className="flex items-center gap-2 text-sm font-semibold border px-4 py-2 rounded-full hover:bg-gray-50 transition-all mt-2"
           >
-            <span>+</span> إضافة ميزة جديدة
+            {t("addCourse.addFeature")}
           </button>
         </div>
 
@@ -397,8 +399,8 @@ const AddCourse = () => {
                 value={field.value}
                 onChange={field.onChange}
                 type="text"
-                label="مدة الكورس"
-                placeholder="مثال: 05:30"
+                label={t("addCourse.duration")}
+                placeholder={t("addCourse.durationPlaceholder")}
                 error={errors.duration?.message}
               />
             )}
@@ -415,8 +417,8 @@ const AddCourse = () => {
                 value={field.value}
                 onChange={field.onChange}
                 type="number"
-                label="سعر الكورس بالجنيه المصري"
-                placeholder="ادخل سعر الكورس بالجنيه المصري..."
+                label={t("addCourse.priceEg")}
+                placeholder={t("addCourse.priceEgPlaceholder")}
                 error={errors.price?.message}
               />
             )}
@@ -430,8 +432,8 @@ const AddCourse = () => {
                 value={field.value}
                 onChange={field.onChange}
                 type="number"
-                label="سعر الكورس بالدولار الأمريكي"
-                placeholder="ادخل سعر الكورس بالدولار الأمريكي..."
+                label={t("addCourse.priceUsd")}
+                placeholder={t("addCourse.priceUsdPlaceholder")}
                 error={errors.dollar_price?.message}
               />
             )}
@@ -449,8 +451,8 @@ const AddCourse = () => {
                 value={field.value}
                 onChange={field.onChange}
                 type="number"
-                label="السعر قبل الخصم بالجنيه المصري"
-                placeholder="ادخل السعر قبل الخصم..."
+                label={t("addCourse.priceBeforeDiscountEg")}
+                placeholder={t("addCourse.priceBeforeDiscountPlaceholder")}
                 error={errors.price_before_discount?.message}
               />
             )}
@@ -464,8 +466,8 @@ const AddCourse = () => {
                 value={field.value}
                 onChange={field.onChange}
                 type="number"
-                label="السعر قبل الخصم بالدولار الأمريكي"
-                placeholder="ادخل السعر قبل الخصم..."
+                label={t("addCourse.priceBeforeDiscountUsd")}
+                placeholder={t("addCourse.priceBeforeDiscountPlaceholder")}
                 error={errors.dollar_price_before_discount?.message}
               />
             )}
@@ -475,14 +477,14 @@ const AddCourse = () => {
         {/* زر الحفظ وأخطاء الخادم */}
         <div className="mt-4 flex flex-col gap-3 items-center">
           <Button type="submit" className="w-full md:w-60" disabled={isPending}>
-            {isPending ? "جاري الحفظ..." : "حفظ"}
+            {isPending ? t("addCourse.saving") : t("addCourse.save")}
           </Button>
 
           {error && (
             <FormError
               errorMsg={
                 error?.response?.data?.message ||
-                "حدث خطأ ما، يرجى المحاولة مرة أخرى"
+                t("addCourse.error")
               }
             />
           )}

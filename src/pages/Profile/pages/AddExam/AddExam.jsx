@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useTranslation } from "react-i18next";
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
@@ -15,39 +16,40 @@ import { useNavigate } from "react-router";
 const AddExam = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const examSchema = z.object({
-    course_id: z.string().min(1, "الرجاء اختيار الكورس"),
-    exam_title_ar: z.string().min(3, "اسم الاختبار بالعربي مطلوب"),
-    exam_title_en: z.string().min(3, "اسم الاختبار بالإنجليزي مطلوب"),
+    course_id: z.string().min(1, t("addExam.validation.courseRequired")),
+    exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
+    exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
     min_degree: z.preprocess(
       (val) => Number(val),
-      z.number().min(1, "الحد الأدنى للنجاح مطلوب ويجب أن يكون أكبر من 0"),
+      z.number().min(1, t("addExam.validation.passMarkRequired")),
     ),
     max_degree: z.preprocess(
       (val) => Number(val),
-      z.number().min(1, "الدرجة النهائية للاختبار مطلوبة"),
+      z.number().min(1, t("addExam.validation.fullMarkRequired")),
     ),
 
     questions: z
       .array(
         z.object({
-          question_title_ar: z.string().min(5, "عنوان السؤال بالعربي مطلوب"),
-          question_title_en: z.string().min(5, "عنوان السؤال بالإنجليزي مطلوب"),
+          question_title_ar: z.string().min(5, t("addExam.validation.questionArRequired")),
+          question_title_en: z.string().min(5, t("addExam.validation.questionEnRequired")),
 
           // مصفوفة الخيارات لكل سؤال (إجباري 2 على الأقل، والحد الأقصى 4)
           options: z
             .array(
               z.object({
-                option_ar: z.string().min(1, "الخيار بالعربي مطلوب"),
-                option_en: z.string().min(1, "الخيار بالإنجليزي مطلوب"),
+                option_ar: z.string().min(1, t("addExam.validation.optionArRequired")),
+                option_en: z.string().min(1, t("addExam.validation.optionEnRequired")),
               }),
             )
-            .min(2, "يجب إضافة خيارين على الأقل للسؤال")
-            .max(4, "الحد الأقصى هو 4 خيارات فقط"),
+            .min(2, t("addExam.validation.minOptions"))
+            .max(4, t("addExam.validation.maxOptions")),
         }),
       )
-      .min(1, "يجب إضافة سؤال واحد على الأقل"),
+      .min(1, t("addExam.validation.minQuestions")),
   });
 
   // 2. إعداد الـ Form مع القيم الافتراضية (سؤال واحد يحتوي على خيارين إجباريين)
@@ -97,7 +99,7 @@ const AddExam = () => {
       return await addExam(formData, courseId);
     },
     onSuccess: () => {
-      toast.success("تم اضافة الامتحان بنجاح");
+      toast.success(t("addExam.success"));
       reset();
       queryClient.invalidateQueries(["examsInstructor", 1]);
       navigate(`/profile/exams`);
@@ -142,7 +144,7 @@ const AddExam = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="إضافة امتحان" />
+      <ProfileTitle title={t("addExam.title")} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* حقل اختيار الكورس */}
@@ -154,8 +156,8 @@ const AddExam = () => {
               <MainInput
                 {...field}
                 type="select"
-                label="الكورس"
-                placeholder="اختر الكورس"
+                label={t("addExam.course")}
+                placeholder={t("addExam.coursePlaceholder")}
                 disabled={isLoading}
                 options={
                   !isLoading
@@ -179,8 +181,8 @@ const AddExam = () => {
             render={({ field }) => (
               <MainInput
                 {...field}
-                label="اسم الاختبار باللغة العربية"
-                placeholder="ادخل اسم الاختبار.."
+                label={t("addExam.nameAr")}
+                placeholder={t("addExam.nameArPlaceholder")}
                 error={errors.exam_title_ar?.message}
               />
             )}
@@ -191,8 +193,8 @@ const AddExam = () => {
             render={({ field }) => (
               <MainInput
                 {...field}
-                label="اسم الاختبار باللغة الانجليزية"
-                placeholder="ادخل اسم الاختبار.."
+                label={t("addExam.nameEn")}
+                placeholder={t("addExam.nameEnPlaceholder")}
                 error={errors.exam_title_en?.message}
               />
             )}
@@ -208,8 +210,8 @@ const AddExam = () => {
               <MainInput
                 {...field}
                 type="number"
-                label="الحد الأدنى للنجاح"
-                placeholder="ادخل الحد الأدنى للنجاح.."
+                label={t("addExam.passMark")}
+                placeholder={t("addExam.passMarkPlaceholder")}
                 error={errors.min_degree?.message}
               />
             )}
@@ -221,8 +223,8 @@ const AddExam = () => {
               <MainInput
                 {...field}
                 type="number"
-                label="الدرجة النهائية للاختبار"
-                placeholder="ادخل الدرجة النهائية للاختبار.."
+                label={t("addExam.fullMark")}
+                placeholder={t("addExam.fullMarkPlaceholder")}
                 error={errors.max_degree?.message}
               />
             )}
@@ -233,10 +235,10 @@ const AddExam = () => {
         <div className="border-t pt-6 mt-4">
           <div className="mb-4">
             <h3 className="text-xl font-bold text-gray-800">
-              بنك الأسئلة الخاصة بالاختبارات
+              {t("addExam.questionsBank")}
             </h3>
             <span className="text-xs text-orange-500 font-medium">
-              * يتم الاختيار منها عشوائياً في الاختبار
+              {t("addExam.questionsBankHint")}
             </span>
           </div>
 
@@ -266,7 +268,7 @@ const AddExam = () => {
             }
             className="flex items-center gap-2 text-sm font-semibold border px-4 py-2 rounded-full hover:bg-gray-50 transition-all mt-2"
           >
-            <span className="text-lg">+</span> إضافة سؤال جديد
+            {t("addExam.addQuestion")}
           </button>
         </div>
 
@@ -277,14 +279,14 @@ const AddExam = () => {
             className="w-full md:w-60 rounded-full"
             disabled={isPending}
           >
-            {isPending ? "جاري الحفظ..." : "حفظ"}
+            {isPending ? t("addExam.saving") : t("addExam.save")}
           </Button>
 
           {error && (
             <FormError
               errorMsg={
                 error?.response?.data?.message ||
-                "حدث خطأ ما، يرجى المحاولة مرة أخرى"
+                t("addExam.error")
               }
             />
           )}
@@ -302,6 +304,7 @@ const QuestionFieldsGroup = ({
   removeQuestion,
   totalQuestions,
 }) => {
+  const { t } = useTranslation();
   const {
     fields: optionFields,
     append: appendOption,
@@ -319,12 +322,12 @@ const QuestionFieldsGroup = ({
           onClick={() => removeQuestion(questionIndex)}
           className="absolute top-3 inset-e-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
         >
-          حذف السؤال
+          {t("addExam.deleteQuestion")}
         </button>
       )}
 
       <h4 className="text-sm font-bold text-primary">
-        السؤال رقم ({questionIndex + 1})
+        {t("addExam.questionNumber", { number: questionIndex + 1 })}
       </h4>
 
       {/* عنوان السؤال (عربي وإنجليزي) */}
@@ -336,8 +339,8 @@ const QuestionFieldsGroup = ({
             <MainInput
               {...field}
               type="textarea"
-              label="عنوان السؤال باللغة العربية"
-              placeholder="أضف عنوان السؤال.."
+              label={t("addExam.questionAr")}
+              placeholder={t("addExam.questionArPlaceholder")}
               error={
                 errors.questions?.[questionIndex]?.question_title_ar?.message
               }
@@ -351,8 +354,8 @@ const QuestionFieldsGroup = ({
             <MainInput
               {...field}
               type="textarea"
-              label="عنوان السؤال باللغة الانجليزية"
-              placeholder="أضف عنوان السؤال.."
+              label={t("addExam.questionEn")}
+              placeholder={t("addExam.questionEnPlaceholder")}
               error={
                 errors.questions?.[questionIndex]?.question_title_en?.message
               }
@@ -363,7 +366,7 @@ const QuestionFieldsGroup = ({
 
       {/* حقول الإجابات (الخيارات المضافة ديناميكياً) */}
       <div className="space-y-4 border-t pt-4 mt-2">
-        <h5 className="text-xs font-bold text-gray-700">خيارات الإجابة:</h5>
+        <h5 className="text-xs font-bold text-gray-700">{t("addExam.answerOptions")}</h5>
 
         {optionFields.map((optItem, optIndex) => (
           <div
@@ -372,9 +375,9 @@ const QuestionFieldsGroup = ({
           >
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-500 font-semibold">
-                الخيار رقم ({optIndex + 1}){" "}
+                {t("addExam.optionNumber", { number: optIndex + 1 })}{" "}
                 {optIndex === 0 && (
-                  <span className="text-green-600">(الإجابة الصحيحة)</span>
+                  <span className="text-green-600">{t("addExam.correctAnswer")}</span>
                 )}
               </span>
               {/* إمكانية حذف الخيار فقط لو زاد عن خيارين إجباريين */}
@@ -384,7 +387,7 @@ const QuestionFieldsGroup = ({
                   onClick={() => removeOption(optIndex)}
                   className="text-xs text-red-400 hover:text-red-600"
                 >
-                  حذف الخيار
+                  {t("addExam.deleteOption")}
                 </button>
               )}
             </div>
@@ -396,8 +399,8 @@ const QuestionFieldsGroup = ({
                 render={({ field }) => (
                   <MainInput
                     {...field}
-                    label="الخيار باللغة العربية"
-                    placeholder="ادخل الخيار بالعربي.."
+                    label={t("addExam.optionAr")}
+                    placeholder={t("addExam.optionArPlaceholder")}
                     error={
                       errors.questions?.[questionIndex]?.options?.[optIndex]
                         ?.option_ar?.message
@@ -411,8 +414,8 @@ const QuestionFieldsGroup = ({
                 render={({ field }) => (
                   <MainInput
                     {...field}
-                    label="الخيار باللغة الانجليزية"
-                    placeholder="ادخل الخيار بالإنجليزي.."
+                    label={t("addExam.optionEn")}
+                    placeholder={t("addExam.optionEnPlaceholder")}
                     error={
                       errors.questions?.[questionIndex]?.options?.[optIndex]
                         ?.option_en?.message
@@ -431,7 +434,7 @@ const QuestionFieldsGroup = ({
             onClick={() => appendOption({ option_ar: "", option_en: "" })}
             className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 mt-1"
           >
-            + إضافة خيار آخر لهذا السؤال
+            {t("addExam.addOption")}
           </button>
         )}
       </div>

@@ -7,6 +7,7 @@ import { RiVideoUploadLine } from "react-icons/ri";
 import { FiUploadCloud } from "react-icons/fi";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { useParams, useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import MainInput from "@/components/form/MainInput";
@@ -19,6 +20,7 @@ import { addLecture } from "@/api/lectureServices";
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 const AddLecture = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -36,12 +38,12 @@ const AddLecture = () => {
   const lectureSchema = z.object({
     video_url: z
       .string()
-      .url("رابط الفيديو غير صالح")
+      .url(t("addLecture.validation.invalidLink"))
       .or(z.string().optional()),
-    title_ar: z.string().min(3, "عنوان المحاضرة بالعربي مطلوب"),
-    title_en: z.string().min(3, "عنوان المحاضرة بالإنجليزي مطلوب"),
-    description_ar: z.string().min(10, "وصف المحاضرة بالعربي مطلوب"),
-    description_en: z.string().min(10, "وصف المحاضرة بالإنجليزي مطلوب"),
+    title_ar: z.string().min(3, t("addLecture.validation.nameArRequired")),
+    title_en: z.string().min(3, t("addLecture.validation.nameEnRequired")),
+    description_ar: z.string().min(10, t("addLecture.validation.descArRequired")),
+    description_en: z.string().min(10, t("addLecture.validation.descEnRequired")),
   });
 
   const {
@@ -67,7 +69,7 @@ const AddLecture = () => {
   } = useMutation({
     mutationFn: (formData) => addLecture(formData, id),
     onSuccess: () => {
-      toast.success("تم إضافة المحاضرة بنجاح");
+      toast.success(t("addLecture.success"));
       navigate(`/profile/lectures/${id}`);
     },
   });
@@ -85,7 +87,7 @@ const AddLecture = () => {
       if (oversizedFiles.length > 0) {
         // 👈 تعيين رسالة الخطأ هنا مباشرةً بدل الـ toast
         setFileSizeError(
-          "عذراً، بعض الملفات تتجاوز الحد الأقصى المسموح به (2 ميجابايت)",
+          t("addLecture.fileTooLarge"),
         );
         return;
       }
@@ -115,7 +117,7 @@ const AddLecture = () => {
 
     // التحقق من وجود فيديو أو رابط على الأقل لتجنب الإرسال الفارغ
     if (!videoFile && !data.video_url) {
-      toast.error("يرجى رفع ملف فيديو أو إضافة رابط للمحاضرة");
+      toast.error(t("addLecture.videoOrLinkRequired"));
       return;
     }
 
@@ -148,7 +150,7 @@ const AddLecture = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="إضافة محاضرة" />
+      <ProfileTitle title={t("addLecture.title")} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* قسم رفع فيديو المحاضرة */}
@@ -175,7 +177,7 @@ const AddLecture = () => {
               <RiVideoUploadLine className="text-3xl" />
             </div>
             <span className="text-lg font-bold text-[#1A202C]">
-              {videoPreview ? videoPreview : "رفع فيديو المحاضرة"}
+              {videoPreview ? videoPreview : t("addLecture.uploadVideo")}
             </span>
           </div>
         </div>
@@ -189,8 +191,8 @@ const AddLecture = () => {
               name={field.name}
               value={field.value}
               onChange={field.onChange}
-              label="رابط المحاضرة"
-              placeholder="ادخل رابط المحاضرة.."
+              label={t("addLecture.videoLink")}
+              placeholder={t("addLecture.videoLinkPlaceholder")}
               error={errors.video_url?.message}
             />
           )}
@@ -206,8 +208,8 @@ const AddLecture = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="عنوان المحاضرة باللغة العربية"
-                placeholder="ادخل عنوان المحاضرة.."
+                label={t("addLecture.nameAr")}
+                placeholder={t("addLecture.nameArPlaceholder")}
                 error={errors.title_ar?.message}
               />
             )}
@@ -220,8 +222,8 @@ const AddLecture = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="عنوان المحاضرة باللغة الانجليزية"
-                placeholder="ادخل عنوان المحاضرة.."
+                label={t("addLecture.nameEn")}
+                placeholder={t("addLecture.nameEnPlaceholder")}
                 error={errors.title_en?.message}
               />
             )}
@@ -238,8 +240,8 @@ const AddLecture = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="وصف المحاضرة باللغة العربية"
-                placeholder="أضف وصف للمحاضرة.."
+                label={t("addLecture.descAr")}
+                placeholder={t("addLecture.descArPlaceholder")}
                 error={errors.description_ar?.message}
                 type="textarea"
               />
@@ -253,8 +255,8 @@ const AddLecture = () => {
                 name={field.name}
                 value={field.value}
                 onChange={field.onChange}
-                label="وصف المحاضرة باللغة الانجليزية"
-                placeholder="أضف وصف للمحاضرة.."
+                label={t("addLecture.descEn")}
+                placeholder={t("addLecture.descEnPlaceholder")}
                 error={errors.description_en?.message}
                 type="textarea"
               />
@@ -265,9 +267,9 @@ const AddLecture = () => {
         {/* قسم ملفات المحاضرة المرفقة */}
         <div className="flex flex-col gap-2 w-full max-w-xl mx-auto">
           <label className="text-lg font-medium text-[#1A202C] text-right mb-1">
-            ملفات المحاضرة{" "}
+            {t("addLecture.attachments")}{" "}
             <span className="text-xs text-gray-400">
-              (الحد الأقصى للملف 2MB)
+              {t("addLecture.attachmentNote")}
             </span>
           </label>
 
@@ -285,7 +287,7 @@ const AddLecture = () => {
             className="w-full border-2 border-dashed border-sky-600 bg-white hover:bg-sky-600/20 rounded-lg py-5 px-4 cursor-pointer flex items-center justify-center gap-3 transition-all select-none"
           >
             <span className="text-sky-600 font-medium text-base">
-              رفع ملفات المحاضرة
+              {t("addLecture.uploadFiles")}
             </span>
             <FiUploadCloud className="text-sky-600 text-2xl" />
           </div>
@@ -300,7 +302,7 @@ const AddLecture = () => {
           {attachedFiles.length > 0 && (
             <div className="mt-3 flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
               <p className="text-xs font-semibold text-gray-500 mb-1">
-                الملفات المختارة ({attachedFiles.length}):
+                {t("addLecture.selectedFiles", { count: attachedFiles.length })}
               </p>
               {attachedFiles.map((file, index) => (
                 <div
@@ -317,7 +319,7 @@ const AddLecture = () => {
                     type="button"
                     onClick={() => removeFile(index)}
                     className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
-                    title="حذف الملف"
+                    title={t("addLecture.deleteFile")}
                   >
                     <IoCloseCircleSharp className="text-xl" />
                   </button>
@@ -334,14 +336,14 @@ const AddLecture = () => {
             className="w-full md:w-60 bg-[#1E2229] hover:bg-[#111418] text-white rounded-full py-3"
             disabled={isPending || !!fileSizeError} // 👈 تعطيل الزر في حال وجود خطأ بالحجم
           >
-            {isPending ? "جاري الحفظ..." : "حفظ"}
+            {isPending ? t("addLecture.saving") : t("addLecture.save")}
           </Button>
 
           {error && (
             <FormError
               errorMsg={
                 error?.response?.data?.message ||
-                "حدث خطأ ما، يرجى المحاولة مرة أخرى"
+                t("addLecture.error")
               }
             />
           )}

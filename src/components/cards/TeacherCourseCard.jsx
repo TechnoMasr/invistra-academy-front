@@ -1,8 +1,10 @@
 import { FaBoxOpen } from "react-icons/fa";
 import { Link } from "react-router";
 import { Button } from "../ui/button";
+import { useTranslation } from "react-i18next";
 
 const TeacherCourseCard = ({ item }) => {
+  const { t } = useTranslation();
   return (
     <div className="border rounded-lg overflow-hidden bg-white flex items-start gap-3 p-3">
       <div className="w-1/3 aspect-square rounded-md overflow-hidden border">
@@ -38,21 +40,24 @@ const TeacherCourseCard = ({ item }) => {
 
           <p className="font-medium text-xs py-1 px-4 text-green-500 border border-green-500 rounded-full flex items-center gap-1">
             <FaBoxOpen />
-            {item?.orders_count} طلبات
+            {t("teacherCourseCard.orders", { count: item?.orders_count })}
           </p>
         </div>
 
         <div className="flex items-center flex-wrap gap-1">
-          <p className="font-semibold">السعر:</p>
+          <p className="font-semibold">{t("teacherCourseCard.price")}</p>
           <span className="text-2xl font-bold text-green-500">
             {item?.price} {item?.currency}
           </span>
         </div>
 
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <Link to={`/profile/lectures/${item?.id}`} className="flex-1 rounded-full">
+          <Link
+            to={`/profile/lectures/${item?.id}`}
+            className="flex-1 rounded-full"
+          >
             <Button variant="outline" className={`w-full`}>
-              عرض المحاضرات
+              {t("teacherCourseCard.viewLectures")}
             </Button>
           </Link>
           <Link
@@ -60,14 +65,16 @@ const TeacherCourseCard = ({ item }) => {
             className="flex-1 rounded-full"
           >
             <Button variant="outline" className={`w-full`}>
-              عرض تفاصيل الكورس
+              {t("teacherCourseCard.viewCourseDetails")}
             </Button>
           </Link>
           <Link
             to={`/profile/add-lecture/${item?.id}`}
             className="flex-1 rounded-full"
           >
-            <Button className={`w-full`}>اضافة محاضرة</Button>
+            <Button className={`w-full`}>
+              {t("teacherCourseCard.addLecture")}
+            </Button>
           </Link>
         </div>
       </div>

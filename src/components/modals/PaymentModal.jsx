@@ -10,10 +10,12 @@ import image from "@/assets/images/hero.png";
 
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "@/store/modals/modalsSlice";
+import { useTranslation } from "react-i18next";
 
 const PaymentModal = () => {
   const { modalName } = useSelector((state) => state.modals);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const onClose = () => {
     dispatch(closeModal());
@@ -22,20 +24,20 @@ const PaymentModal = () => {
   const list = [
     {
       id: 1,
-      title: "فودافون كاش",
-      description: "تحويل فوري عبر المحفظة",
+      title: t("paymentModal.vodafoneCash"),
+      description: t("paymentModal.vodafoneCashDesc"),
       image: image,
     },
     {
       id: 2,
-      title: "إنستا باي (Insta Pay)",
-      description: "تحويل بنكي لحظي",
+      title: t("paymentModal.instaPay"),
+      description: t("paymentModal.instaPayDesc"),
       image: image,
     },
     {
       id: 3,
-      title: "دفع اونلاين",
-      description: "بطاقات فيزا أو ماستركارد",
+      title: t("paymentModal.onlinePayment"),
+      description: t("paymentModal.onlinePaymentDesc"),
       image: image,
     },
   ];
@@ -44,9 +46,9 @@ const PaymentModal = () => {
     <Dialog open={modalName === "PaymentModal"} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader className="text-start">
-          <DialogTitle className="text-2xl">اختر طريقة الدفع</DialogTitle>
+          <DialogTitle className="text-2xl">{t("paymentModal.title")}</DialogTitle>
           <DialogDescription className="text-primary/90">
-            يرجى اختيار الوسيلة الأنسب لك لإتمام العملية
+            {t("paymentModal.description")}
           </DialogDescription>
         </DialogHeader>
 

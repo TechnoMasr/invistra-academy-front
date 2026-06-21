@@ -4,8 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@/hooks/useDebounce";
 import { sendSearch } from "@/api/mainServices";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const SearchInput = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -89,7 +91,7 @@ const SearchInput = () => {
           </span>
           {type === "course" && item.instructor && (
             <span className="text-xs text-gray-400">
-              المحاضر: {item.instructor.name}
+               {t("search.instructor")}: {item.instructor.name}
             </span>
           )}
         </div>
@@ -107,7 +109,7 @@ const SearchInput = () => {
           setIsOpen(true);
         }}
         onFocus={() => query && setIsOpen(true)}
-        placeholder="ابحث فى المنصة"
+        placeholder={t("search.placeholder")}
         className="bg-white py-2 px-8 pe-8 rounded-full outline-0 border w-full focus:border-primary"
       />
 
@@ -130,7 +132,7 @@ const SearchInput = () => {
         <div className="absolute top-[calc(100%+8px)] custom_scrollbar w-full bg-white rounded-2xl shadow-lg z-50 overflow-hidden min-h-[50px] max-h-[400px] overflow-y-auto border border-gray-100">
           {isLoading ? (
             <div className="py-6 flex justify-center text-sm text-gray-500">
-              جاري البحث...
+              {t("search.searching")}
             </div>
           ) : hasResults ? (
             <div className="py-2 divide-y divide-gray-100">
@@ -138,7 +140,7 @@ const SearchInput = () => {
               {searchResults.courses && searchResults.courses.length > 0 && (
                 <div className="py-1">
                   <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none">
-                    الكورسات
+                    {t("search.courses")}
                   </div>
                   {searchResults.courses.map((course) => (
                     <ResultItem
@@ -155,7 +157,7 @@ const SearchInput = () => {
                 searchResults.instructors.length > 0 && (
                   <div className="py-1">
                     <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none">
-                      المحاضرين
+                      {t("search.instructors")}
                     </div>
                     {searchResults.instructors.map((instructor) => (
                       <ResultItem
@@ -172,7 +174,7 @@ const SearchInput = () => {
                 searchResults.categories.length > 0 && (
                   <div className="py-1">
                     <div className="px-4 py-1 text-xs font-bold text-gray-400 bg-gray-50/50 select-none">
-                      الأقسام
+                      {t("search.categories")}
                     </div>
                     {searchResults.categories.map((category) => (
                       <ResultItem
@@ -187,7 +189,7 @@ const SearchInput = () => {
           ) : (
             <div className="py-6 flex flex-col items-center gap-2 text-sm text-gray-500">
               <span>
-                لا توجد نتائج لـ{" "}
+                {t("search.noResults")}{" "}
                 <span className="font-semibold">"{query}"</span>
               </span>
             </div>

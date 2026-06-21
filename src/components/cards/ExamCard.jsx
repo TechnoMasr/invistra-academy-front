@@ -4,8 +4,10 @@ import { Link } from "react-router";
 import { Button } from "../ui/button";
 import { RiFileList3Line } from "react-icons/ri";
 import { GrEdit } from "react-icons/gr";
+import { useTranslation } from "react-i18next";
 
 const ExamCard = ({ item }) => {
+  const { t } = useTranslation();
   const isCompleted = item?.status === "ended";
   return (
     <div key={item?.id} className="border rounded-lg p-4 flex flex-col gap-2">
@@ -26,10 +28,11 @@ const ExamCard = ({ item }) => {
               : "bg-green-50 text-green-700 border border-green-400"
           }`}
         >
-          اختبار: {item?.status_translated}
+          {t("examCard.exam")}: {item?.status_translated}
         </p>
         <p className="font-medium text-xs py-1 px-4 text-amber-500 border border-amber-500 rounded-full flex items-center gap-1">
-          {item?.questions_count} اسئلة <FaRegCircleQuestion />
+          {t("examCard.questions", { count: item?.questions_count })}{" "}
+          <FaRegCircleQuestion />
         </p>
       </div>
 
@@ -50,7 +53,9 @@ const ExamCard = ({ item }) => {
       <hr className="my-2" />
 
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p>درجة الاختبار: {item?.score ? item?.score : "??"}</p>
+        <p>
+          {t("examCard.testScore", { score: item?.score ? item?.score : "??" })}
+        </p>
 
         {isCompleted ? (
           <Link
@@ -59,14 +64,14 @@ const ExamCard = ({ item }) => {
           >
             <Button variant="outline">
               <RiFileList3Line />
-              عرض الاختبار
+              {t("examCard.viewExam")}
             </Button>
           </Link>
         ) : (
           <Link to={`/profile/enter-exam/${item?.id}`} className="rounded-full">
             <Button>
               <GrEdit />
-              ابدأ الاختبار
+              {t("examCard.startExam")}
             </Button>
           </Link>
         )}

@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import HeroSkeleton from "@/components/Loading/SkeletonLoading/HeroSkeleton";
 import { Button } from "@/components/ui/button";
 import { MdOndemandVideo } from "react-icons/md";
 import { Link } from "react-router";
 
 const Hero = ({ data = {}, loading }) => {
+  const { t } = useTranslation();
   if (loading) return <HeroSkeleton />;
 
   if (!data || (!data?.title && !data?.description && !data?.image))
@@ -32,7 +34,7 @@ const Hero = ({ data = {}, loading }) => {
 
               <Link to="/courses" className="btn btn-primary w-full md:w-auto">
                 <Button className="rounded-full px-6!">
-                  استكشف الكورسات <MdOndemandVideo />
+                  {t("hero.exploreCourses")} <MdOndemandVideo />
                 </Button>
               </Link>
             </div>

@@ -25,7 +25,7 @@ const StudentCourses = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title="كورساتي" />
+      <ProfileTitle title={t("myCourses.title")} />
 
       {isLoading ? (
         <MyCoursesSkeleton />

@@ -49,9 +49,17 @@ const CourseCard = ({ course }) => {
             {t("courseCard.lecturesCount", { count: course?.lectures_count })}
           </div>
 
-          <p className="text-2xl font-bold text-green-500">
-            {course?.price} {course?.currency}
-          </p>
+          <div>
+            {course?.price_before_discount && (
+              <p className="text-lg font-bold text-red-500 line-through">
+                {course?.price_before_discount} {course?.currency}
+              </p>
+            )}
+
+            <p className="text-2xl font-bold text-green-500">
+              {course?.price} {course?.currency}
+            </p>
+          </div>
         </div>
       </div>
     </Link>

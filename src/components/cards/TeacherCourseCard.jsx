@@ -46,6 +46,12 @@ const TeacherCourseCard = ({ item }) => {
 
         <div className="flex items-center flex-wrap gap-1">
           <p className="font-semibold">{t("teacherCourseCard.price")}</p>
+
+          {item?.price_before_discount && (
+            <p className="text-lg font-bold text-red-500 line-through">
+              {item?.price_before_discount} {item?.currency}
+            </p>
+          )}
           <span className="text-2xl font-bold text-green-500">
             {item?.price} {item?.currency}
           </span>

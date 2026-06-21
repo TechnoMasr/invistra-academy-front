@@ -1,4 +1,4 @@
-import logo from "@/assets/images/logo.png";
+// import logo from "@/assets/images/logo.png";
 import { Link } from "react-router";
 import HeaderActions from "./HeaderActions/HeaderActions";
 import SearchInput from "./SearchInput";
@@ -36,21 +36,21 @@ const Header = () => {
       <div className="container py-2 flex justify-between items-center gap-2">
         {/* اللوجو */}
         <Link to="/" className="w-24 md:w-28 h-10">
-          <img
+          {/* <img
             loading="lazy"
             src={logo}
             alt="Company Logo"
             className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-          />
+          /> */}
 
-          {/* {settings?.header_logo && (
+          {settings?.header_logo && (
             <img
               loading="lazy"
               src={settings?.header_logo}
               alt="Company Logo"
               className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
             />
-          )} */}
+          )}
         </Link>
 
         {/* السيرش للشاشات الكبيرة */}

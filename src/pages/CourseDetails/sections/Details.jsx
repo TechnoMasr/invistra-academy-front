@@ -119,12 +119,17 @@ const Details = ({ data }) => {
           ))}
         </ul>
 
-        <p className="text-lg font-bold">
+        <div className="text-lg font-bold flex items-center gap-1">
           {t("courseDetails.price")}{" "}
-          <span className="text-green-600 text-4xl">
+          {data?.price_before_discount && (
+            <p className="text-lg font-bold text-red-500 line-through">
+              {data?.price_before_discount} {data?.currency}
+            </p>
+          )}
+          <p className="text-green-600 text-4xl">
             {data?.price} {data?.currency}
-          </span>
-        </p>
+          </p>
+        </div>
 
         {/* أزرار التحكم */}
         {!isInstructor && (

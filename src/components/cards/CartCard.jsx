@@ -82,9 +82,16 @@ const CartCard = ({ item, course_id }) => {
         </div>
 
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <p className="text-3xl font-bold text-green-500">
-            {item.price} {item.currency}
-          </p>
+          <div>
+            {item?.price_before_discount && (
+              <p className="text-lg font-bold text-red-500 line-through">
+                {item?.price_before_discount} {item?.currency}
+              </p>
+            )}
+            <p className="text-3xl font-bold text-green-500">
+              {item.price} {item.currency}
+            </p>
+          </div>
 
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

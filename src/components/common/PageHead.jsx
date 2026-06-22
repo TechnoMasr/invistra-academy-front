@@ -13,6 +13,12 @@ const PageHead = ({ title, description }) => {
       )}
 
       {description && <p className="lg:text-2xl max-w-4xl">{description}</p>}
+      {/* {description && (
+        <div
+          className="lg:text-2xl max-w-4xl rich_content"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
+      )} */}
     </article>
   );
 };

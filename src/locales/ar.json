@@ -408,7 +408,8 @@
   "header": {
     "instructors": "المحاضرين",
     "courses": "الكورسات",
-    "all": "الكل"
+    "all": "الكل",
+    "subCategories": "القسم الفرعي"
   },
 
   "search": {

@@ -1,6 +1,5 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import logo from "@/assets/images/logo.png";
 import { FaFacebookF, FaLinkedinIn, FaYoutube, FaTiktok } from "react-icons/fa";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +20,6 @@ const Footer = () => {
   });
 
   if (isLoading) return <FooterSkeleton />;
-
 
   const socialLinks = [
     {
@@ -61,7 +59,7 @@ const Footer = () => {
               loading="lazy"
               src={footerData?.logo}
               alt="Company Logo"
-              className="w-28 lg:w-40 object-contain"
+              className="w-56 object-contain"
             />
           )}
 

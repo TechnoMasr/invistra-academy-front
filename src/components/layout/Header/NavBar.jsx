@@ -1,103 +1,154 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const NavBar = ({ links }) => {
   const { t } = useTranslation();
-  // نضيف State للتحكم في فتح وإغلاق القائمة الرئيسية
-  const [open, setOpen] = useState(false);
 
-  const renderSubCategories = (subCategories, parentCategoryId) => {
-    return subCategories.map((subItem) => {
-      return (
-        <DropdownMenuItem key={subItem.id} asChild>
-          <NavLink
-            to={`/courses?category_id=${parentCategoryId}&sub_category_id=${subItem.id}`}
-            className="w-full block px-2 py-1.5"
-          >
-            {subItem.name}
-          </NavLink>
-        </DropdownMenuItem>
-      );
-    });
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  // 1. إنشاء مرجع (Ref) لمراقبة شجرة عناصر الـ Navbar
+  const navRef = useRef(null);
+
+  const toggleDropdown = (id) => {
+    if (openDropdownId === id) {
+      setOpenDropdownId(null);
+      setActiveCategory(null);
+    } else {
+      setOpenDropdownId(id);
+      setActiveCategory(null);
+    }
   };
 
+  const closeAll = () => {
+    setOpenDropdownId(null);
+    setActiveCategory(null);
+  };
+
+  // 2. مراقبة الضغط خارج القائمة
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // إذا كانت القائمة مفتوحة والضغطة تمت خارج عنصر الـ navRef
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        closeAll();
+      }
+    };
+
+    // تسجيل الحدث عند تركيب المكون (Mount)
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // تنظيف الحدث عند فك المكون (Unmount) لمنع تسريب الذاكرة
+    return () => {
+      document.addEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <nav className="flex items-center gap-4">
+    // 3. نربط الـ ref بالـ <nav> الأساسي ليغطي كل الدروب داونز
+    <nav ref={navRef} className="flex items-center gap-4 relative">
       {links.map((link) => {
-        if (link.list && link.list.length > 0) {
+        const isDropdownOpen = openDropdownId === link.id;
+        const hasList = link.list && link.list.length > 0;
+
+        if (hasList) {
           return (
-            // نربط القائمة بالـ State هنا
-            <DropdownMenu key={link.id} open={open} onOpenChange={setOpen}>
-              <DropdownMenuTrigger className="nav_link flex items-center gap-1 focus:outline-none">
+            <div key={link.id} className="relative">
+              <button
+                onClick={() => toggleDropdown(link.id)}
+                className="nav_link flex items-center gap-1 focus:outline-none cursor-pointer"
+              >
                 {link.name}
-                <ChevronDown className="h-4 w-4 opacity-70" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="min-w-[14rem]">
-                <DropdownMenuItem asChild>
-                  <NavLink to={link.url} className="w-full font-bold">
-                    {t("header.all")} {link.name}
-                  </NavLink>
-                </DropdownMenuItem>
+                <ChevronDown
+                  className={`h-4 w-4 opacity-70 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
-                {link.list.map((category) => {
-                  const hasSubCategories =
-                    category.sub_categories &&
-                    category.sub_categories.length > 0;
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-[16rem] bg-white border border-gray-200 rounded-md shadow-lg z-50 flex flex-col justify-between">
+                  <div className="flex-1 py-1">
+                    <NavLink
+                      to={link.url}
+                      onClick={closeAll}
+                      className="block px-4 py-2 text-sm font-bold border-b border-gray-100 hover:bg-gray-50"
+                    >
+                      {t("header.all")} {link.name}
+                    </NavLink>
 
-                  if (hasSubCategories) {
-                    return (
-                      <DropdownMenuSub key={category.id}>
-                        {/* جعلنا الـ SubTrigger يتصرف كـ Child ونقلنا الـ NavLink للخارج لحل مشكلة الإغلاق والتوجيه معاً */}
-                        <DropdownMenuSubTrigger className="flex items-center justify-between gap-2 w-full p-0">
+                    {link.list.map((category) => {
+                      const hasSubCategories =
+                        category.sub_categories &&
+                        category.sub_categories.length > 0;
+                      const isCategoryActive =
+                        activeCategory?.id === category.id;
+
+                      return (
+                        <div
+                          key={category.id}
+                          // إذا كانت تحتوي على فروع نفتحها، وإذا كانت عادية نصفر القائمة لتختفي القديمة
+                          onMouseEnter={() =>
+                            hasSubCategories
+                              ? setActiveCategory(category)
+                              : setActiveCategory(null)
+                          }
+                          className="relative"
+                        >
+                          {hasSubCategories ? (
+                            <div
+                              className={`flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer ${isCategoryActive ? "bg-gray-50" : ""}`}
+                            >
+                              <NavLink
+                                to={`/courses?category_id=${category.id}`}
+                                onClick={closeAll}
+                                className="flex-1 px-4 py-2"
+                              >
+                                {category.name}
+                              </NavLink>
+                              <span className="px-3 py-2 text-gray-400">
+                                <ChevronRight className="h-4 w-4 ltr:block rtl:hidden" />
+                                <ChevronLeft className="h-4 w-4 rtl:block ltr:hidden" />
+                              </span>
+                            </div>
+                          ) : (
+                            <NavLink
+                              to={`/courses?category_id=${category.id}`}
+                              onClick={closeAll}
+                              className="block px-4 py-2 text-sm hover:bg-gray-50"
+                            >
+                              {category.name}
+                            </NavLink>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {activeCategory && (
+                    <div
+                      className="absolute top-0 ltr:left-full rtl:right-full w-[14rem] h-full bg-white border border-gray-200 rounded-md shadow-lg z-50 overflow-y-auto flex flex-col"
+                      onMouseLeave={() => setActiveCategory(null)}
+                    >
+                      <div className="py-1">
+                        <p className="px-4 py-2 text-xs font-semibold border-b border-gray-100">
+                          {t("header.subCategories")}
+                        </p>
+                        {activeCategory.sub_categories.map((subItem) => (
                           <NavLink
-                            to={`/courses?category_id=${category.id}`}
-                            className="w-full h-full px-2 py-1.5"
-                            onClick={(e) => {
-                              // نمنع انتشار الحدث حتى لا يفتح القائمة الفرعية ويغلق الرئيسية بدلاً من ذلك
-                              e.stopPropagation();
-                              setOpen(false);
-                            }}
+                            key={subItem.id}
+                            to={`/courses?category_id=${activeCategory.id}&sub_category_id=${subItem.id}`}
+                            onClick={closeAll}
+                            className="block px-4 py-2 text-sm hover:bg-gray-50"
                           >
-                            <span>{category.name}</span>
+                            {subItem.name}
                           </NavLink>
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                          <DropdownMenuSubContent className="min-w-[10rem]">
-                            {renderSubCategories(
-                              category.sub_categories,
-                              category.id,
-                            )}
-                          </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                      </DropdownMenuSub>
-                    );
-                  }
-
-                  return (
-                    <DropdownMenuItem key={category.id} asChild>
-                      <NavLink
-                        to={`/courses?category_id=${category.id}`}
-                        className="w-full block px-2 py-1.5"
-                      >
-                        {category.name}
-                      </NavLink>
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           );
         }
 

@@ -28,7 +28,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
             <Link
               to="/"
               onClick={() => onOpenChange(false)}
-              className="inline-block w-14"
+              className="inline-block w-full"
             >
               {settings?.header_logo && (
                 <img
@@ -75,21 +75,20 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                   </AccordionTrigger>
 
                   <AccordionContent className="pt-1 pb-3 flex flex-col gap-2">
-                    {/* زر لعرض كل الكورسات مباشرة */}
-                    <Link
-                      to={link.url}
-                      className="text-primary font-semibold text-sm py-2 block border-b border-dashed border-gray-100"
-                      onClick={() => onOpenChange(false)}
-                    >
-                      {t("header.all")} {link.name}
-                    </Link>
-
                     {/* الأكورديون الثاني للمستوى الثاني (الأقسام الرئيسية) */}
                     <Accordion
                       type="single"
                       collapsible
                       className="w-full ps-2 border-s-2 border-primary flex flex-col gap-1"
                     >
+                      <Link
+                        to={link.url}
+                        className="text-primary font-medium text-sm py-2 block border-b border-dashed border-gray-100"
+                        onClick={() => onOpenChange(false)}
+                      >
+                        {t("header.all")} {link.name}
+                      </Link>
+
                       {link.list.map((category) => {
                         const hasSubCategories =
                           category.sub_categories &&
@@ -124,7 +123,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                               {/* رابط للذهاب للقسم الرئيسي نفسه */}
                               <Link
                                 to={`/courses?category_id=${category.id}`}
-                                className="text-gray-400 font-medium text-xs hover:text-primary transition-colors py-1 block"
+                                className="text-gray-600 font-medium text-xs hover:text-primary transition-colors py-1 block"
                                 onClick={() => onOpenChange(false)}
                               >
                                 - {t("header.all")} {category.name}
@@ -135,7 +134,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                                 <Link
                                   key={subCategory.id}
                                   to={`/courses?category_id=${category.id}&sub_category_id=${subCategory.id}`}
-                                  className="text-gray-600 text-xs hover:text-primary transition-colors py-1 block"
+                                  className="text-gray-800 text-xs hover:text-primary transition-colors py-1 block"
                                   onClick={() => onOpenChange(false)}
                                 >
                                   - {subCategory.name}

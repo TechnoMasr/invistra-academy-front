@@ -408,7 +408,8 @@
   "header": {
     "instructors": "Instructors",
     "courses": "Courses",
-    "all": "All"
+    "all": "All",
+    "subCategories": "Sub Categories"
   },
 
   "search": {

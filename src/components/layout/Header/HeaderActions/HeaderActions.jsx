@@ -37,7 +37,7 @@ const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
       )}
       <ProfileSide user={user}  />
       <div
-        className="lg:hidden text-3xl cursor-pointer"
+        className="xl:hidden text-3xl cursor-pointer"
         onClick={() => setShowMobileNav((prev) => !prev)}
       >
         {showMobileNav ? <CgClose /> : <HiMenuAlt3 />}

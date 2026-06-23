@@ -17,6 +17,7 @@ const AddExam = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // 1. إضافة حقل duration لمخطط Zod
   const examSchema = z.object({
     course_id: z.string().min(1, t("addExam.validation.courseRequired")),
     exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
@@ -28,6 +29,10 @@ const AddExam = () => {
     max_degree: z.preprocess(
       (val) => Number(val),
       z.number().min(1, t("addExam.validation.fullMarkRequired")),
+    ),
+    duration: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, t("addExam.validation.durationRequired")),
     ),
     displayed_questions_count: z.preprocess(
       (val) => Number(val),
@@ -47,7 +52,6 @@ const AddExam = () => {
             .min(5, t("addExam.validation.questionEnRequired")),
           is_appears_to_all_examinees: z.boolean().default(false),
 
-          // مصفوفة الخيارات لكل سؤال (إجباري 2 على الأقل، والحد الأقصى 4)
           options: z
             .array(
               z.object({
@@ -66,7 +70,7 @@ const AddExam = () => {
       .min(1, t("addExam.validation.minQuestions")),
   });
 
-  // 2. إعداد الـ Form مع القيم الافتراضية
+  // 2. إضافة القيمة الافتراضية لـ duration
   const {
     handleSubmit,
     control,
@@ -80,6 +84,7 @@ const AddExam = () => {
       exam_title_en: "",
       min_degree: "",
       max_degree: "",
+      duration: "",
       displayed_questions_count: "",
       questions: [
         {
@@ -87,15 +92,14 @@ const AddExam = () => {
           question_title_en: "",
           is_appears_to_all_examinees: false,
           options: [
-            { option_ar: "", option_en: "" }, // الخيار الأول (الصحيح)
-            { option_ar: "", option_en: "" }, // الخيار الثاني
+            { option_ar: "", option_en: "" },
+            { option_ar: "", option_en: "" },
           ],
         },
       ],
     },
   });
 
-  // 3. التحكم بالأسئلة
   const {
     fields: questionFields,
     append: appendQuestion,
@@ -105,7 +109,6 @@ const AddExam = () => {
     name: "questions",
   });
 
-  // 4. إدارة الـ Mutation لربطها بالـ API
   const {
     mutate: createExamMutate,
     isPending,
@@ -121,26 +124,24 @@ const AddExam = () => {
     },
   });
 
-  // 5. تحويل البيانات لشكل Form Data بالمفاتيح المطابقة
+  // 3. إرسال حقل duration في الـ FormData
   const onSubmit = (data) => {
     const formData = new FormData();
 
-    // البيانات الأساسية للامتحان
     formData.append("title[en]", data.exam_title_en);
     formData.append("title[ar]", data.exam_title_ar);
     formData.append("pass_mark", String(data.min_degree));
     formData.append("full_mark", String(data.max_degree));
+    formData.append("duration", String(data.duration)); // الحقل المطلوب هُنا
     formData.append(
       "displayed_questions_count",
       String(data.displayed_questions_count),
     );
 
-    // تركيب أسئلة الامتحان وخياراتها
     data.questions.forEach((q, qIndex) => {
       formData.append(`questions[${qIndex}][title][en]`, q.question_title_en);
       formData.append(`questions[${qIndex}][title][ar]`, q.question_title_ar);
 
-      // تحويل الـ boolean إلى 0 أو 1 كما هو مطلوب
       const isAppearsValue = q.is_appears_to_all_examinees ? "1" : "0";
       formData.append(
         `questions[${qIndex}][is_appears_to_all_examinees]`,
@@ -159,7 +160,6 @@ const AddExam = () => {
       });
     });
 
-    // إرسال البيانات الـ FormData مع الـ ID الخاص بالكورس المختار
     createExamMutate({ formData, courseId: data.course_id });
   };
 
@@ -173,7 +173,6 @@ const AddExam = () => {
       <ProfileTitle title={t("addExam.title")} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-        {/* حقل اختيار الكورس */}
         <div className="w-full">
           <Controller
             name="course_id"
@@ -199,7 +198,6 @@ const AddExam = () => {
           />
         </div>
 
-        {/* اسم الاختبار (عربي وإنجليزي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="exam_title_ar"
@@ -227,8 +225,8 @@ const AddExam = () => {
           />
         </div>
 
-        {/* الحد الأدنى للنجاح، الدرجة النهائية، وعدد الأسئلة المعروضة */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* 4. تحديث شبكة الحقول (Grid) لتصبح 4 أعمدة بدلاً من 3 واضافة المدة */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
           <Controller
             name="min_degree"
             control={control}
@@ -256,6 +254,19 @@ const AddExam = () => {
             )}
           />
           <Controller
+            name="duration"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                label={t("addExam.duration")}
+                placeholder={t("addExam.durationPlaceholder")}
+                error={errors.duration?.message}
+              />
+            )}
+          />
+          <Controller
             name="displayed_questions_count"
             control={control}
             render={({ field }) => (
@@ -270,7 +281,6 @@ const AddExam = () => {
           />
         </div>
 
-        {/* قسم بنك الأسئلة */}
         <div className="border-t pt-6 mt-4">
           <div className="mb-4">
             <h3 className="text-xl font-bold text-gray-800">
@@ -292,7 +302,6 @@ const AddExam = () => {
             />
           ))}
 
-          {/* زر إضافة سؤال جديد */}
           <button
             type="button"
             onClick={() =>
@@ -312,7 +321,6 @@ const AddExam = () => {
           </button>
         </div>
 
-        {/* زر الحفظ وأخطاء السيرفر */}
         <div className="mt-6 flex flex-col gap-3 items-center">
           <Button
             type="submit"
@@ -333,7 +341,6 @@ const AddExam = () => {
   );
 };
 
-// مكون فرعي (Sub-component) لإدارة حقول كل سؤال
 const QuestionFieldsGroup = ({
   questionIndex,
   control,
@@ -368,7 +375,6 @@ const QuestionFieldsGroup = ({
           {t("addExam.questionNumber", { number: questionIndex + 1 })}
         </h4>
 
-        {/* الـ Checkbox لتثبيت السؤال */}
         <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">
           <Controller
             name={`questions.${questionIndex}.is_appears_to_all_examinees`}
@@ -387,7 +393,6 @@ const QuestionFieldsGroup = ({
         </label>
       </div>
 
-      {/* عنوان السؤال (عربي وإنجليزي) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Controller
           name={`questions.${questionIndex}.question_title_ar`}
@@ -421,7 +426,6 @@ const QuestionFieldsGroup = ({
         />
       </div>
 
-      {/* حقول الإجابات (الخيارات المضافة ديناميكياً) */}
       <div className="space-y-4 border-t pt-4 mt-2">
         <h5 className="text-xs font-bold text-gray-700">
           {t("addExam.answerOptions")}

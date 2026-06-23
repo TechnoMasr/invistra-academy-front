@@ -8,10 +8,12 @@ import { getMyLectureDetails } from "@/api/ordersServices";
 import { useParams } from "react-router";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import { useTranslation } from "react-i18next";
+import { useDirectDownload } from "@/hooks/useDirectDownload";
 
 const LectureDetails = () => {
   const { t } = useTranslation();
   const { id } = useParams();
+  const { handleDownload, loadingMap } = useDirectDownload();
 
   const { data: lecture, isLoading } = useQuery({
     queryKey: ["lecture", id],
@@ -23,6 +25,7 @@ const LectureDetails = () => {
   const isEmpty = !isLoading && !lecture;
 
   if (isEmpty) return <EmptyDataSection msg={t("lectureDetails.noData")} />;
+
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -56,7 +59,9 @@ const LectureDetails = () => {
       <div className="border rounded-2xl p-4 h-fit">
         <div className="flex items-start gap-2 mb-1">
           <FaRegFolderOpen className="text-xl mt-1" />
-          <h2 className="text-lg font-bold">{t("lectureDetails.attachments")}</h2>
+          <h2 className="text-lg font-bold">
+            {t("lectureDetails.attachments")}
+          </h2>
         </div>
         <p className="opacity-80 text-sm mb-4">
           {t("lectureDetails.attachmentsDesc")}
@@ -78,22 +83,29 @@ const LectureDetails = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-sm break-all">{file.name}</h4>
+                    <h4 className="font-medium text-sm break-all">
+                      {file.name}
+                    </h4>
                     <span className="text-xs opacity-70 block font-mono">
                       {file.size}
                     </span>
                   </div>
                 </div>
 
-                <a
-                  href={file.url}
-                  download
-                  target="_blank"
-                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-colors cursor-pointer"
+                <button
+                  onClick={() => handleDownload(file.url, file.name)}
+                  disabled={loadingMap[file.url]}
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  <FiDownloadCloud className="text-base" />
-                  <span>{t("lectureDetails.download")}</span>
-                </a>
+                  {loadingMap[file.url] ? (
+                    <span className="text-xs">...</span>
+                  ) : (
+                    <>
+                      <FiDownloadCloud className="text-base" />
+                      <span>{t("lectureDetails.download")}</span>
+                    </>
+                  )}
+                </button>
               </div>
             ))}
           </div>

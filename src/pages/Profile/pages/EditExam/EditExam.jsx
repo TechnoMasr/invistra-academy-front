@@ -12,20 +12,15 @@ import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
 import ProfileTitle from "@/components/common/ProfileTitle";
-import {
-  getExamDetailsInstructor,
-  updateExam,
-  getInstructorCoursesForExams,
-} from "@/api/ExamServices";
+import { getExamDetailsInstructor, updateExam } from "@/api/ExamServices";
 import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
 const EditExam = () => {
   const { t } = useTranslation();
-  const { id } = useParams(); // جلب معرف الامتحان من الـ URL
+  const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
 
-
-  // 1. بناء الـ Schema الديناميكي المتوافق مع حقل العرض وخيار تثبيت السؤال الجديد
+  // 1. إضافة حقل duration لمخطط Zod التابع للتعديل
   const examSchema = z.object({
     exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
     exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
@@ -36,6 +31,10 @@ const EditExam = () => {
     max_degree: z.preprocess(
       (val) => Number(val),
       z.number().min(1, t("addExam.validation.fullMarkRequired")),
+    ),
+    duration: z.preprocess(
+      (val) => Number(val),
+      z.number().min(1, t("addExam.validation.durationRequired")),
     ),
     displayed_questions_count: z.preprocess(
       (val) => Number(val),
@@ -71,7 +70,7 @@ const EditExam = () => {
       .min(1, t("addExam.validation.minQuestions")),
   });
 
-  // 2. إعداد الـ Form بالقيم الافتراضية المبدئية
+  // 2. إضافة القيمة الافتراضية لـ duration
   const {
     handleSubmit,
     control,
@@ -84,25 +83,19 @@ const EditExam = () => {
       exam_title_en: "",
       min_degree: "",
       max_degree: "",
+      duration: "",
       displayed_questions_count: "",
       questions: [],
     },
   });
 
-  // 3. جلب تفاصيل الامتحان الحالي وتحويل شكل البيانات ليتناسب مع الـ Form
   const { data: examDetails, isLoading: isExamLoading } = useQuery({
     queryKey: ["examDetails", id],
     queryFn: () => getExamDetailsInstructor(id),
     enabled: !!id,
   });
 
-  // جلب قائمة الكورسات الخاصة بالمدرس لتعبئة حقل الاختيار
-  const { data: courses, isLoading: isCoursesLoading } = useQuery({
-    queryKey: ["instructorCoursesForExams"],
-    queryFn: getInstructorCoursesForExams,
-  });
-
-  // تابع مساعد لصياغة البيانات القادمة من الـ API بشكل متوافق مع المدخلات والـ Types
+  // 3. جلب الـ duration من تفاصيل الامتحان وتمريره للـ Form
   const getFormattedExamData = (details) => {
     if (!details) return {};
     return {
@@ -110,11 +103,11 @@ const EditExam = () => {
       exam_title_en: details.title?.en || "",
       min_degree: details.pass_mark || "",
       max_degree: details.full_mark || "",
+      duration: details.duration || "", // جلب الحقل من الـ API هُنا
       displayed_questions_count: details.displayed_questions_count || "",
       questions: (details.questions || []).map((q) => ({
         question_title_ar: q.title?.ar || "",
         question_title_en: q.title?.en || "",
-        // تحويل القيمة القادمة من السيرفر (سواء 1/0 أو Boolean) إلى Boolean صريح متوافق مع الـ Checkbox
         is_appears_to_all_examinees: Boolean(
           Number(q.is_appears_to_all_examinees),
         ),
@@ -126,14 +119,12 @@ const EditExam = () => {
     };
   };
 
-  // عمل تعبئة (Reset) للـ Form فور وصول البيانات من الـ API
   useEffect(() => {
     if (examDetails) {
       reset(getFormattedExamData(examDetails));
     }
   }, [examDetails, reset]);
 
-  // 4. التحكم بمصفوفة الأسئلة الأساسية
   const {
     fields: questionFields,
     append: appendQuestion,
@@ -143,7 +134,6 @@ const EditExam = () => {
     name: "questions",
   });
 
-  // 5. إدارة الـ Mutation للتحديث وإرسال البيانات كـ FormData
   const {
     mutate: updateExamMutate,
     isPending,
@@ -158,7 +148,7 @@ const EditExam = () => {
     },
   });
 
-  // 6. تحويل كائن البيانات (Object) إلى FormData بالصيغة المدعومة في السيرفر
+  // 4. إرسال حقل duration داخل الـ FormData عند حفظ التعديلات
   const onSubmit = (data) => {
     const formData = new FormData();
 
@@ -166,6 +156,7 @@ const EditExam = () => {
     formData.append("title[ar]", data.exam_title_ar);
     formData.append("pass_mark", String(data.min_degree));
     formData.append("full_mark", String(data.max_degree));
+    formData.append("duration", String(data.duration)); // الحقل المطلوب
     formData.append(
       "displayed_questions_count",
       String(data.displayed_questions_count),
@@ -175,7 +166,6 @@ const EditExam = () => {
       formData.append(`questions[${qIndex}][title][en]`, q.question_title_en);
       formData.append(`questions[${qIndex}][title][ar]`, q.question_title_ar);
 
-      // تحويل قيمة الـ Boolean إلى 0 أو 1 ليتم إرسالها بالمفتاح المطلوب
       const isAppearsValue = q.is_appears_to_all_examinees ? "1" : "0";
       formData.append(
         `questions[${qIndex}][is_appears_to_all_examinees]`,
@@ -194,7 +184,6 @@ const EditExam = () => {
       });
     });
 
-    // إرسال الـ FormData المجهزة مع الـ Mutation
     updateExamMutate(formData);
   };
 
@@ -202,7 +191,6 @@ const EditExam = () => {
 
   return (
     <div className="space-y-6">
-      {/* الهيدر العلوي */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
         <ProfileTitle title={t("editExam.title")} />
 
@@ -219,7 +207,6 @@ const EditExam = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-        {/* اسم الاختبار (عربي وإنجليزي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="exam_title_ar"
@@ -249,8 +236,8 @@ const EditExam = () => {
           />
         </div>
 
-        {/* الحد الأدنى للنجاح، الدرجة النهائية، وعدد الأسئلة المعروضة */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* 5. تعديل الـ Grid هنا ليصبح md:grid-cols-4 لاستيعاب حقل الـ duration */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
           <Controller
             name="min_degree"
             control={control}
@@ -279,6 +266,21 @@ const EditExam = () => {
               />
             )}
           />
+          {/* حقل مدة الاختبار المضاف حديثاً */}
+          <Controller
+            name="duration"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                disabled={!isEditing}
+                label={t("addExam.duration")}
+                placeholder={t("addExam.durationPlaceholder")}
+                error={errors.duration?.message}
+              />
+            )}
+          />
           <Controller
             name="displayed_questions_count"
             control={control}
@@ -295,7 +297,6 @@ const EditExam = () => {
           />
         </div>
 
-        {/* قسم بنك الأسئلة بالامتحانات */}
         <div className="border-t pt-6 mt-4">
           <div className="mb-4">
             <h3 className="text-xl font-bold text-gray-800">
@@ -318,7 +319,6 @@ const EditExam = () => {
             />
           ))}
 
-          {/* زر إضافة سؤال جديد يظهر فقط في وضع التعديل */}
           {isEditing && (
             <button
               type="button"
@@ -340,7 +340,6 @@ const EditExam = () => {
           )}
         </div>
 
-        {/* أزرار الحفظ والإلغاء تظهر فقط في وضع التعديل */}
         {isEditing && (
           <div className="mt-6 flex flex-col sm:flex-row gap-3 items-center justify-center">
             <Button
@@ -355,7 +354,6 @@ const EditExam = () => {
               variant="outline"
               className="w-full md:w-40 rounded-full"
               onClick={() => {
-                // إعادة تعيين الحقول إلى تفاصيل الامتحان الأصلية المجلوبة من الـ API
                 if (examDetails) {
                   reset(getFormattedExamData(examDetails));
                 }
@@ -379,7 +377,6 @@ const EditExam = () => {
   );
 };
 
-// المكون الفرعي المتنقل لإدارة خيارات كل سؤال بشكل ديناميكي
 const QuestionFieldsGroup = ({
   questionIndex,
   control,
@@ -415,7 +412,6 @@ const QuestionFieldsGroup = ({
           {t("addExam.questionNumber", { number: questionIndex + 1 })}
         </h4>
 
-        {/* حقل الـ Checkbox لتثبيت السؤال مدمج بشكل منظم ومتوافق مع الـ isEditing */}
         <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">
           <Controller
             name={`questions.${questionIndex}.is_appears_to_all_examinees`}
@@ -435,7 +431,6 @@ const QuestionFieldsGroup = ({
         </label>
       </div>
 
-      {/* عنوان السؤال (عربي وإنجليزي) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Controller
           name={`questions.${questionIndex}.question_title_ar`}
@@ -471,7 +466,6 @@ const QuestionFieldsGroup = ({
         />
       </div>
 
-      {/* حقول الإجابات (الخيارات المضافة ديناميكياً) */}
       <div className="space-y-4 border-t pt-4 mt-2">
         <h5 className="text-xs font-bold text-gray-700">
           {t("addExam.answerOptions")}
@@ -491,7 +485,6 @@ const QuestionFieldsGroup = ({
                   </span>
                 )}
               </span>
-              {/* إمكانية حذف الخيار فقط في وضع التعديل ولو زاد عن خيارين */}
               {optionFields.length > 2 && isEditing && (
                 <button
                   type="button"
@@ -540,7 +533,6 @@ const QuestionFieldsGroup = ({
           </div>
         ))}
 
-        {/* زر إضافة خيار آخر للسؤال الحالي */}
         {optionFields.length < 4 && isEditing && (
           <button
             type="button"

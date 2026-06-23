@@ -1,5 +1,6 @@
 {
   "loading": "جاري التحميل...",
+  "downloading": "جاري التحميل",
 
   "privacyPolicy": "سياسة الخصوصية",
   "termsAndConditions": "الشروط والأحكام",
@@ -727,8 +728,11 @@
     "displayedQuestionsCount": "عدد الأسئلة التي سيتم عرضها للمختبر",
     "displayedQuestionsCountPlaceholder": "ادخل عدد الأسئلة المعروضة..",
     "isAppearsToAllExaminees": "تثبيت هذا السؤال في جميع الاختبارات",
+    "duration": "مدة الاختبار (بالدقائق)",
+    "durationPlaceholder": "ادخل مدة الاختبار..",
 
     "validation": {
+      "durationRequired": "مدة الاختبار مطلوبة ويجب أن تكون أكبر من 0",
       "courseRequired": "الرجاء اختيار الكورس",
       "nameArRequired": "اسم الاختبار بالعربي مطلوب",
       "nameEnRequired": "اسم الاختبار بالإنجليزي مطلوب",

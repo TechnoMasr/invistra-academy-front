@@ -1,5 +1,6 @@
 {
   "loading": "Loading...",
+  "downloading": "Downloading...",
 
   "privacyPolicy": "Privacy Policy",
   "termsAndConditions": "Terms and Conditions",
@@ -729,7 +730,11 @@
     "displayedQuestionsCount": "Number of Displayed Questions",
     "displayedQuestionsCountPlaceholder": "Enter number of displayed questions...",
     "isAppearsToAllExaminees": "Pin this question to all exams",
+    "duration": "Exam Duration (in minutes)",
+    "durationPlaceholder": "Enter exam duration...",
+
     "validation": {
+      "durationRequired": "Exam duration is required and must be greater than 0",
       "courseRequired": "Please select a course",
       "nameArRequired": "Exam name in Arabic is required",
       "nameEnRequired": "Exam name in English is required",

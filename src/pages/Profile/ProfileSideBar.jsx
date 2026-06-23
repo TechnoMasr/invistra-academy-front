@@ -10,7 +10,6 @@ import { FaRegBell, FaRegUser } from "react-icons/fa6";
 import { IoIosLogOut } from "react-icons/io";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/images/logo.png";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
@@ -32,7 +31,11 @@ const ProfileSideBar = () => {
   const dispatch = useDispatch();
 
   const links = [
-    { name: t("profileSidebar.personalInfo"), href: "/profile", icon: FaRegUser },
+    {
+      name: t("profileSidebar.personalInfo"),
+      href: "/profile",
+      icon: FaRegUser,
+    },
     {
       name: t("profileSidebar.orders"),
       href: "/profile/orders",
@@ -120,14 +123,16 @@ const ProfileSideBar = () => {
             asChild
             className="flex items-center justify-center w-full"
           >
-            <div className="w-40 h-20 overflow-hidden mt-4 p-4">
-              <img
-                loading="lazy"
-                src={settings?.header_logo || logo}
-                alt="logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
+            {settings?.header_logo && (
+              <div className="w-40 h-20 overflow-hidden mt-4 p-4">
+                <img
+                  loading="lazy"
+                  src={settings?.header_logo}
+                  alt="logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
           </SheetTitle>
 
           <SheetDescription className="sr-only"></SheetDescription>

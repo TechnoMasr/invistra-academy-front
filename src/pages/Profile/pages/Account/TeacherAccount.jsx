@@ -21,7 +21,6 @@ import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
 import { setCredentials } from "@/store/auth/authSlice";
 import LoadingPage from "@/components/Loading/LoadingPage";
-import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
 
 const TeacherAccount = () => {
   const { t } = useTranslation();
@@ -148,9 +147,12 @@ const TeacherAccount = () => {
     },
   });
 
-  if (isLoading) return <InputsSkeleton />;
+  if (isLoading) return <LoadingPage />;
+
   if (isError)
-    return <div className="text-red-500 py-20">{t("teacherAccount.loadError")}</div>;
+    return (
+      <div className="text-red-500 py-20">{t("teacherAccount.loadError")}</div>
+    );
 
   const onSubmit = (values) => {
     const formData = new FormData();

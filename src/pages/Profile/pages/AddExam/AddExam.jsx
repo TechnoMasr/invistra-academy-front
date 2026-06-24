@@ -17,60 +17,90 @@ const AddExam = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // 1. إضافة حقل duration لمخطط Zod
-  const examSchema = z.object({
-    course_id: z.string().min(1, t("addExam.validation.courseRequired")),
-    exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
-    exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
-    min_degree: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, t("addExam.validation.passMarkRequired")),
-    ),
-    max_degree: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, t("addExam.validation.fullMarkRequired")),
-    ),
-    duration: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, t("addExam.validation.durationRequired")),
-    ),
-    displayed_questions_count: z.preprocess(
-      (val) => Number(val),
-      z
-        .number()
-        .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
-    ),
+  // 1. تحديث مخطط Zod وإضافة شروط التحقق المتبادلة (superRefine)
+  const examSchema = z
+    .object({
+      course_id: z.string().min(1, t("addExam.validation.courseRequired")),
+      exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
+      exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
+      min_degree: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.passMarkRequired")),
+      ),
+      max_degree: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.fullMarkRequired")),
+      ),
+      duration: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.durationRequired")),
+      ),
+      displayed_questions_count: z.preprocess(
+        (val) => Number(val),
+        z
+          .number()
+          .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
+      ),
+      attempts_allowed: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.attemptsAllowedRequired")),
+      ),
+      min_completion_percentage: z.preprocess(
+        (val) => Number(val),
+        z
+          .number()
+          .min(1, t("addExam.validation.minCompletionPercentageRequired"))
+          .max(100, t("addExam.validation.minCompletionPercentageMax")),
+      ),
 
-    questions: z
-      .array(
-        z.object({
-          question_title_ar: z
-            .string()
-            .min(5, t("addExam.validation.questionArRequired")),
-          question_title_en: z
-            .string()
-            .min(5, t("addExam.validation.questionEnRequired")),
-          is_appears_to_all_examinees: z.boolean().default(false),
+      questions: z
+        .array(
+          z.object({
+            question_title_ar: z
+              .string()
+              .min(5, t("addExam.validation.questionArRequired")),
+            question_title_en: z
+              .string()
+              .min(5, t("addExam.validation.questionEnRequired")),
+            is_appears_to_all_examinees: z.boolean().default(false),
 
-          options: z
-            .array(
-              z.object({
-                option_ar: z
-                  .string()
-                  .min(1, t("addExam.validation.optionArRequired")),
-                option_en: z
-                  .string()
-                  .min(1, t("addExam.validation.optionEnRequired")),
-              }),
-            )
-            .min(2, t("addExam.validation.minOptions"))
-            .max(4, t("addExam.validation.maxOptions")),
-        }),
-      )
-      .min(1, t("addExam.validation.minQuestions")),
-  });
+            options: z
+              .array(
+                z.object({
+                  option_ar: z
+                    .string()
+                    .min(1, t("addExam.validation.optionArRequired")),
+                  option_en: z
+                    .string()
+                    .min(1, t("addExam.validation.optionEnRequired")),
+                }),
+              )
+              .min(2, t("addExam.validation.minOptions"))
+              .max(4, t("addExam.validation.maxOptions")),
+          }),
+        )
+        .min(1, t("addExam.validation.minQuestions")),
+    })
+    .superRefine((data, ctx) => {
+      // الشرط الأول: الحد الأدنى للنجاح لا يتعدى الدرجة النهائية
+      if (data.min_degree > data.max_degree) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("addExam.validation.minDegreeExceedsMax"), // تأكد من إضافة مفتاح الترجمة هذا
+          path: ["min_degree"],
+        });
+      }
 
-  // 2. إضافة القيمة الافتراضية لـ duration
+      // الشرط الثاني: عدد الأسئلة المعروضة لا يتعدى إجمالي الأسئلة المضافة
+      if (data.displayed_questions_count > data.questions.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("addExam.validation.displayedCountExceedsTotal"), // تأكد من إضافة مفتاح الترجمة هذا
+          path: ["displayed_questions_count"],
+        });
+      }
+    });
+
   const {
     handleSubmit,
     control,
@@ -86,6 +116,9 @@ const AddExam = () => {
       max_degree: "",
       duration: "",
       displayed_questions_count: "",
+      attempts_allowed: "",
+      min_completion_percentage: "",
+
       questions: [
         {
           question_title_ar: "",
@@ -124,7 +157,6 @@ const AddExam = () => {
     },
   });
 
-  // 3. إرسال حقل duration في الـ FormData
   const onSubmit = (data) => {
     const formData = new FormData();
 
@@ -132,10 +164,15 @@ const AddExam = () => {
     formData.append("title[ar]", data.exam_title_ar);
     formData.append("pass_mark", String(data.min_degree));
     formData.append("full_mark", String(data.max_degree));
-    formData.append("duration", String(data.duration)); // الحقل المطلوب هُنا
+    formData.append("duration", String(data.duration));
     formData.append(
       "displayed_questions_count",
       String(data.displayed_questions_count),
+    );
+    formData.append("attempts_allowed", String(data.attempts_allowed));
+    formData.append(
+      "min_completion_percentage",
+      String(data.min_completion_percentage),
     );
 
     data.questions.forEach((q, qIndex) => {
@@ -225,21 +262,7 @@ const AddExam = () => {
           />
         </div>
 
-        {/* 4. تحديث شبكة الحقول (Grid) لتصبح 4 أعمدة بدلاً من 3 واضافة المدة */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-          <Controller
-            name="min_degree"
-            control={control}
-            render={({ field }) => (
-              <MainInput
-                {...field}
-                type="number"
-                label={t("addExam.passMark")}
-                placeholder={t("addExam.passMarkPlaceholder")}
-                error={errors.min_degree?.message}
-              />
-            )}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Controller
             name="max_degree"
             control={control}
@@ -253,6 +276,19 @@ const AddExam = () => {
               />
             )}
           />
+          <Controller
+            name="min_degree"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                label={t("addExam.passMark")}
+                placeholder={t("addExam.passMarkPlaceholder")}
+                error={errors.min_degree?.message}
+              />
+            )}
+          />{" "}
           <Controller
             name="duration"
             control={control}
@@ -276,6 +312,32 @@ const AddExam = () => {
                 label={t("addExam.displayedQuestionsCount")}
                 placeholder={t("addExam.displayedQuestionsCountPlaceholder")}
                 error={errors.displayed_questions_count?.message}
+              />
+            )}
+          />
+          <Controller
+            name="attempts_allowed"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                label={t("addExam.attemptsAllowed")}
+                placeholder={t("addExam.attemptsAllowedPlaceholder")}
+                error={errors.attempts_allowed?.message}
+              />
+            )}
+          />
+          <Controller
+            name="min_completion_percentage"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                label={t("addExam.minCompletionPercentage")}
+                placeholder={t("addExam.minCompletionPercentagePlaceholder")}
+                error={errors.min_completion_percentage?.message}
               />
             )}
           />

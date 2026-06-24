@@ -7,9 +7,9 @@
   "contactUs": "Contact Us",
 
   "noDataFound": "No data found",
-  "teachers": "Teachers",
+  "teachers": "Instructors",
   "courses": "Courses",
-  "registerAsTeacher": "Register as Teacher",
+  "registerAsTeacher": "Register as Instructor",
   "phone": "Phone",
   "whatsapp": "WhatsApp",
 
@@ -203,9 +203,9 @@
 
   "registerPage": {
     "title": "Register",
-    "description": "Are you a student or a teacher?",
+    "description": "Are you a student or a instructor?",
     "student": "Student",
-    "teacher": "Teacher",
+    "teacher": "Instructor",
     "alreadyHaveAccount": "Already have an account?",
     "signInHere": "Sign in here"
   },
@@ -235,7 +235,7 @@
   },
 
   "RegisterTeacher": {
-    "createAccount": "Create Teacher Account",
+    "createAccount": "Create Instructor Account",
     "enterDetails": "Please enter your details to access your account"
   },
 
@@ -476,6 +476,7 @@
     "deleteExam": "Delete Exam",
     "deleteTitle": "Delete Exam",
     "deleteDescription": "Are you sure you want to delete exam \"{{name}}\"? This action cannot be undone after completion.",
+    "time": "Exam time: {{time}} minute",
     "confirmDelete": "Confirm Delete",
     "cancel": "Cancel",
     "deleteSuccess": "Exam deleted successfully",
@@ -599,7 +600,7 @@
   },
 
   "teachersPage": {
-    "title": "Teachers",
+    "title": "Instructors",
     "search": "Search",
     "searchPlaceholder": "Search for an instructor",
     "category": "Category",
@@ -668,6 +669,8 @@
     "error": "Something went wrong, please try again",
     "validation": {
       "invalidLink": "Invalid video link",
+      "imageRequired": "Course image is required",
+      "atLeastOneFeature": "At least one learning feature is required",
       "nameArRequired": "Course name in Arabic is required (at least 3 characters)",
       "nameEnRequired": "Course name in English is required (at least 3 characters)",
       "descArRequired": "Course description in Arabic is required (at least 10 characters)",
@@ -679,7 +682,8 @@
       "durationRequired": "Course duration is required",
       "durationFormat": "Duration format must be HH:MM like 05:30",
       "priceRequired": "Price is required",
-      "invalidDiscount": "Invalid discount price"
+      "invalidDiscount": "Invalid discount price",
+      "priceBeforeDiscountRequired": "Price before discount must be greater than the current price or empty"
     }
   },
 
@@ -732,6 +736,10 @@
     "isAppearsToAllExaminees": "Pin this question to all exams",
     "duration": "Exam Duration (in minutes)",
     "durationPlaceholder": "Enter exam duration...",
+    "attemptsAllowed": "Allowed Attempts",
+    "attemptsAllowedPlaceholder": "Enter number of attempts...",
+    "minCompletionPercentage": "Course Completion Required to Unlock Exam (%)",
+    "minCompletionPercentagePlaceholder": "Enter required percentage (1-100)...",
 
     "validation": {
       "durationRequired": "Exam duration is required and must be greater than 0",
@@ -747,7 +755,12 @@
       "minOptions": "At least 2 options are required per question",
       "maxOptions": "Maximum of 4 options allowed",
       "minQuestions": "At least 1 question is required",
-      "displayedQuestionsCountRequired": "Displayed questions count is required and must be greater than 0"
+      "displayedQuestionsCountRequired": "Displayed questions count is required and must be greater than 0",
+      "minDegreeExceedsMax": "Minimum pass mark cannot exceed the exam's full mark",
+      "attemptsAllowedRequired": "Attempts count is required and must be greater than 0",
+      "minCompletionPercentageRequired": "Completion percentage is required and must be greater than 0",
+      "minCompletionPercentageMax": "Completion percentage cannot exceed 100%",
+      "displayedCountExceedsTotal": "Displayed questions count cannot exceed the total number of added questions"
     }
   },
 
@@ -763,6 +776,7 @@
   "addLecture": {
     "title": "Add Lecture",
     "uploadVideo": "Upload Lecture Video",
+    "readyToUpload": "Ready to upload",
     "videoLink": "Lecture Link",
     "videoLinkPlaceholder": "Enter lecture link...",
     "nameAr": "Lecture Title (Arabic)",

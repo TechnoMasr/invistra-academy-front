@@ -17,13 +17,13 @@ const HeaderActions = ({ showMobileNav, setShowMobileNav }) => {
   const { isInstructor } = useAuthGuard();
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 sm:gap-2">
       <LanguageSwitcher />
 
       <Button
         onClick={() => dispatch(openModal({ modalName: "SearchModal" }))}
         size="icon"
-        className="rounded-full lg:hidden"
+        className="rounded-full xl:hidden"
       >
         <IoSearchOutline />
       </Button>

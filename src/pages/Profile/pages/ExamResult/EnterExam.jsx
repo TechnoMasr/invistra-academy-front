@@ -6,6 +6,8 @@ import ProfileTitle from "@/components/common/ProfileTitle";
 import { HelpCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { RiTimerLine } from "react-icons/ri";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 const EnterExam = () => {
   const { t } = useTranslation();
@@ -16,8 +18,11 @@ const EnterExam = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const isSubmittedRef = useRef(false); // لمنع التكرار والإرسال المزدوج
   const selectedAnswersRef = useRef(selectedAnswers);
+  // حالة التايمر بالثواني والوقت الكلي للحسابات الدائرية
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [totalDuration, setTotalDuration] = useState(null);
 
-  // تحديث الـ Ref دائماً بالقيمة الحالية لاستخدامه داخل أحداث المتصفح المستقلة
+  // تحديث الـ Ref دائماً بالقيمة الحالية لاستخدامه داخل أحداث المتصفح المستقلة والتايمر
   useEffect(() => {
     selectedAnswersRef.current = selectedAnswers;
   }, [selectedAnswers]);
@@ -42,32 +47,87 @@ const EnterExam = () => {
     },
   });
 
+  const questionsRef = useRef([]);
+
+  // حدّثه لما الـ exam يتحمل
+  useEffect(() => {
+    if (exam?.questions) {
+      questionsRef.current = exam.questions;
+    }
+  }, [exam]);
+
   // دالة مساعدة لتحويل الإجابات لـ FormData وإرسالها
   const sendAnswersAndSubmit = (currentAnswers) => {
     if (isSubmittedRef.current) return;
     isSubmittedRef.current = true;
 
     const formData = new FormData();
-    Object.entries(currentAnswers).forEach(([qId, optId], index) => {
-      formData.append(`answers[${index}][question_id]`, qId);
-      formData.append(`answers[${index}][option_id]`, optId);
+    const questions = questionsRef.current; // ✅ دايماً محدّث
+
+    questions.forEach((q, index) => {
+      formData.append(`answers[${index}][question_id]`, q.id);
+      formData.append(
+        `answers[${index}][option_id]`,
+        currentAnswers[q.id] ?? "",
+      );
     });
+
     submitExam(formData);
+  };
+
+  // 2. إعداد وتشغيل التايمر التنازلي
+  useEffect(() => {
+    if (exam?.duration) {
+      const seconds = exam.duration * 60;
+      setTimeLeft(seconds);
+      setTotalDuration(seconds); // حفظ الوقت الكلي لحساب النسبة الدائرية والألوان
+    }
+  }, [exam]);
+
+  useEffect(() => {
+    if (timeLeft === null) return;
+
+    // إذا انتهى الوقت، أرسل الإجابات فوراً
+    if (timeLeft <= 0) {
+      alert(
+        t("enterExam.timeOut") ||
+          "انتهى وقت الامتحان! سيتم حفظ وإرسال إجاباتك الحالية تلقائيًا.",
+      );
+      sendAnswersAndSubmit(selectedAnswersRef.current);
+      return;
+    }
+
+    const timerInterval = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [timeLeft]);
+
+  // دالة تحويل الثواني إلى صيغة HH:MM:SS بشكل احترافي
+  const formatTime = (totalSeconds) => {
+    if (totalSeconds === null || totalSeconds < 0) return "00:00:00";
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const formattedHours = String(hours).padStart(2, "0");
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   };
 
   // 3. تفعيل وضع ملء الشاشة تلقائياً ومراقبته عند الخروج
   useEffect(() => {
     const element = document.documentElement;
 
-    // تفعيل ملء الشاشة عند الدخول
     if (element.requestFullscreen) element.requestFullscreen();
     else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
     else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
     else if (element.msRequestFullscreen) element.msRequestFullscreen();
 
-    // دالة لمراقبة الخروج من ملء الشاشة
     const handleFullscreenChange = () => {
-      // إذا لم يعد هناك عنصر في وضع ملء الشاشة، والامتحان لم يتم إرساله بعد
       if (!document.fullscreenElement && !isSubmittedRef.current) {
         alert(
           t("enterExam.fullscreenExitWarning") ||
@@ -77,14 +137,12 @@ const EnterExam = () => {
       }
     };
 
-    // إضافة مستمعات الأحداث لجميع المتصفحات
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
     document.addEventListener("mozfullscreenchange", handleFullscreenChange);
     document.addEventListener("MSFullscreenChange", handleFullscreenChange);
 
     return () => {
-      // تنظيف الأحداث عند الخروج من الصفحة
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.removeEventListener(
         "webkitfullscreenchange",
@@ -99,7 +157,6 @@ const EnterExam = () => {
         handleFullscreenChange,
       );
 
-      // إلغاء ملء الشاشة إذا كان لا يزال مفعلاً
       if (document.fullscreenElement) {
         document.exitFullscreen().catch((err) => console.log(err));
       }
@@ -160,41 +217,121 @@ const EnterExam = () => {
     sendAnswersAndSubmit(selectedAnswers);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingPage />;
 
   const questionsList = exam?.questions || [];
+
+  // --- حسابات الـ Progress Circle الديناميكية بالأثلاث ---
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+
+  // حساب نسبة الوقت المتبقي (من 0 إلى 100)
+  const percentageLeft = totalDuration ? (timeLeft / totalDuration) * 100 : 0;
+
+  // حساب المسافة المقطوعة للدائرة
+  const strokeDashoffset =
+    circumference - (percentageLeft / 100) * circumference;
+
+  // تحديد كلاسات الألوان ديناميكياً بناءً على نسبة الوقت المتبقي
+  let timerColorClass = "text-sky-500"; // الافتراضي: الثلث الأول (الأزرق)
+  let timerBgClass = "border-gray-100 bg-white";
+  let textClockColorClass = "text-gray-700";
+
+  if (percentageLeft <= 33.33) {
+    // الثلث الأخير (الأحمر)
+    timerColorClass = "text-red-500 animate-pulse";
+    timerBgClass = "border-red-200 bg-red-50/50";
+    textClockColorClass = "text-red-600 animate-pulse";
+  } else if (percentageLeft <= 66.66) {
+    // الثلث الأوسط (الأصفر)
+    timerColorClass = "text-amber-500";
+    timerBgClass = "border-amber-200 bg-amber-50/50";
+    textClockColorClass = "text-amber-600";
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 select-none p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* الهيدر العلوي للامتحان */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-white p-5 rounded-xl shadow-sm pb-4">
-          <ProfileTitle title={exam?.title || t("enterExam.title")} />
+        <div className="flex flex-col items-center justify-center md:flex-row md:justify-between gap-4 border-b bg-white p-5 rounded-xl shadow-sm">
+          <ProfileTitle title={exam?.title} />
 
-          <div className="flex gap-3 text-sm">
-            <p className="font-medium py-1 px-4 text-amber-500 border border-amber-500 rounded-full flex items-center gap-1.5">
-              <HelpCircle className="w-4 h-4" />
-              <span>
-                {t("enterExam.questions", { count: questionsList.length })}
-              </span>
-            </p>
-            <p className="font-medium py-1 px-4 border rounded-full flex items-center gap-1.5">
-              <span>{t("enterExam.passMark", { mark: exam?.pass_mark })} </span>
-            </p>
-          </div>
+          {/* التايمر الدائري المتغير ديناميكياً حسب النسبة المئوية */}
+          {timeLeft !== null && (
+            <div
+              className={`flex items-center gap-3 border rounded-xl py-1.5 px-4 shadow-sm transition-all duration-500 ${timerBgClass}`}
+            >
+              {/* رسمة الـ SVG للدائرة */}
+              <div className="relative flex items-center justify-center w-14 h-14">
+                <svg className="w-full h-full transform -rotate-90">
+                  {/* الدائرة الخلفية الرمادية */}
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r={radius}
+                    className="text-gray-100"
+                    strokeWidth="4"
+                    stroke="currentColor"
+                    fill="transparent"
+                  />
+                  {/* الدائرة الملونة المتحركة ديناميكياً */}
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r={radius}
+                    className={`transition-all duration-1000 ease-linear ${timerColorClass}`}
+                    strokeWidth="4"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="transparent"
+                  />
+                </svg>
+                {/* الأيقونة في المنتصف وتتغير ألوانها أيضاً */}
+                <div
+                  className={`absolute text-xs ${percentageLeft <= 33.33 ? "animate-ping text-red-500" : ""}`}
+                >
+                  <RiTimerLine className="w-6 h-6" />
+                </div>
+              </div>
+
+              {/* الوقت بالأرقام بجانب الدائرة */}
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500 font-medium">
+                  الوقت المتبقي
+                </span>
+                <span
+                  className={`font-mono text-base font-bold transition-colors duration-500 ${textClockColorClass}`}
+                >
+                  {formatTime(timeLeft)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* محتوى الأسئلة */}
         <form onSubmit={handleSubmit} className="space-y-8">
-          <h3 className="text-gray-800 font-bold text-lg mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            {t("enterExam.chooseCorrect")}
-          </h3>
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-white p-5 rounded-xl shadow-sm">
+            <h3 className="text-gray-800 font-bold text-lg">
+              {t("enterExam.chooseCorrect")}
+            </h3>
+
+            <div className="flex flex-wrap gap-3 text-sm items-center">
+              <p className="font-medium py-1 px-4 text-amber-500 border border-amber-500 rounded-full flex items-center gap-1.5">
+                <HelpCircle className="w-4 h-4" />
+                <span>
+                  {t("enterExam.questions", { count: questionsList.length })}
+                </span>
+              </p>
+              <p className="font-medium py-1 px-4 border rounded-full flex items-center gap-1.5">
+                <span>
+                  {t("enterExam.passMark", { mark: exam?.pass_mark })}{" "}
+                </span>
+              </p>
+            </div>
+          </div>
 
           <div className="space-y-6">
             {questionsList.map((q, qIndex) => (

@@ -16,20 +16,38 @@ import { toast } from "sonner";
 
 const AddCourse = () => {
   const [imagePreview, setImagePreview] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // بناء الـ Schema باللغة العربية مباشرة
+  // 1. الحقول الإلزامية (الأسعار الحالية بعد الخصم)
+  const requiredNumberSchema = z
+    .string()
+    .min(1, t("addCourse.validation.priceRequired"))
+    .refine(
+      (val) => !isNaN(Number(val)),
+      t("addCourse.validation.priceRequired"),
+    )
+    .transform((val) => Number(val))
+    .refine((val) => val >= 0, t("addCourse.validation.priceRequired"));
+
+  // بناء الـ Schema بحيث تكون جميع الحقول مطلوبة عدا الـ link
   const courseSchema = z.object({
-    link: z.string().url(t("addCourse.validation.invalidLink")).or(z.string().optional()),
+    // الرابط اختياري (يمكن تركه فارغاً)
+    link: z
+      .string()
+      .url(t("addCourse.validation.invalidLink"))
+      .optional()
+      .or(z.literal("")),
+
+    // الصورة مطلوبة (نتحقق من وجود ملف الـ File)
+    image: z.any().refine((file) => file instanceof File, {
+      message: t("addCourse.validation.imageRequired"),
+    }),
 
     // بيانات الكورس الأساسية باللغتين
     name_ar: z.string().min(3, t("addCourse.validation.nameArRequired")),
-    name_en: z
-      .string()
-      .min(3, t("addCourse.validation.nameEnRequired")),
+    name_en: z.string().min(3, t("addCourse.validation.nameEnRequired")),
     description_ar: z
       .string()
       .min(10, t("addCourse.validation.descArRequired")),
@@ -37,33 +55,40 @@ const AddCourse = () => {
       .string()
       .min(10, t("addCourse.validation.descEnRequired")),
 
-    // ميزات تعلم الكورس (مصفوفة ديناميكية)
-    learnings: z.array(
-      z.object({
-        title_ar: z.string().min(3, t("addCourse.validation.featureTitleAr")),
-        title_en: z.string().min(3, t("addCourse.validation.featureTitleEn")),
-        description_ar: z.string().min(5, t("addCourse.validation.featureDescAr")),
-        description_en: z.string().min(5, t("addCourse.validation.featureDescEn")),
-      }),
-    ),
+    // ميزات تعلم الكورس
+    learnings: z
+      .array(
+        z.object({
+          title_ar: z.string().min(3, t("addCourse.validation.featureTitleAr")),
+          title_en: z.string().min(3, t("addCourse.validation.featureTitleEn")),
+          description_ar: z
+            .string()
+            .min(5, t("addCourse.validation.featureDescAr")),
+          description_en: z
+            .string()
+            .min(5, t("addCourse.validation.featureDescEn")),
+        }),
+      )
+      .min(1, t("addCourse.validation.atLeastOneFeature")),
 
-    // الحقول السفلية للكورس
+    // الحقول السفلية للكورس (جميعها مطلوبة الآن)
     duration: z
       .string()
       .min(1, t("addCourse.validation.durationRequired"))
       .regex(/^\d{2}:\d{2}$/, t("addCourse.validation.durationFormat")),
-    price: z.preprocess((val) => Number(val), z.number().min(0, t("addCourse.validation.priceRequired"))),
-    dollar_price: z.preprocess(
+
+    price: requiredNumberSchema,
+    dollar_price: requiredNumberSchema,
+    price_before_discount: z.preprocess(
       (val) => Number(val),
+
       z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
-    price_before_discount: z.preprocess(
-      (val) => (val === "" || val === undefined ? undefined : Number(val)),
-      z.number().min(0, t("addCourse.validation.invalidDiscount")).optional(),
-    ),
+
     dollar_price_before_discount: z.preprocess(
-      (val) => (val === "" || val === undefined ? undefined : Number(val)),
-      z.number().min(0, t("addCourse.validation.invalidDiscount")).optional(),
+      (val) => Number(val),
+
+      z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
   });
 
@@ -71,11 +96,13 @@ const AddCourse = () => {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(courseSchema),
     defaultValues: {
       link: "",
+      image: null,
       name_ar: "",
       name_en: "",
       description_ar: "",
@@ -96,13 +123,11 @@ const AddCourse = () => {
     },
   });
 
-  // التحكم بإضافة وحذف ميزات الكورس ديناميكيًا
   const { fields, append, remove } = useFieldArray({
     control,
     name: "learnings",
   });
 
-  // إدارة الـ Mutation لإرسال البيانات للـ Back-end عبر createCourse
   const {
     mutate: createCourseMutate,
     isPending,
@@ -111,6 +136,7 @@ const AddCourse = () => {
     mutationFn: createCourse,
     onSuccess: () => {
       reset();
+      setImagePreview(null);
       toast.success(t("addCourse.success"));
       navigate("/profile/my-courses");
     },
@@ -119,26 +145,23 @@ const AddCourse = () => {
   const onSubmit = (data) => {
     const formData = new FormData();
 
-    // الحقول النصية البسيطة بأسماء الـ backend المطلوبة
     formData.append("name[en]", data.name_en);
     formData.append("name[ar]", data.name_ar);
     formData.append("description[en]", data.description_en);
     formData.append("description[ar]", data.description_ar);
     formData.append("price", data.price);
     formData.append("dollar_price", data.dollar_price);
-    if (data.price_before_discount !== undefined) {
-      formData.append("price_before_discount", data.price_before_discount);
-    }
-    if (data.dollar_price_before_discount !== undefined) {
-      formData.append(
-        "dollar_price_before_discount",
-        data.dollar_price_before_discount,
-      );
-    }
+    formData.append("price_before_discount", data.price_before_discount);
+    formData.append(
+      "dollar_price_before_discount",
+      data.dollar_price_before_discount,
+    );
     formData.append("duration", data.duration);
-    formData.append("link", data.link);
 
-    // مصفوفة الـ learnings بصيغة learnings[index][field][lang]
+    if (data.link) {
+      formData.append("link", data.link);
+    }
+
     data.learnings.forEach((item, index) => {
       formData.append(`learnings[${index}][title][en]`, item.title_en);
       formData.append(`learnings[${index}][title][ar]`, item.title_ar);
@@ -152,9 +175,8 @@ const AddCourse = () => {
       );
     });
 
-    // الصورة الرئيسية فقط (image) - تم إلغاء thumbnail بناءً على الطلب
-    if (imageFile) {
-      formData.append("image", imageFile);
+    if (data.image) {
+      formData.append("image", data.image);
     }
 
     createCourseMutate(formData);
@@ -175,7 +197,7 @@ const AddCourse = () => {
             onChange={(e) => {
               const file = e.target.files[0];
               if (file) {
-                setImageFile(file);
+                setValue("image", file, { shouldValidate: true });
                 setImagePreview(URL.createObjectURL(file));
               }
             }}
@@ -183,7 +205,9 @@ const AddCourse = () => {
 
           <div
             onClick={() => fileInputRef.current.click()}
-            className="w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:bg-gray-100 transition-all"
+            className={`w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed rounded-lg cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:bg-gray-100 transition-all ${
+              errors.image ? "border-red-500" : "border-gray-200"
+            }`}
           >
             {imagePreview ? (
               <img
@@ -195,10 +219,13 @@ const AddCourse = () => {
             ) : (
               <div className="flex flex-col items-center gap-2 text-gray-400">
                 <IoImageOutline className="text-7xl" />
-                <span className="">{t("addCourse.courseImage")}</span>
+                <span>{t("addCourse.courseImage")}</span>
               </div>
             )}
           </div>
+          {errors.image && (
+            <p className="text-sm text-red-500 mt-2">{errors.image.message}</p>
+          )}
         </div>
 
         {/* حقل الفيديو التعريفي (link) */}
@@ -387,24 +414,29 @@ const AddCourse = () => {
           >
             {t("addCourse.addFeature")}
           </button>
+          {errors.learnings?.message && (
+            <p className="text-sm text-red-500 mt-2">
+              {errors.learnings.message}
+            </p>
+          )}
         </div>
 
         {/* مدة الكورس */}
-          <Controller
-            name="duration"
-            control={control}
-            render={({ field }) => (
-              <MainInput
-                name={field.name}
-                value={field.value}
-                onChange={field.onChange}
-                type="text"
-                label={t("addCourse.duration")}
-                placeholder={t("addCourse.durationPlaceholder")}
-                error={errors.duration?.message}
-              />
-            )}
-          />
+        <Controller
+          name="duration"
+          control={control}
+          render={({ field }) => (
+            <MainInput
+              name={field.name}
+              value={field.value}
+              onChange={field.onChange}
+              type="text"
+              label={t("addCourse.duration")}
+              placeholder={t("addCourse.durationPlaceholder")}
+              error={errors.duration?.message}
+            />
+          )}
+        />
 
         {/* سعر الكورس (جنيه مصري ودولار أمريكي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -482,10 +514,7 @@ const AddCourse = () => {
 
           {error && (
             <FormError
-              errorMsg={
-                error?.response?.data?.message ||
-                t("addCourse.error")
-              }
+              errorMsg={error?.response?.data?.message || t("addCourse.error")}
             />
           )}
         </div>

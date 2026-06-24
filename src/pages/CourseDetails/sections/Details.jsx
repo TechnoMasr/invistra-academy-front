@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { GoPlay } from "react-icons/go";
 import {
   MdOndemandVideo,
   MdOutlineAccessTime,
@@ -19,6 +18,7 @@ import { toast } from "sonner";
 import FormError from "@/components/form/FormError";
 import useRequireAuth from "@/hooks/useRequireAuth";
 import useAuthGuard from "@/hooks/useAuthGuard";
+import ImageSection from "./ImageSection";
 
 const Details = ({ data }) => {
   const { t } = useTranslation();
@@ -40,19 +40,15 @@ const Details = ({ data }) => {
     },
   });
 
-  // دالة أضف إلى السلة المحمية
   const onAddToCartClick = () => {
     if (!data?.id) return;
-
     requireAuth(() => {
       handleAddToCart(data.id);
     });
   };
 
-  // دالة "اشتري الآن" المحمية
   const handleBuyNow = () => {
     if (!data?.id) return;
-
     requireAuth(() => {
       handleAddToCart(data.id, {
         onSuccess: () => {
@@ -131,51 +127,52 @@ const Details = ({ data }) => {
           </p>
         </div>
 
-        {/* أزرار التحكم */}
         {!isInstructor && (
           <div className="flex items-center gap-2">
-            <Button
-              size="lg"
-              className="rounded-full flex-1"
-              onClick={onAddToCartClick} // استخدام الدالة المحمية الجديدة
-              disabled={isPending}
-            >
-              {isPending ? (
-                <Loader2 className="animate-spin h-5 w-5" />
-              ) : (
-                <>
-                  {t("courseDetails.addToCart")} <GrCart />
-                </>
-              )}
-            </Button>
+            {data?.is_purchased ? (
+              <Link
+                to={`/profile/lectures/${data?.id}`}
+                className="rounded-full flex-1"
+              >
+                <Button size="lg" className="w-full">
+                  {t("courseDetails.showLectures")} <MdOutlineOndemandVideo />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Button
+                  size="lg"
+                  className="rounded-full flex-1"
+                  onClick={onAddToCartClick}
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <Loader2 className="animate-spin h-5 w-5" />
+                  ) : (
+                    <>
+                      {t("courseDetails.addToCart")} <GrCart />
+                    </>
+                  )}
+                </Button>
 
-            <Button
-              size="lg"
-              variant="outline"
-              className="rounded-full flex-1"
-              onClick={handleBuyNow} // الدالة أصبحت محمية بالداخل تلقائياً
-              disabled={isPending}
-            >
-              {isPending ? (
-                <Loader2 className="animate-spin h-5 w-5" />
-              ) : (
-                <>
-                  {t("courseDetails.buyNow")} <IoFlashOutline />
-                </>
-              )}
-            </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full flex-1"
+                  onClick={handleBuyNow}
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <Loader2 className="animate-spin h-5 w-5" />
+                  ) : (
+                    <>
+                      {t("courseDetails.buyNow")} <IoFlashOutline />
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
           </div>
-        )}
-
-        {data?.is_purchased && (
-          <Link
-            to={`/profile/lectures/${data?.id}`}
-            className="rounded-full flex-1"
-          >
-            <Button size="lg" className="w-full">
-              {t("courseDetails.showLectures")} <MdOutlineOndemandVideo />
-            </Button>
-          </Link>
         )}
 
         {error && (
@@ -188,26 +185,7 @@ const Details = ({ data }) => {
         )}
       </div>
 
-      {data?.image && (
-        <div className="aspect-6/4 rounded-xl border overflow-hidden order-1 lg:order-2 relative">
-          <img
-            src={data?.image}
-            alt={data?.name}
-            className="w-full h-full object-cover"
-          />
-
-          {data?.link && (
-            <a
-              href={data?.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute inset-0 bg-black/50 flex items-center justify-center"
-            >
-              <GoPlay className="text-[100px] text-white" />
-            </a>
-          )}
-        </div>
-      )}
+      <ImageSection data={data} />
     </section>
   );
 };

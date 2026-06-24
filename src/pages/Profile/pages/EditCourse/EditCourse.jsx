@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoImageOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import { FaRegEdit } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import { toast } from "sonner";
 
 import MainInput from "@/components/form/MainInput";
@@ -17,7 +17,7 @@ import {
   getMyCourseDetailsInstructor,
   updateCourse,
 } from "@/api/myCoursesServices";
-import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 const EditCourse = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -26,7 +26,6 @@ const EditCourse = () => {
   const fileInputRef = useRef(null);
 
   const { id } = useParams();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -36,14 +35,27 @@ const EditCourse = () => {
     queryFn: () => getMyCourseDetailsInstructor(id),
   });
 
-  // بناء الـ Schema باللغة العربية مباشرة (مطابق تماماً لصفحة الإضافة)
+  // 1. الحقول الإلزامية (الأسعار الحالية بعد الخصم) متطابقة مع صفحة الإضافة
+  const requiredNumberSchema = z
+    .string()
+    .min(1, t("addCourse.validation.priceRequired"))
+    .refine(
+      (val) => !isNaN(Number(val)),
+      t("addCourse.validation.priceRequired"),
+    )
+    .transform((val) => Number(val))
+    .refine((val) => val >= 0, t("addCourse.validation.priceRequired"));
+
+  // بناء الـ Schema بحيث تكون مطابقة تماماً لصفحة الإضافة
   const courseSchema = z.object({
-    link: z.string().url(t("addCourse.validation.invalidLink")).or(z.string().optional()),
+    link: z
+      .string()
+      .url(t("addCourse.validation.invalidLink"))
+      .optional()
+      .or(z.literal("")),
 
     name_ar: z.string().min(3, t("addCourse.validation.nameArRequired")),
-    name_en: z
-      .string()
-      .min(3, t("addCourse.validation.nameEnRequired")),
+    name_en: z.string().min(3, t("addCourse.validation.nameEnRequired")),
     description_ar: z
       .string()
       .min(10, t("addCourse.validation.descArRequired")),
@@ -51,37 +63,37 @@ const EditCourse = () => {
       .string()
       .min(10, t("addCourse.validation.descEnRequired")),
 
-    learnings: z.array(
-      z.object({
-        title_ar: z.string().min(3, t("addCourse.validation.featureTitleAr")),
-        title_en: z.string().min(3, t("addCourse.validation.featureTitleEn")),
-        description_ar: z.string().min(5, t("addCourse.validation.featureDescAr")),
-        description_en: z.string().min(5, t("addCourse.validation.featureDescEn")),
-      }),
-    ),
+    learnings: z
+      .array(
+        z.object({
+          title_ar: z.string().min(3, t("addCourse.validation.featureTitleAr")),
+          title_en: z.string().min(3, t("addCourse.validation.featureTitleEn")),
+          description_ar: z
+            .string()
+            .min(5, t("addCourse.validation.featureDescAr")),
+          description_en: z
+            .string()
+            .min(5, t("addCourse.validation.featureDescEn")),
+        }),
+      )
+      .min(1, t("addCourse.validation.atLeastOneFeature")),
 
     duration: z
       .string()
       .min(1, t("addCourse.validation.durationRequired"))
       .regex(/^\d{2}:\d{2}$/, t("addCourse.validation.durationFormat")),
-    price: z.preprocess((val) => Number(val), z.number().min(0, t("addCourse.validation.priceRequired"))),
-    dollar_price: z.preprocess(
+
+    price: requiredNumberSchema,
+    dollar_price: requiredNumberSchema,
+
+    price_before_discount: z.preprocess(
       (val) => Number(val),
       z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
-    price_before_discount: z.preprocess(
-      (val) =>
-        val === "" || val === undefined || val === null
-          ? undefined
-          : Number(val),
-      z.number().min(0, t("addCourse.validation.invalidDiscount")).optional(),
-    ),
+
     dollar_price_before_discount: z.preprocess(
-      (val) =>
-        val === "" || val === undefined || val === null
-          ? undefined
-          : Number(val),
-      z.number().min(0, t("addCourse.validation.invalidDiscount")).optional(),
+      (val) => Number(val),
+      z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
   });
 
@@ -120,7 +132,7 @@ const EditCourse = () => {
     name: "learnings",
   });
 
-  // دالة مساعدة لتشكيل وتجهيز البيانات القادمة من الـ API لتتوافق مع الـ Form
+  // دالة مساعدة لتشكيل وتجهيز البيانات القادمة من الـ API لتتوافق مع الـ Form والقيم الافتراضية النصية
   const formatCourseData = (data) => {
     if (!data) return {};
     return {
@@ -129,7 +141,6 @@ const EditCourse = () => {
       name_en: data.name?.en || "",
       description_ar: data.description?.ar || "",
       description_en: data.description?.en || "",
-      // عمل تحويل (Mapping) من what_will_learn إلى learnings الحقل المطلوب بالـ Form
       learnings: data.what_will_learn?.map((item) => ({
         title_ar: item.title_ar || "",
         title_en: item.title_en || "",
@@ -144,10 +155,25 @@ const EditCourse = () => {
         },
       ],
       duration: data.duration || "",
-      price: data.price || "",
-      dollar_price: data.dollar_price || "",
-      price_before_discount: data.price_before_discount || "",
-      dollar_price_before_discount: data.dollar_price_before_discount || "",
+      // تحويل الأرقام القادمة من الـ API لسلاسل نصية (Strings) لتتوافق مع معالجة الـ Input والـ Schema
+      price:
+        data.price !== undefined && data.price !== null
+          ? String(data.price)
+          : "",
+      dollar_price:
+        data.dollar_price !== undefined && data.dollar_price !== null
+          ? String(data.dollar_price)
+          : "",
+      price_before_discount:
+        data.price_before_discount !== undefined &&
+        data.price_before_discount !== null
+          ? String(data.price_before_discount)
+          : "",
+      dollar_price_before_discount:
+        data.dollar_price_before_discount !== undefined &&
+        data.dollar_price_before_discount !== null
+          ? String(data.dollar_price_before_discount)
+          : "",
     };
   };
 
@@ -178,32 +204,22 @@ const EditCourse = () => {
   const onSubmit = (data) => {
     const formData = new FormData();
 
-    // الحقول النصية البسيطة بأسماء الـ backend المطلوبة
     formData.append("name[en]", data.name_en);
     formData.append("name[ar]", data.name_ar);
     formData.append("description[en]", data.description_en);
     formData.append("description[ar]", data.description_ar);
     formData.append("price", data.price);
     formData.append("dollar_price", data.dollar_price);
-
-    if (
-      data.price_before_discount !== undefined &&
-      data.price_before_discount !== ""
-    ) {
-      formData.append("price_before_discount", data.price_before_discount);
-    }
-    if (
-      data.dollar_price_before_discount !== undefined &&
-      data.dollar_price_before_discount !== ""
-    ) {
-      formData.append(
-        "dollar_price_before_discount",
-        data.dollar_price_before_discount,
-      );
-    }
-
+    formData.append("price_before_discount", data.price_before_discount);
+    formData.append(
+      "dollar_price_before_discount",
+      data.dollar_price_before_discount,
+    );
     formData.append("duration", data.duration);
-    formData.append("link", data.link);
+
+    if (data.link) {
+      formData.append("link", data.link);
+    }
 
     // مصفوفة الـ learnings بصيغة learnings[index][field][lang]
     data.learnings.forEach((item, index) => {
@@ -227,7 +243,7 @@ const EditCourse = () => {
     updateCourseMutate(formData);
   };
 
-  if (isLoading) return <InputsSkeleton />;
+  if (isLoading) return <LoadingPage />;
 
   return (
     <div className="space-y-6">
@@ -267,11 +283,11 @@ const EditCourse = () => {
 
           <div
             onClick={() => isEditing && fileInputRef.current.click()}
-            className={`w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all ${
+            className={`w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all ${
               isEditing
                 ? "cursor-pointer hover:bg-gray-100"
                 : "cursor-not-allowed opacity-90"
-            }`}
+            } ${errors.image ? "border-red-500" : "border-gray-200"}`}
           >
             {imagePreview ? (
               <img
@@ -378,7 +394,9 @@ const EditCourse = () => {
 
         {/* قسم إضافة ميزات تعلم الكورس الديناميكي (learnings) */}
         <div className="border-t pt-4">
-          <h3 className="text-lg font-semibold mb-4">{t("addCourse.learningsTitle")}</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            {t("addCourse.learningsTitle")}
+          </h3>
 
           {fields.map((item, index) => (
             <div
@@ -481,8 +499,13 @@ const EditCourse = () => {
               }
               className="flex items-center gap-2 text-sm font-semibold border px-4 py-2 rounded-full hover:bg-gray-50 transition-all mt-2"
             >
-              {t("editCourse.addFeature")}
+              {t("addCourse.addFeature")}
             </button>
+          )}
+          {errors.learnings?.message && (
+            <p className="text-sm text-red-500 mt-2">
+              {errors.learnings.message}
+            </p>
           )}
         </div>
 
@@ -605,10 +628,7 @@ const EditCourse = () => {
         {error && (
           <div className="flex justify-center">
             <FormError
-              errorMsg={
-                error?.response?.data?.message ||
-                t("addCourse.error")
-              }
+              errorMsg={error?.response?.data?.message || t("addCourse.error")}
             />
           </div>
         )}

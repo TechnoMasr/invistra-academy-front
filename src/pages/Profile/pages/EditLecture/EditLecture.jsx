@@ -4,10 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RiVideoUploadLine } from "react-icons/ri";
-import { FiUploadCloud } from "react-icons/fi";
+import { FiUploadCloud, FiFilm } from "react-icons/fi";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -19,7 +19,7 @@ import {
   getLectureInstructorDetails,
   updateLecture,
 } from "@/api/lectureServices";
-import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 // الحد الأقصى لحجم الملف: 2 ميجابايت بالبايت
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -27,7 +27,6 @@ const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const EditLecture = () => {
   const { t } = useTranslation();
   const { id } = useParams();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -39,8 +38,11 @@ const EditLecture = () => {
   const [deletedOldFiles, setDeletedOldFiles] = useState([]);
   const [attachedFiles, setAttachedFiles] = useState([]);
 
-  // 👈 State جديدة لتخزين خطأ حجم الملفات المرفقة
+  // State لتخزين خطأ حجم الملفات المرفقة
   const [fileSizeError, setFileSizeError] = useState("");
+
+  // 👈 State جديدة لتخزين خطأ عدم وجود فيديو أو رابط
+  const [videoValidationError, setVideoValidationError] = useState("");
 
   const videoInputRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -52,14 +54,19 @@ const EditLecture = () => {
       .or(z.string().optional()),
     title_ar: z.string().min(3, t("addLecture.validation.nameArRequired")),
     title_en: z.string().min(3, t("addLecture.validation.nameEnRequired")),
-    description_ar: z.string().min(10, t("addLecture.validation.descArRequired")),
-    description_en: z.string().min(10, t("addLecture.validation.descEnRequired")),
+    description_ar: z
+      .string()
+      .min(10, t("addLecture.validation.descArRequired")),
+    description_en: z
+      .string()
+      .min(10, t("addLecture.validation.descEnRequired")),
   });
 
   const {
     handleSubmit,
     control,
     reset,
+    watch, // 👈 لمراقبة حقل التكست الخاص بالرابط وتصفير الخطأ تلقائياً
     formState: { errors },
   } = useForm({
     resolver: zodResolver(lectureSchema),
@@ -71,6 +78,16 @@ const EditLecture = () => {
       description_en: "",
     },
   });
+
+  // مراقبة قيمة الرابط الحالي
+  const currentVideoUrl = watch("video_url");
+
+  // 👈 مراقبة المدخلات لتصفير خطأ الفاليديشن فور قيام المستخدم بحل المشكلة
+  useEffect(() => {
+    if (videoFile || videoPreview || currentVideoUrl) {
+      setVideoValidationError("");
+    }
+  }, [videoFile, videoPreview, currentVideoUrl]);
 
   const { data: lectureData, isLoading } = useQuery({
     queryKey: ["lectureDetails", id],
@@ -109,38 +126,32 @@ const EditLecture = () => {
     onSuccess: () => {
       toast.success(t("editLecture.success"));
       setIsEditing(false);
+      setVideoFile(null);
       setAttachedFiles([]);
       setDeletedOldFiles([]);
-      setFileSizeError(""); // تصفير الخطأ عند النجاح
+      setFileSizeError("");
+      setVideoValidationError(""); // تصفير الخطأ عند النجاح
       queryClient.invalidateQueries(["lectureDetails", id]);
     },
   });
 
-  // دالة اختيار ملفات جديدة مع عمل فالياديشن للحجم (2MB)
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
-
-      // فحص حجم الملفات أولاً
       const oversizedFiles = newFiles.filter(
         (file) => file.size > MAX_FILE_SIZE,
       );
 
       if (oversizedFiles.length > 0) {
-        // 👈 تعيين رسالة الخطأ هنا بدلاً من الـ toast
-        setFileSizeError(
-          t("addLecture.fileTooLarge"),
-        );
+        setFileSizeError(t("addLecture.fileTooLarge"));
         return;
       }
 
-      // إذا كانت الملفات سليمة، نظف رسالة الخطأ وأضف الملفات
       setFileSizeError("");
       setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles]);
     }
   };
 
-  // دالة حذف ملف قديم من واجهة المستخدم وتخزينه لإرساله للسيرفر ليحذفه
   const handleRemoveOldFile = (fileUrlToRemove) => {
     setOldFiles((prev) => prev.filter((url) => url !== fileUrlToRemove));
     setDeletedOldFiles((prev) => [...prev, fileUrlToRemove]);
@@ -150,18 +161,28 @@ const EditLecture = () => {
     setAttachedFiles((prevFiles) =>
       prevFiles.filter((_, index) => index !== indexToRemove),
     );
-    // تصفير الخطأ إذا قام المستخدم بحذف الملفات المسببة للمشكلة أو لتنظيف الواجهة
     if (attachedFiles.length <= 1) {
       setFileSizeError("");
     }
   };
 
+  const removeVideoFile = (e) => {
+    e.stopPropagation();
+    setVideoFile(null);
+    setVideoPreview(null);
+    if (videoInputRef.current) videoInputRef.current.value = "";
+  };
+
   const onSubmit = (data) => {
-    // منع الإرسال إذا كان هناك خطأ في حجم الملفات
     if (fileSizeError) return;
 
-    const formData = new FormData();
+    // 👈 التحقق الإجباري: إذا لم تتوفر الشروط يتم تعيين الخطأ في الـ State بدلاً من الـ toast
+    if (!videoFile && !videoPreview && !data.video_url) {
+      setVideoValidationError(t("addLecture.videoOrLinkRequired"));
+      return;
+    }
 
+    const formData = new FormData();
     formData.append("title[en]", data.title_en);
     formData.append("title[ar]", data.title_ar);
     formData.append("description[en]", data.description_en);
@@ -170,17 +191,14 @@ const EditLecture = () => {
     if (data.video_url) {
       formData.append("video_url", data.video_url);
     }
-
     if (videoFile) {
       formData.append("video_path", videoFile);
     }
-
     if (attachedFiles.length > 0) {
       attachedFiles.forEach((file) => {
         formData.append("files[]", file);
       });
     }
-
     if (deletedOldFiles.length > 0) {
       deletedOldFiles.forEach((fileUrl) => {
         formData.append("deleted_files[]", fileUrl);
@@ -190,7 +208,7 @@ const EditLecture = () => {
     updateLectureMutate(formData);
   };
 
-  if (isLoading) return <InputsSkeleton />;
+  if (isLoading) return <LoadingPage />;
 
   return (
     <div className="space-y-6">
@@ -211,7 +229,7 @@ const EditLecture = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* قسم رفع/تعديل فيديو المحاضرة */}
-        <div className="flex flex-col items-center justify-center mb-4">
+        <div className="flex flex-col items-center justify-center mb-4 relative">
           <input
             type="file"
             accept="video/*"
@@ -229,18 +247,51 @@ const EditLecture = () => {
 
           <div
             onClick={() => isEditing && videoInputRef.current.click()}
-            className={`w-full max-w-xl aspect-2/1 bg-[#F3F4F6] border border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-6 transition-all text-center ${
+            className={`w-full max-w-xl aspect-2/1 rounded-2xl flex flex-col items-center justify-center p-6 transition-all text-center relative group overflow-hidden ${
+              videoPreview
+                ? "bg-emerald-50 border-2 border-emerald-500"
+                : "bg-[#F3F4F6] border border-dashed border-gray-300"
+            } ${
               isEditing
-                ? "cursor-pointer hover:bg-gray-100"
+                ? "cursor-pointer hover:bg-opacity-90"
                 : "cursor-not-allowed opacity-90"
             }`}
           >
-            <div className="bg-gray-300/60 p-4 rounded-xl text-gray-700 mb-3">
-              <RiVideoUploadLine className="text-3xl" />
-            </div>
-            <span className="text-lg font-bold text-[#1A202C]">
-              {videoPreview ? videoPreview : t("editLecture.lectureVideo")}
-            </span>
+            {videoPreview ? (
+              <>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={removeVideoFile}
+                    className="absolute top-3 right-3 z-10 text-red-500 hover:text-red-700 bg-white rounded-full p-0.5 shadow-md transition-transform hover:scale-110"
+                  >
+                    <IoCloseCircleSharp className="text-2xl" />
+                  </button>
+                )}
+
+                <div className="bg-emerald-500 text-white p-4 rounded-xl mb-3">
+                  <FiFilm className="text-3xl" />
+                </div>
+                <span className="text-lg font-bold text-emerald-800 truncate max-w-[90%]">
+                  {videoPreview}
+                </span>
+                {videoFile && (
+                  <span className="text-xs text-emerald-600 mt-1">
+                    ({(videoFile.size / (1024 * 1024)).toFixed(2)} MB){" "}
+                    {t("addLecture.readyToUpload")}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="bg-gray-300/60 p-4 rounded-xl text-gray-700 mb-3">
+                  <RiVideoUploadLine className="text-3xl" />
+                </div>
+                <span className="text-lg font-bold text-[#1A202C]">
+                  {t("editLecture.lectureVideo")}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -364,14 +415,13 @@ const EditLecture = () => {
             <FiUploadCloud className="text-sky-600 text-2xl" />
           </div>
 
-          {/* 👈 هنا يتم عرض رسالة الخطأ تحت حقل الرفع مباشرة */}
           {fileSizeError && (
             <p className="text-sm font-medium text-red-500 text-right mt-1 animate-pulse">
               {fileSizeError}
             </p>
           )}
 
-          {/* أولاً: عرض الملفات الحالية المرفوعة مسبقاً على السيرفر */}
+          {/* أولاً: عرض الملفات الحالية المرفوعة مسبقاً */}
           {oldFiles.length > 0 && (
             <div className="mt-3 flex flex-col gap-2 bg-gray-100/70 p-3 rounded-xl border border-gray-200/50">
               <p className="text-xs font-semibold text-gray-500 mb-1">
@@ -405,7 +455,7 @@ const EditLecture = () => {
             </div>
           )}
 
-          {/* ثانياً: قائمة الملفات الجديدة التي تم اختيارها الآن ولم تحفظ بعد */}
+          {/* ثانياً: قائمة الملفات الجديدة */}
           {attachedFiles.length > 0 && (
             <div className="mt-3 flex flex-col gap-2 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
               <p className="text-xs font-semibold text-emerald-600 mb-1">
@@ -425,7 +475,7 @@ const EditLecture = () => {
                   <button
                     type="button"
                     onClick={() => removeNewFile(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors flex items-colors p-1"
+                    className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
                     title={t("addLecture.deleteFile")}
                   >
                     <IoCloseCircleSharp className="text-xl" />
@@ -442,7 +492,7 @@ const EditLecture = () => {
             <Button
               type="submit"
               className="w-full md:w-60 bg-[#1E2229] hover:bg-[#111418] text-white rounded-full py-3"
-              disabled={isPending || !!fileSizeError} // تعطيل الزر إذا كان هناك خطأ في الحجم
+              disabled={isPending || !!fileSizeError}
             >
               {isPending ? t("editLecture.saving") : t("editLecture.save")}
             </Button>
@@ -460,7 +510,8 @@ const EditLecture = () => {
                 setVideoFile(null);
                 setAttachedFiles([]);
                 setDeletedOldFiles([]);
-                setFileSizeError(""); // تصفير الخطأ عند الإلغاء
+                setFileSizeError("");
+                setVideoValidationError(""); // تصفير الخطأ عند الإلغاء
                 setIsEditing(false);
               }}
             >
@@ -469,16 +520,20 @@ const EditLecture = () => {
           </div>
         )}
 
-        {error && (
-          <div className="flex justify-center">
+        {/* 👈 قسم عرض الأخطاء بالأسفل موثق ومجموع داخل حاوية مرنة */}
+        <div className="flex flex-col gap-2 items-center justify-center max-w-md mx-auto w-full">
+          {/* 1. عرض رسالة خطأ التحقق الإجباري المخصصة للفيديو أو الرابط */}
+          {videoValidationError && (
+            <FormError errorMsg={videoValidationError} />
+          )}
+
+          {/* 2. عرض خطأ الـ API الراجع من السيرفر في حال الفشل */}
+          {error && (
             <FormError
-              errorMsg={
-                error?.response?.data?.message ||
-                t("addLecture.error")
-              }
+              errorMsg={error?.response?.data?.message || t("addLecture.error")}
             />
-          </div>
-        )}
+          )}
+        </div>
       </form>
     </div>
   );

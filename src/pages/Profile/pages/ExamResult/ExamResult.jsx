@@ -1,9 +1,10 @@
 import { getExamsResult } from "@/api/ExamServices";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import { useQuery } from "@tanstack/react-query";
-import { HelpCircle, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { HelpCircle, CheckCircle2, XCircle } from "lucide-react";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 const ExamResult = () => {
   const { t } = useTranslation();
@@ -15,13 +16,7 @@ const ExamResult = () => {
     queryFn: () => getExamsResult(id),
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex h-60 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingPage />;
 
   // استخراج القائمة والبيانات الأساسية من الـ API
   const questionsList = examData?.questions || [];

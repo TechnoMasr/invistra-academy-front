@@ -13,64 +13,95 @@ import { Button } from "@/components/ui/button";
 import FormError from "@/components/form/FormError";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import { getExamDetailsInstructor, updateExam } from "@/api/ExamServices";
-import InputsSkeleton from "@/components/Loading/SkeletonLoading/InputsSkeleton";
+import LoadingPage from "@/components/Loading/LoadingPage";
 
 const EditExam = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
 
-  // 1. إضافة حقل duration لمخطط Zod التابع للتعديل
-  const examSchema = z.object({
-    exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
-    exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
-    min_degree: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, t("addExam.validation.passMarkRequired")),
-    ),
-    max_degree: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, t("addExam.validation.fullMarkRequired")),
-    ),
-    duration: z.preprocess(
-      (val) => Number(val),
-      z.number().min(1, t("addExam.validation.durationRequired")),
-    ),
-    displayed_questions_count: z.preprocess(
-      (val) => Number(val),
-      z
-        .number()
-        .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
-    ),
-    questions: z
-      .array(
-        z.object({
-          question_title_ar: z
-            .string()
-            .min(5, t("addExam.validation.questionArRequired")),
-          question_title_en: z
-            .string()
-            .min(5, t("addExam.validation.questionEnRequired")),
-          is_appears_to_all_examinees: z.boolean().default(false),
-          options: z
-            .array(
-              z.object({
-                option_ar: z
-                  .string()
-                  .min(1, t("addExam.validation.optionArRequired")),
-                option_en: z
-                  .string()
-                  .min(1, t("addExam.validation.optionEnRequired")),
-              }),
-            )
-            .min(2, t("addExam.validation.minOptions"))
-            .max(4, t("addExam.validation.maxOptions")),
-        }),
-      )
-      .min(1, t("addExam.validation.minQuestions")),
-  });
+  // 1. تحديث الـ Schema وإضافة شروط التحقق المتبادلة (superRefine)
+  const examSchema = z
+    .object({
+      exam_title_ar: z.string().min(3, t("addExam.validation.nameArRequired")),
+      exam_title_en: z.string().min(3, t("addExam.validation.nameEnRequired")),
+      min_degree: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.passMarkRequired")),
+      ),
+      max_degree: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.fullMarkRequired")),
+      ),
+      duration: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.durationRequired")),
+      ),
+      displayed_questions_count: z.preprocess(
+        (val) => Number(val),
+        z
+          .number()
+          .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
+      ),
+      attempts_allowed: z.preprocess(
+        (val) => Number(val),
+        z.number().min(1, t("addExam.validation.attemptsAllowedRequired")),
+      ),
+      min_completion_percentage: z.preprocess(
+        (val) => Number(val),
+        z
+          .number()
+          .min(1, t("addExam.validation.minCompletionPercentageRequired"))
+          .max(100, t("addExam.validation.minCompletionPercentageMax")),
+      ),
 
-  // 2. إضافة القيمة الافتراضية لـ duration
+      questions: z
+        .array(
+          z.object({
+            question_title_ar: z
+              .string()
+              .min(5, t("addExam.validation.questionArRequired")),
+            question_title_en: z
+              .string()
+              .min(5, t("addExam.validation.questionEnRequired")),
+            is_appears_to_all_examinees: z.boolean().default(false),
+            options: z
+              .array(
+                z.object({
+                  option_ar: z
+                    .string()
+                    .min(1, t("addExam.validation.optionArRequired")),
+                  option_en: z
+                    .string()
+                    .min(1, t("addExam.validation.optionEnRequired")),
+                }),
+              )
+              .min(2, t("addExam.validation.minOptions"))
+              .max(4, t("addExam.validation.maxOptions")),
+          }),
+        )
+        .min(1, t("addExam.validation.minQuestions")),
+    })
+    .superRefine((data, ctx) => {
+      // الشرط الأول: الحد الأدنى للنجاح لا يتعدى الدرجة النهائية
+      if (data.min_degree > data.max_degree) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("addExam.validation.minDegreeExceedsMax"),
+          path: ["min_degree"],
+        });
+      }
+
+      // الشرط الثاني: عدد الأسئلة المعروضة لا يتعدى إجمالي الأسئلة المتاحة في البنك
+      if (data.displayed_questions_count > data.questions.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("addExam.validation.displayedCountExceedsTotal"),
+          path: ["displayed_questions_count"],
+        });
+      }
+    });
+
   const {
     handleSubmit,
     control,
@@ -85,6 +116,9 @@ const EditExam = () => {
       max_degree: "",
       duration: "",
       displayed_questions_count: "",
+      attempts_allowed: "",
+      min_completion_percentage: "",
+
       questions: [],
     },
   });
@@ -95,7 +129,6 @@ const EditExam = () => {
     enabled: !!id,
   });
 
-  // 3. جلب الـ duration من تفاصيل الامتحان وتمريره للـ Form
   const getFormattedExamData = (details) => {
     if (!details) return {};
     return {
@@ -103,8 +136,11 @@ const EditExam = () => {
       exam_title_en: details.title?.en || "",
       min_degree: details.pass_mark || "",
       max_degree: details.full_mark || "",
-      duration: details.duration || "", // جلب الحقل من الـ API هُنا
+      duration: details.duration || "",
       displayed_questions_count: details.displayed_questions_count || "",
+      attempts_allowed: details.attempts_allowed || "",
+      min_completion_percentage: details.min_completion_percentage || "",
+
       questions: (details.questions || []).map((q) => ({
         question_title_ar: q.title?.ar || "",
         question_title_en: q.title?.en || "",
@@ -148,7 +184,6 @@ const EditExam = () => {
     },
   });
 
-  // 4. إرسال حقل duration داخل الـ FormData عند حفظ التعديلات
   const onSubmit = (data) => {
     const formData = new FormData();
 
@@ -156,10 +191,15 @@ const EditExam = () => {
     formData.append("title[ar]", data.exam_title_ar);
     formData.append("pass_mark", String(data.min_degree));
     formData.append("full_mark", String(data.max_degree));
-    formData.append("duration", String(data.duration)); // الحقل المطلوب
+    formData.append("duration", String(data.duration));
     formData.append(
       "displayed_questions_count",
       String(data.displayed_questions_count),
+    );
+    formData.append("attempts_allowed", String(data.attempts_allowed));
+    formData.append(
+      "min_completion_percentage",
+      String(data.min_completion_percentage),
     );
 
     data.questions.forEach((q, qIndex) => {
@@ -187,7 +227,7 @@ const EditExam = () => {
     updateExamMutate(formData);
   };
 
-  if (isExamLoading) return <InputsSkeleton />;
+  if (isExamLoading) return <LoadingPage />;
 
   return (
     <div className="space-y-6">
@@ -236,22 +276,7 @@ const EditExam = () => {
           />
         </div>
 
-        {/* 5. تعديل الـ Grid هنا ليصبح md:grid-cols-4 لاستيعاب حقل الـ duration */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-          <Controller
-            name="min_degree"
-            control={control}
-            render={({ field }) => (
-              <MainInput
-                {...field}
-                type="number"
-                disabled={!isEditing}
-                label={t("addExam.passMark")}
-                placeholder={t("addExam.passMarkPlaceholder")}
-                error={errors.min_degree?.message}
-              />
-            )}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Controller
             name="max_degree"
             control={control}
@@ -266,7 +291,20 @@ const EditExam = () => {
               />
             )}
           />
-          {/* حقل مدة الاختبار المضاف حديثاً */}
+          <Controller
+            name="min_degree"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                disabled={!isEditing}
+                label={t("addExam.passMark")}
+                placeholder={t("addExam.passMarkPlaceholder")}
+                error={errors.min_degree?.message}
+              />
+            )}
+          />
           <Controller
             name="duration"
             control={control}
@@ -292,6 +330,34 @@ const EditExam = () => {
                 label={t("addExam.displayedQuestionsCount")}
                 placeholder={t("addExam.displayedQuestionsCountPlaceholder")}
                 error={errors.displayed_questions_count?.message}
+              />
+            )}
+          />
+          <Controller
+            name="attempts_allowed"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                disabled={!isEditing}
+                label={t("addExam.attemptsAllowed")}
+                placeholder={t("addExam.attemptsAllowedPlaceholder")}
+                error={errors.attempts_allowed?.message}
+              />
+            )}
+          />
+          <Controller
+            name="min_completion_percentage"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                {...field}
+                type="number"
+                disabled={!isEditing} // شيلها في AddExam
+                label={t("addExam.minCompletionPercentage")}
+                placeholder={t("addExam.minCompletionPercentagePlaceholder")}
+                error={errors.min_completion_percentage?.message}
               />
             )}
           />

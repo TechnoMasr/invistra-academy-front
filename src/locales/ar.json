@@ -203,15 +203,15 @@
 
   "registerPage": {
     "title": "انشاء حساب",
-    "description": "هل انت محاضر أم طالب؟",
-    "student": "طالب",
+    "description": "هل انت محاضر أم متدرب؟",
+    "student": "متدرب",
     "teacher": "محاضر",
     "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
     "signInHere": "تسجيل الدخول هنا"
   },
 
   "RegisterStudent": {
-    "createAccount": "انشاء حساب كطالب",
+    "createAccount": "انشاء حساب كمتدرب",
     "enterDetails": "يرجى إدخال بياناتك للوصول إلى حسابك",
     "uploadImage": "قم بتحميل صورتك",
     "fullName": "الاسم الكامل",
@@ -477,6 +477,7 @@
     "deleteTitle": "حذف الاختبار",
     "deleteDescription": "هل أنت متأكد من رغبتك في حذف اختبار \"{{name}}\"? لا يمكن التراجع عن هذا الإجراء بعد إتمامه.",
     "confirmDelete": "تأكيد الحذف",
+    "time": "وقت الاختبار: {{time}} دقيقة",
     "cancel": "إلغاء",
     "deleteSuccess": "تم حذف الاختبار بنجاح",
     "deleteError": "حدث خطأ أثناء حذف الاختبار"
@@ -665,6 +666,8 @@
     "success": "تم انشاء الكورس بنجاح",
     "error": "حدث خطأ ما، يرجى المحاولة مرة أخرى",
     "validation": {
+      "imageRequired": "صورة الكورس مطلوبة",
+      "atLeastOneFeature": "يجب إضافة ميزة واحدة على الأقل",
       "invalidLink": "رابط الفيديو غير صالح",
       "nameArRequired": "اسم الكورس بالعربي مطلوب (3 أحرف على الأقل)",
       "nameEnRequired": "اسم الكورس بالإنجليزي مطلوب (3 أحرف على الأقل)",
@@ -677,7 +680,8 @@
       "durationRequired": "مدة الكورس مطلوبة",
       "durationFormat": "صيغة المدة يجب أن تكون HH:MM مثل 05:30",
       "priceRequired": "السعر مطلوب",
-      "invalidDiscount": "السعر قبل الخصم غير صالح"
+      "invalidDiscount": "السعر قبل الخصم غير صالح",
+      "priceBeforeDiscountInvalid": "السعر قبل الخصم يجب ان يكون اكبر من السعر الحالي او قيمه فارغه"
     }
   },
 
@@ -730,6 +734,10 @@
     "isAppearsToAllExaminees": "تثبيت هذا السؤال في جميع الاختبارات",
     "duration": "مدة الاختبار (بالدقائق)",
     "durationPlaceholder": "ادخل مدة الاختبار..",
+    "attemptsAllowed": "عدد مرات المحاولة المسموح بها",
+    "attemptsAllowedPlaceholder": "ادخل عدد المحاولات..",
+    "minCompletionPercentage": "نسبة إتمام الكورس لفتح الاختبار (%)",
+    "minCompletionPercentagePlaceholder": "ادخل النسبة المطلوبة (1-100)..",
 
     "validation": {
       "durationRequired": "مدة الاختبار مطلوبة ويجب أن تكون أكبر من 0",
@@ -745,7 +753,12 @@
       "minOptions": "يجب إضافة خيارين على الأقل للسؤال",
       "maxOptions": "الحد الأقصى هو 4 خيارات فقط",
       "minQuestions": "يجب إضافة سؤال واحد على الأقل",
-      "displayedQuestionsCountRequired": "عدد الأسئلة المعروضة مطلوب ويجب أن يكون أكبر من 0"
+      "displayedQuestionsCountRequired": "عدد الأسئلة المعروضة مطلوب ويجب أن يكون أكبر من 0",
+      "minDegreeExceedsMax": "الحد الأدنى للنجاح لا يمكن أن يكون أكبر من الدرجة النهائية",
+      "attemptsAllowedRequired": "عدد المحاولات مطلوب ويجب أن يكون أكبر من 0",
+      "minCompletionPercentageRequired": "نسبة الإتمام مطلوبة ويجب أن تكون أكبر من 0",
+      "minCompletionPercentageMax": "نسبة الإتمام لا يمكن أن تتجاوز 100%",
+      "displayedCountExceedsTotal": "عدد الأسئلة المعروضة لا يمكن أن يتجاوز عدد الأسئلة المضافة في البنك"
     }
   },
 
@@ -761,6 +774,7 @@
   "addLecture": {
     "title": "إضافة محاضرة",
     "uploadVideo": "رفع فيديو المحاضرة",
+    "readyToUpload": "جاهز للرفع",
     "videoLink": "رابط المحاضرة",
     "videoLinkPlaceholder": "ادخل رابط المحاضرة..",
     "nameAr": "عنوان المحاضرة باللغة العربية",

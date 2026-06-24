@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { RiErrorWarningLine } from "react-icons/ri";
+import { RiErrorWarningLine, RiTimerLine } from "react-icons/ri";
 import { PiExam } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
@@ -63,6 +63,11 @@ const TeacherExamCard = ({ item }) => {
         {t("teacherExamCard.examScore", { mark: item?.full_mark })}
       </p>
 
+      <p className="text-sm flex items-center gap-1 font-semibold text-sky-600">
+        <RiTimerLine />
+        {t("teacherExamCard.time", { time: item?.duration })}
+      </p>
+
       <div className="flex items-center gap-2">
         <div className="w-8 aspect-square overflow-hidden rounded-full">
           <img
@@ -75,63 +80,65 @@ const TeacherExamCard = ({ item }) => {
         <h4 className="font-medium">{item?.instructor_name}</h4>
       </div>
 
-      <Link
-        to={`/profile/edit-exam/${item?.id}`}
-        className="flex-1 rounded-full"
-      >
-        <Button variant="outline" className="w-full">
-          {t("teacherExamCard.viewExamDetails")}
-        </Button>
-      </Link>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="destructive" disabled={isPending}>
-            {isPending ? (
-              <Loader2 className="animate-spin h-4 w-4" />
-            ) : (
-              t("teacherExamCard.deleteExam")
-            )}
+      <div className="flex flex-col gap-2 mt-auto">
+        <Link
+          to={`/profile/edit-exam/${item?.id}`}
+          className="flex-1 rounded-full"
+        >
+          <Button variant="outline" className="w-full">
+            {t("teacherExamCard.viewExamDetails")}
           </Button>
-        </DialogTrigger>
+        </Link>
 
-        <DialogContent className="sm:max-w-106" showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle className="text-right">
-              {t("teacherExamCard.deleteTitle")}
-            </DialogTitle>
-            <DialogDescription className="text-right mt-2">
-              {t("teacherExamCard.deleteDescription", { name: item?.title })}
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter className="flex flex-row-reverse gap-2 mt-4">
-            <Button
-              type="button"
-              variant="destructive"
-              className="flex-1 sm:flex-none"
-              onClick={() => handleDeleteExam(item?.id)}
-              disabled={isPending}
-            >
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="destructive" disabled={isPending}>
               {isPending ? (
                 <Loader2 className="animate-spin h-4 w-4" />
               ) : (
-                t("teacherExamCard.confirmDelete")
+                t("teacherExamCard.deleteExam")
               )}
             </Button>
+          </DialogTrigger>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1 sm:flex-none"
-              onClick={() => setOpen(false)}
-              disabled={isPending}
-            >
-              {t("teacherExamCard.cancel")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <DialogContent className="sm:max-w-106" showCloseButton={false}>
+            <DialogHeader>
+              <DialogTitle className="text-right">
+                {t("teacherExamCard.deleteTitle")}
+              </DialogTitle>
+              <DialogDescription className="text-right mt-2">
+                {t("teacherExamCard.deleteDescription", { name: item?.title })}
+              </DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter className="flex flex-row-reverse gap-2 mt-4">
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1 sm:flex-none"
+                onClick={() => handleDeleteExam(item?.id)}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <Loader2 className="animate-spin h-4 w-4" />
+                ) : (
+                  t("teacherExamCard.confirmDelete")
+                )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 sm:flex-none"
+                onClick={() => setOpen(false)}
+                disabled={isPending}
+              >
+                {t("teacherExamCard.cancel")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

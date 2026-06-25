@@ -242,7 +242,7 @@ input::-webkit-inner-spin-button {
 
     &:hover,
     &.active {
-      @apply text-secondary scale-105;
+      @apply text-secondary font-medium scale-105;
     }
   }
 

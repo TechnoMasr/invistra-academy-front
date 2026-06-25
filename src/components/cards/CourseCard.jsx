@@ -31,16 +31,16 @@ const CourseCard = ({ course }) => {
         />
 
         <div className="flex items-center gap-2">
-          {course?.instructor.image && (
-            <div className="w-10 aspect-square overflow-hidden rounded-full">
+          <div className="w-10 aspect-square overflow-hidden border rounded-full">
+            {course?.instructor.image && (
               <img
                 loading="lazy"
                 src={course?.instructor.image}
                 alt={course?.instructor.name}
                 className="w-full h-full object-cover"
               />
-            </div>
-          )}
+            )}
+          </div>
           <h4 className="font-medium">{course?.instructor.name}</h4>
         </div>
 

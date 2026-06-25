@@ -447,7 +447,7 @@ const AddCourse = () => {
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="absolute top-2 inset-e-2 text-xs text-red-500 hover:underline"
+                  className="ms-auto text-xs text-red-500 hover:text-red-700 font-medium hover:underline transition-all cursor-pointer"
                 >
                   {t("addCourse.delete")}
                 </button>

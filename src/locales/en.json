@@ -451,7 +451,7 @@
     "passMark": "Pass mark: {{score}}",
     "viewExam": "View Exam",
     "startExam": "Start Exam",
-    "notAccessible": "This exam is not available at this moment"
+    "notAccessible": "This exam will be available after watching {{percentage}}% of the course lectures."
   },
 
   "teacherCourseCard": {
@@ -830,7 +830,8 @@
     "noFiles": "No files available",
     "download": "Download",
     "watched": "Watched",
-    "markAsWatched": "Mark as watched"
+    "markAsWatched": "Mark as watched",
+    "noVideo": "No video available for this lecture"
   },
 
   "enterExam": {

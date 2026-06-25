@@ -37,14 +37,11 @@ const SuccessesPaymentModal = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col sm:flex-row gap-2 mt-5 w-full"></div>
-
         <DialogFooter>
-          <Link
-            to="/profile/orders"
-            onClick={onClose}
-          >
-            <Button className="w-full font-medium">{t("successPaymentModal.goToOrders")}</Button>
+          <Link to="/profile/orders" onClick={onClose}>
+            <Button className="w-full font-medium">
+              {t("successPaymentModal.goToOrders")}
+            </Button>
           </Link>
 
           <Button variant="outline" onClick={onClose}>

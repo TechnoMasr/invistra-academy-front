@@ -467,7 +467,7 @@ const QuestionFieldsGroup = ({
         <button
           type="button"
           onClick={() => removeQuestion(questionIndex)}
-          className="absolute top-3 inset-e-4 text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
+          className="ms-auto text-sm text-red-500 hover:text-red-700 font-medium hover:underline transition-all"
         >
           {t("addExam.deleteQuestion")}
         </button>
@@ -555,7 +555,7 @@ const QuestionFieldsGroup = ({
                 <button
                   type="button"
                   onClick={() => removeOption(optIndex)}
-                  className="text-xs text-red-400 hover:text-red-600"
+                  className="text-xs text-red-500 hover:text-red-700 font-medium hover:underline transition-all cursor-pointer"
                 >
                   {t("addExam.deleteOption")}
                 </button>

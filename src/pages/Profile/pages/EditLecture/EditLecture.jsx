@@ -33,15 +33,15 @@ const EditLecture = () => {
   const [videoPreview, setVideoPreview] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
 
-  // الاحتفاظ بالملفات القديمة، والملفات الجديدة، والملفات المحذوفة
+  // الاحتفاظ بالملفات القديمة، والملفات الجديدة، ومعرفات الملفات المحذوفة
   const [oldFiles, setOldFiles] = useState([]);
-  const [deletedOldFiles, setDeletedOldFiles] = useState([]);
+  const [deletedOldFileIds, setDeletedOldFileIds] = useState([]);
   const [attachedFiles, setAttachedFiles] = useState([]);
 
   // State لتخزين خطأ حجم الملفات المرفقة
   const [fileSizeError, setFileSizeError] = useState("");
 
-  // 👈 State جديدة لتخزين خطأ عدم وجود فيديو أو رابط
+  // State جديدة لتخزين خطأ عدم وجود فيديو أو رابط
   const [videoValidationError, setVideoValidationError] = useState("");
 
   const videoInputRef = useRef(null);
@@ -66,7 +66,7 @@ const EditLecture = () => {
     handleSubmit,
     control,
     reset,
-    watch, // 👈 لمراقبة حقل التكست الخاص بالرابط وتصفير الخطأ تلقائياً
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(lectureSchema),
@@ -82,7 +82,7 @@ const EditLecture = () => {
   // مراقبة قيمة الرابط الحالي
   const currentVideoUrl = watch("video_url");
 
-  // 👈 مراقبة المدخلات لتصفير خطأ الفاليديشن فور قيام المستخدم بحل المشكلة
+  // مراقبة المدخلات لتصفير خطأ الفاليديشن فور قيام المستخدم بحل المشكلة
   useEffect(() => {
     if (videoFile || videoPreview || currentVideoUrl) {
       setVideoValidationError("");
@@ -128,9 +128,9 @@ const EditLecture = () => {
       setIsEditing(false);
       setVideoFile(null);
       setAttachedFiles([]);
-      setDeletedOldFiles([]);
+      setDeletedOldFileIds([]);
       setFileSizeError("");
-      setVideoValidationError(""); // تصفير الخطأ عند النجاح
+      setVideoValidationError("");
       queryClient.invalidateQueries(["lectureDetails", id]);
     },
   });
@@ -152,9 +152,10 @@ const EditLecture = () => {
     }
   };
 
-  const handleRemoveOldFile = (fileUrlToRemove) => {
-    setOldFiles((prev) => prev.filter((url) => url !== fileUrlToRemove));
-    setDeletedOldFiles((prev) => [...prev, fileUrlToRemove]);
+  // دالة الحذف تعتمد على الـ id الخاص بالملف
+  const handleRemoveOldFile = (fileId) => {
+    setOldFiles((prev) => prev.filter((file) => file.id !== fileId));
+    setDeletedOldFileIds((prev) => [...prev, fileId]);
   };
 
   const removeNewFile = (indexToRemove) => {
@@ -176,7 +177,6 @@ const EditLecture = () => {
   const onSubmit = (data) => {
     if (fileSizeError) return;
 
-    // 👈 التحقق الإجباري: إذا لم تتوفر الشروط يتم تعيين الخطأ في الـ State بدلاً من الـ toast
     if (!videoFile && !videoPreview && !data.video_url) {
       setVideoValidationError(t("addLecture.videoOrLinkRequired"));
       return;
@@ -199,9 +199,11 @@ const EditLecture = () => {
         formData.append("files[]", file);
       });
     }
-    if (deletedOldFiles.length > 0) {
-      deletedOldFiles.forEach((fileUrl) => {
-        formData.append("deleted_files[]", fileUrl);
+
+    // إرسال الـ IDs المحذوفة بالمفتاح الجديد المطلوب
+    if (deletedOldFileIds.length > 0) {
+      deletedOldFileIds.forEach((fileId) => {
+        formData.append("delete_file_ids[]", fileId);
       });
     }
 
@@ -312,7 +314,7 @@ const EditLecture = () => {
           )}
         />
 
-        {/* عنوان المحاضرة (عربي وإنجليزي) */}
+        {/* عنوان المحاضرة */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="title_ar"
@@ -346,7 +348,7 @@ const EditLecture = () => {
           />
         </div>
 
-        {/* وصف المحاضرة (عربي وإنجليزي) */}
+        {/* وصف المحاضرة */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="description_ar"
@@ -427,23 +429,24 @@ const EditLecture = () => {
               <p className="text-xs font-semibold text-gray-500 mb-1">
                 {t("addLecture.selectedFiles", { count: oldFiles.length })}
               </p>
-              {oldFiles.map((fileUrl, index) => (
+              {oldFiles.map((file, index) => (
                 <div
-                  key={index}
+                  key={file.id || index}
                   className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm"
                 >
                   <a
-                    href={fileUrl}
+                    href={file.file_path}
                     target="_blank"
                     rel="noreferrer"
                     className="text-sm text-sky-600 hover:underline truncate max-w-[80%] text-left"
                   >
-                    {fileUrl.split("/").pop()}
+                    {/* الإصلاح تم هنا: يتم قراءة اسم الملف من الـ file_path الخاص بالـ Object */}
+                    {file.file_path ? file.file_path.split("/").pop() : ""}
                   </a>
                   {isEditing && (
                     <button
                       type="button"
-                      onClick={() => handleRemoveOldFile(fileUrl)}
+                      onClick={() => handleRemoveOldFile(file.id)}
                       className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
                       title={t("addLecture.deleteFile")}
                     >
@@ -509,9 +512,9 @@ const EditLecture = () => {
                 }
                 setVideoFile(null);
                 setAttachedFiles([]);
-                setDeletedOldFiles([]);
+                setDeletedOldFileIds([]);
                 setFileSizeError("");
-                setVideoValidationError(""); // تصفير الخطأ عند الإلغاء
+                setVideoValidationError("");
                 setIsEditing(false);
               }}
             >
@@ -520,14 +523,12 @@ const EditLecture = () => {
           </div>
         )}
 
-        {/* 👈 قسم عرض الأخطاء بالأسفل موثق ومجموع داخل حاوية مرنة */}
+        {/* قسم عرض الأخطاء */}
         <div className="flex flex-col gap-2 items-center justify-center max-w-md mx-auto w-full">
-          {/* 1. عرض رسالة خطأ التحقق الإجباري المخصصة للفيديو أو الرابط */}
           {videoValidationError && (
             <FormError errorMsg={videoValidationError} />
           )}
 
-          {/* 2. عرض خطأ الـ API الراجع من السيرفر في حال الفشل */}
           {error && (
             <FormError
               errorMsg={error?.response?.data?.message || t("addLecture.error")}

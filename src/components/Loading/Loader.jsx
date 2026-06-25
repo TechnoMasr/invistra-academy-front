@@ -38,24 +38,24 @@ const Loader = ({ textWhite = false }) => {
         <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-t-primary border-r-primary/30 border-b-primary/10 border-l-primary/50 animate-spin"></div>
 
         {/* حاوية اللوجو الثابتة في المنتصف */}
-        <div className="absolute w-26 h-26 md:w-34 md:h-34 p-2 bg-primary rounded-full shadow-sm flex items-center justify-center">
+        <div className="absolute w-26 h-26 md:w-34 md:h-34 p-2 rounded-full shadow-sm flex items-center justify-center">
           <img
             loading="lazy"
             src={logo}
             alt="Logo"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain inset-0 brightness-0"
           />
         </div>
       </div>
 
       {/* نص التحميل الذكي */}
-      <div className="flex flex-col items-center gap-1">
+      {/* <div className="flex flex-col items-center gap-1">
         <h2
           className={`text-xl font-bold tracking-wide ${textWhite ? "text-white" : "text-slate-800"}`}
         >
           {t("loading")}...
         </h2>
-      </div>
+      </div> */}
     </div>
   );
 };

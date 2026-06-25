@@ -11,6 +11,26 @@ import { useTranslation } from "react-i18next";
 import { useDirectDownload } from "@/hooks/useDirectDownload";
 import { setShowLecture } from "@/api/lectureServices";
 
+function isDirectVideo(url) {
+  return /\.(mp4|webm|ogg)(\?|$)/i.test(url);
+}
+
+function getEmbedUrl(url) {
+  // Google Drive
+  const drive = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (drive) return `https://drive.google.com/file/d/${drive[1]}/preview`;
+
+  // YouTube
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+
+  // Vimeo
+  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+  return url;
+}
+
 const LectureDetails = () => {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -38,18 +58,35 @@ const LectureDetails = () => {
 
   if (isEmpty) return <EmptyDataSection msg={t("lectureDetails.noData")} />;
 
+  const videoSrc = lecture?.video_url || lecture?.video_path;
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
       <div className="xl:col-span-2 space-y-4">
         <div className="relative rounded-2xl overflow-hidden aspect-video bg-black shadow-md">
-          <video
-            src={lecture?.video_url}
-            controls
-            className="w-full h-full object-cover"
-            poster=""
-          >
-            {t("lectureDetails.videoNotSupported")}
-          </video>
+          {videoSrc ? (
+            isDirectVideo(videoSrc) ? (
+              <video
+                src={videoSrc}
+                controls
+                className="w-full h-full object-cover"
+              >
+                {t("lectureDetails.videoNotSupported")}
+              </video>
+            ) : (
+              <iframe
+                src={getEmbedUrl(videoSrc)}
+                className="w-full h-full"
+                allowFullScreen
+                allow="autoplay; encrypted-media"
+                title={lecture?.title}
+              />
+            )
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+              {t("lectureDetails.noVideo")}
+            </div>
+          )}
         </div>
 
         <div className="border rounded-2xl p-4">
@@ -67,7 +104,7 @@ const LectureDetails = () => {
               {lecture?.is_watched === 1 || lecture?.is_watched === true ? (
                 <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1.5 rounded-xl font-medium text-sm border border-green-200">
                   <FiCheckCircle className="text-lg" />
-                  <span>{t("lectureDetails.watched") || "تمت المشاهدة"}</span>
+                  <span>{t("lectureDetails.watched")}</span>
                 </div>
               ) : (
                 <button
@@ -75,9 +112,7 @@ const LectureDetails = () => {
                   disabled={isWatching}
                   className="bg-primary hover:bg-primary/95 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all disabled:opacity-75 cursor-pointer"
                 >
-                  {isWatching
-                    ? "..."
-                    : t("lectureDetails.markAsWatched") || "تحديد كمشاهدة"}
+                  {isWatching ? "..." : t("lectureDetails.markAsWatched")}
                 </button>
               )}
             </div>
@@ -103,7 +138,7 @@ const LectureDetails = () => {
 
         {!lecture?.files?.length ? (
           <div className="h-full flex items-center justify-center">
-            <p className="text-white bg-primary rounded-lg px-4 py-1 text-center font-semibold">
+            <p className="text-primary bg-primary/10 border border-primary rounded-lg px-4 py-1 text-center font-semibold">
               {t("lectureDetails.noFiles")}
             </p>
           </div>

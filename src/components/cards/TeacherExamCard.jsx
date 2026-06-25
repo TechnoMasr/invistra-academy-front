@@ -70,12 +70,14 @@ const TeacherExamCard = ({ item }) => {
 
       <div className="flex items-center gap-2">
         <div className="w-8 aspect-square overflow-hidden rounded-full">
-          <img
-            loading="lazy"
-            src={item?.instructor_image}
-            alt={item?.instructor_name}
-            className="w-full h-full object-cover"
-          />
+          {item?.instructor_image && (
+            <img
+              loading="lazy"
+              src={item?.instructor_image}
+              alt={item?.instructor_name}
+              className="w-full h-full object-cover"
+            />
+          )}
         </div>
         <h4 className="font-medium">{item?.instructor_name}</h4>
       </div>

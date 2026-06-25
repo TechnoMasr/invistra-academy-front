@@ -93,12 +93,14 @@ const Details = ({ data }) => {
 
         <div className="flex items-center gap-2">
           <div className="w-10 aspect-square overflow-hidden rounded-full">
-            <img
-              loading="lazy"
-              src={data?.instructor?.image}
-              alt={""}
-              className="w-full h-full object-cover"
-            />
+            {data?.instructor?.image && (
+              <img
+                loading="lazy"
+                src={data?.instructor?.image}
+                alt={""}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
           <h4 className="font-medium">{data?.instructor?.name}</h4>
         </div>

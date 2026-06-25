@@ -24,7 +24,12 @@ import { useDispatch } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
 
 const STATIC_PAYMENT_METHODS = [
-  { id: 1, title: "orderSummary.vodafoneCash", image: vodafoneCash, key: "vodafone_cash" },
+  {
+    id: 1,
+    title: "orderSummary.vodafoneCash",
+    image: vodafoneCash,
+    key: "vodafone_cash",
+  },
   { id: 2, title: "orderSummary.instaPay", image: instaPay, key: "instapay" },
   { id: 3, title: "orderSummary.onlinePayment", image: online, key: "online" },
 ];
@@ -152,7 +157,9 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
         </div>
       )}
 
-      <h2 className="text-xl font-bold pb-2 border-b">{t("orderSummary.title")}</h2>
+      <h2 className="text-xl font-bold pb-2 border-b">
+        {t("orderSummary.title")}
+      </h2>
 
       {/* Summary Info */}
       <div className="space-y-2">
@@ -174,7 +181,9 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
       {/* Payment Methods Selection */}
       {filteredPaymentList.length > 0 && (
         <div className="pt-2">
-          <h3 className="font-bold mb-2.5">{t("orderSummary.choosePayment")}</h3>
+          <h3 className="font-bold mb-2.5">
+            {t("orderSummary.choosePayment")}
+          </h3>
           <div className="grid grid-cols-3 gap-2">
             {filteredPaymentList.map((item) => {
               const isSelected = selectedMethod === item.key;
@@ -194,12 +203,14 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                   }`}
                 >
                   <div className="w-full aspect-video overflow-hidden rounded-lg border border-gray-100 mb-1.5 bg-gray-50">
-                    <img
-                      loading="lazy"
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {item.image && (
+                      <img
+                        loading="lazy"
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    )}
                   </div>
                   <span className="text-xs font-bold tracking-tight">
                     {t(item.title)}
@@ -226,7 +237,9 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
               {summaryData.service_fee > 0 && (
                 <div className="flex justify-between items-center text-amber-600 font-medium">
                   <span>
-                    {t("orderSummary.serviceFee", { percent: currentMethodDetails?.service_fee })}
+                    {t("orderSummary.serviceFee", {
+                      percent: currentMethodDetails?.service_fee,
+                    })}
                   </span>
                   <span>
                     +{summaryData.service_fee} {summaryData.currency}
@@ -235,7 +248,9 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
               )}
 
               <div className="flex justify-between items-center pt-2 border-t border-dotted border-gray-200">
-                <span className="text-sm font-bold">{t("orderSummary.finalTotal")}</span>
+                <span className="text-sm font-bold">
+                  {t("orderSummary.finalTotal")}
+                </span>
                 <span className="text-lg font-bold text-green-600">
                   {summaryData.total_with_fee} {summaryData.currency}
                 </span>

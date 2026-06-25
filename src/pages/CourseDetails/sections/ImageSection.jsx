@@ -42,7 +42,7 @@ const ImageSection = ({ data }) => {
         {data?.link && (
           <button
             onClick={() => setShowVideoModal(true)}
-            className="absolute inset-0 bg-black/50 flex items-center justify-center w-full"
+            className="absolute inset-0 bg-black/50 flex items-center justify-center w-full cursor-pointer"
           >
             <GoPlay className="text-[100px] text-white" />
           </button>

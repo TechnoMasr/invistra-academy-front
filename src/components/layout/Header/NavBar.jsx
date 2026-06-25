@@ -1,52 +1,62 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  ArrowRight,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const NavBar = ({ links }) => {
   const { t } = useTranslation();
+  const { lang } = useSelector((state) => state.language);
+
+  const isRtl = lang === "ar";
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [activeCategory, setActiveCategory] = useState(null);
 
-  // 1. إنشاء مرجع (Ref) لمراقبة شجرة عناصر الـ Navbar
+  // حفظ مسار التنقل داخل الشجرة لتسهيل العودة للخلف (تخزن كـ Objects للـ Categories المفتوحة)
+  const [navStack, setNavStack] = useState([]);
+
   const navRef = useRef(null);
 
   const toggleDropdown = (id) => {
     if (openDropdownId === id) {
-      setOpenDropdownId(null);
-      setActiveCategory(null);
+      closeAll();
     } else {
       setOpenDropdownId(id);
-      setActiveCategory(null);
+      setNavStack([]); // تصفير المسار عند فتح دروب داون جديدة
     }
   };
 
   const closeAll = () => {
     setOpenDropdownId(null);
-    setActiveCategory(null);
+    setNavStack([]);
   };
 
-  // 2. مراقبة الضغط خارج القائمة
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // إذا كانت القائمة مفتوحة والضغطة تمت خارج عنصر الـ navRef
       if (navRef.current && !navRef.current.contains(event.target)) {
         closeAll();
       }
     };
-
-    // تسجيل الحدث عند تركيب المكون (Mount)
     document.addEventListener("mousedown", handleClickOutside);
-
-    // تنظيف الحدث عند فك المكون (Unmount) لمنع تسريب الذاكرة
     return () => {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const currentSubMenu =
+    navStack.length > 0 ? navStack[navStack.length - 1] : null;
+
+  const handleGoBack = () => {
+    setNavStack((prev) => prev.slice(0, -1));
+  };
+
   return (
-    // 3. نربط الـ ref بالـ <nav> الأساسي ليغطي كل الدروب داونز
     <nav ref={navRef} className="flex items-center gap-4 relative">
       {links.map((link) => {
         const isDropdownOpen = openDropdownId === link.id;
@@ -66,83 +76,122 @@ const NavBar = ({ links }) => {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-[16rem] bg-white border border-gray-200 rounded-md shadow-lg z-50 flex flex-col justify-between">
+                <div className="absolute inset-s-0 mt-2 w-[16rem] bg-white border border-gray-200 rounded-md shadow-lg z-50 flex flex-col justify-between">
+                  {/* القائمة الرئيسية الأولى للدروب داون */}
                   <div className="flex-1 py-1">
                     <NavLink
                       to={link.url}
                       onClick={closeAll}
                       className="block px-4 py-2 text-sm font-bold border-b border-gray-100 hover:bg-gray-50"
                     >
-                      {t("header.all")} {link.name}
+                      {t("all")} {link.name}
                     </NavLink>
 
                     {link.list.map((category) => {
                       const hasSubCategories =
                         category.sub_categories &&
                         category.sub_categories.length > 0;
-                      const isCategoryActive =
-                        activeCategory?.id === category.id;
 
                       return (
                         <div
                           key={category.id}
-                          // إذا كانت تحتوي على فروع نفتحها، وإذا كانت عادية نصفر القائمة لتختفي القديمة
-                          onMouseEnter={() =>
-                            hasSubCategories
-                              ? setActiveCategory(category)
-                              : setActiveCategory(null)
-                          }
+                          onMouseEnter={() => {
+                            if (hasSubCategories) {
+                              setNavStack([category]);
+                            } else {
+                              setNavStack([]);
+                            }
+                          }}
                           className="relative"
                         >
-                          {hasSubCategories ? (
-                            <div
-                              className={`flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer ${isCategoryActive ? "bg-gray-50" : ""}`}
+                          <div
+                            className={`flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer`}
+                          >
+                            {/* تعديل هنا: المستوى الأول يأخذ الـ ID الخاص به فقط في المسار */}
+                            <NavLink
+                              to={`/courses?category_path=${category.id}`}
+                              onClick={closeAll}
+                              className="flex-1 px-4 py-2 text-start"
                             >
-                              <NavLink
-                                to={`/courses?category_id=${category.id}`}
-                                onClick={closeAll}
-                                className="flex-1 px-4 py-2"
-                              >
-                                {category.name}
-                              </NavLink>
+                              {category.name}
+                            </NavLink>
+                            {hasSubCategories && (
                               <span className="px-3 py-2 text-gray-400">
                                 <ChevronRight className="h-4 w-4 ltr:block rtl:hidden" />
                                 <ChevronLeft className="h-4 w-4 rtl:block ltr:hidden" />
                               </span>
-                            </div>
-                          ) : (
-                            <NavLink
-                              to={`/courses?category_id=${category.id}`}
-                              onClick={closeAll}
-                              className="block px-4 py-2 text-sm hover:bg-gray-50"
-                            >
-                              {category.name}
-                            </NavLink>
-                          )}
+                            )}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
 
-                  {activeCategory && (
-                    <div
-                      className="absolute top-0 ltr:left-full rtl:right-full w-[14rem] h-full bg-white border border-gray-200 rounded-md shadow-lg z-50 overflow-y-auto flex flex-col"
-                      onMouseLeave={() => setActiveCategory(null)}
-                    >
-                      <div className="py-1">
-                        <p className="px-4 py-2 text-xs font-semibold border-b border-gray-100">
-                          {t("header.subCategories")}
-                        </p>
-                        {activeCategory.sub_categories.map((subItem) => (
-                          <NavLink
-                            key={subItem.id}
-                            to={`/courses?category_id=${activeCategory.id}&sub_category_id=${subItem.id}`}
-                            onClick={closeAll}
-                            className="block px-4 py-2 text-sm hover:bg-gray-50"
-                          >
-                            {subItem.name}
-                          </NavLink>
-                        ))}
+                  {/* القائمة الفرعية الديناميكية */}
+                  {currentSubMenu && (
+                    <div className="absolute top-0 ltr:left-full rtl:right-full w-60 h-full bg-white border border-gray-200 rounded-md shadow-lg z-50 overflow-y-auto flex flex-col">
+                      {/* الهيدر الخاص بالمنيو الفرعية */}
+                      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-700">
+                        <button
+                          onClick={handleGoBack}
+                          className="p-1 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
+                          title={t("header.back") || "Back"}
+                        >
+                          {isRtl ? (
+                            <ArrowRight className="h-4 w-4" />
+                          ) : (
+                            <ArrowLeft className="h-4 w-4" />
+                          )}
+                        </button>
+                        <span className="truncate flex-1">
+                          {currentSubMenu.name}
+                        </span>
+                      </div>
+
+                      {/* عرض العناصر الفرعية */}
+                      <div className="py-1 flex-1">
+                        {currentSubMenu.sub_categories &&
+                          currentSubMenu.sub_categories.map((subItem) => {
+                            const hasMoreSubs =
+                              subItem.sub_categories &&
+                              subItem.sub_categories.length > 0;
+
+                            // ─── الذكاء هنا ───
+                            // نقوم بجلب كل المعرفات المفتوحة حالياً في الـ Stack ونضيف إليها الـ id الخاص بالعنصر الحالي لإنشاء سلسلة الرابط كاملة
+                            const currentPathIds = [
+                              ...navStack.map((item) => item.id),
+                              subItem.id,
+                            ].join(",");
+
+                            return (
+                              <div
+                                key={subItem.id}
+                                className="flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer"
+                              >
+                                {/* تعديل هنا: تمرير المسار المجمع بالكامل للرابط */}
+                                <NavLink
+                                  to={`/courses?category_path=${currentPathIds}`}
+                                  onClick={closeAll}
+                                  className="flex-1 px-4 py-2 text-start"
+                                >
+                                  {subItem.name}
+                                </NavLink>
+
+                                {hasMoreSubs && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setNavStack((prev) => [...prev, subItem]);
+                                    }}
+                                    className="px-3 py-2 bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700 h-full"
+                                  >
+                                    <ChevronRight className="h-5 w-5 ltr:block rtl:hidden" />
+                                    <ChevronLeft className="h-5 w-5 rtl:block ltr:hidden" />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
                   )}

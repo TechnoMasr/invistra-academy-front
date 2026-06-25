@@ -60,11 +60,11 @@ const OrdersDetailsCard = ({ item }) => {
             <p className="text-3xl font-bold text-green-500">
               {item?.price} {item?.currency}
             </p>
-            {item?.price_before_discount && (
+            {item?.price_before_discount ? (
               <p className="text-lg font-bold text-red-500 line-through">
                 {item?.price_before_discount} {item?.currency}
               </p>
-            )}
+            ): null}
           </div>
 
           <Link

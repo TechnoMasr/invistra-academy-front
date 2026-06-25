@@ -1,6 +1,7 @@
 {
   "loading": "جاري التحميل...",
   "downloading": "جاري التحميل",
+  "all": "كل",
 
   "privacyPolicy": "سياسة الخصوصية",
   "termsAndConditions": "الشروط والأحكام",
@@ -300,7 +301,8 @@
 
   "CompleteRegister": {
     "title": "تم إرسال بياناتك بنجاح",
-    "description": "سيتم مراجعة البيانات وإعلامك عن طريق البريد الإلكتروني"
+    "description": "سيتم مراجعة البيانات وإعلامك عن طريق البريد الإلكتروني",
+    "goHome": "الذهاب للصفحة الرئيسية"
   },
 
   "account": {
@@ -444,9 +446,12 @@
     "exam": "اختبار",
     "questions": "{{count}} سؤال",
     "questions_plural": "{{count}} اسئلة",
-    "testScore": "درجة الاختبار: {{score}}",
+    "attempts": "عدد المحاولات : {{count}} / {{max}}",
+    "testScore": "درجة الاختبار: {{score}} / {{max}}",
+    "passMark": "درجة النجاح: {{score}}",
     "viewExam": "عرض الاختبار",
-    "startExam": "ابدأ الاختبار"
+    "startExam": "ابدأ الاختبار",
+    "notAccessible": "هذا الاختبار غير متاح حالياً"
   },
 
   "teacherCourseCard": {
@@ -821,7 +826,9 @@
     "attachments": "ملفات ومرفقات المحاضرة",
     "attachmentsDesc": "يمكنك تحميل الملخصات والملفات التعليمية المعتمدة لهذه المحاضرة للمذاكرة لاحقاً.",
     "noFiles": "لا يوجد ملفات حاليا",
-    "download": "تحميل"
+    "download": "تحميل",
+    "watched": "تمت المشاهدة",
+    "markAsWatched": "تحديد كمشاهدة"
   },
 
   "enterExam": {

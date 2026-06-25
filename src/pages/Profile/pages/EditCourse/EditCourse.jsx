@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { FaRegEdit } from "react-icons/fa";
 import { useParams } from "react-router";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 import MainInput from "@/components/form/MainInput";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,16 @@ import {
 } from "@/api/myCoursesServices";
 import LoadingPage from "@/components/Loading/LoadingPage";
 
+// استيراد مكونات الـ Select من shadcn/ui
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const EditCourse = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -29,13 +40,100 @@ const EditCourse = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
+  // جلب الفئات الكلية المتاحة من Redux لتتبع المستويات الفرعية عند التعديل
+  const { categories, categoriesLoading } = useSelector(
+    (state) => state.categories,
+  );
+
+  // تتبع مسار الفئات المختارة في الـ State
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
   // جلب بيانات الكورس من الـ API
   const { data: course, isLoading } = useQuery({
     queryKey: ["myCourseDetails", id],
     queryFn: () => getMyCourseDetailsInstructor(id),
   });
 
-  // 1. الحقول الإلزامية (الأسعار الحالية بعد الخصم) متطابقة مع صفحة الإضافة
+  // تعبئة مسار شجرة الأقسام (selectedCategories) بناءً على الـ category_chain الراجع من الـ API فور تحميل البيانات
+  useEffect(() => {
+    if (course?.category_chain && course.category_chain.length > 0) {
+      // استخراج الـ IDs من السلسلة وتحويلها لـ Strings لتتوافق مع الـ Select component
+      const pathIds = course.category_chain.map((cat) => String(cat.id));
+      setSelectedCategories(pathIds);
+    }
+  }, [course]);
+
+  // بناء قائمة المستويات المتاحة للعرض ديناميكياً بناءً على المسار المختار والبيانات من Redux
+  const renderLevels = [];
+  let currentLevelOptions = categories || [];
+
+  // بناء المستوى الأول (القسم الرئيسي) دائماً
+  if (selectedCategories.length > 0) {
+    const mainCategoryId = selectedCategories[0];
+    const mainCategoryObj = currentLevelOptions.find(
+      (cat) => String(cat.id) === String(mainCategoryId),
+    );
+
+    renderLevels.push({
+      levelIndex: 0,
+      options: currentLevelOptions,
+      selectedValue: String(mainCategoryId),
+      disabled: true, // القسم الرئيسي مغلق دائماً بناءً على فئة المدرس الثابتة
+      parentName: "",
+    });
+
+    // بناء القوائم الفرعية المتتالية ديناميكياً
+    if (mainCategoryObj && mainCategoryObj.sub_categories) {
+      currentLevelOptions = mainCategoryObj.sub_categories;
+
+      for (let i = 1; i < selectedCategories.length + 1; i++) {
+        const parentId = selectedCategories[i - 1];
+        const foundParent =
+          i === 1
+            ? mainCategoryObj
+            : renderLevels[i - 1]?.options?.find(
+                (cat) => String(cat.id) === parentId,
+              );
+
+        if (
+          foundParent &&
+          foundParent.sub_categories &&
+          foundParent.sub_categories.length > 0
+        ) {
+          currentLevelOptions = foundParent.sub_categories;
+          renderLevels.push({
+            levelIndex: i,
+            options: currentLevelOptions,
+            selectedValue: selectedCategories[i] || "all",
+            disabled: !isEditing, // تكون قابلة للتعديل فقط عند الضغط على زر التعديل
+            parentName: foundParent.name,
+          });
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  // التعامل مع تغيير قيم الفئات الفرعية أثناء وضع التعديل
+  const handleCategoryChange = (levelIndex, value) => {
+    if (value === "all") {
+      // العودة إلى الأب مباشرة وتصفير الفروع التابعة له
+      const newPath = selectedCategories.slice(0, levelIndex);
+      setSelectedCategories(newPath);
+      setValue("category_id", newPath[newPath.length - 1], {
+        shouldValidate: true,
+      });
+    } else {
+      // تحديث المسار بإضافة الـ ID الجديد وقص أي مستويات تالية
+      const newPath = [...selectedCategories.slice(0, levelIndex)];
+      newPath[levelIndex] = value;
+      setSelectedCategories(newPath);
+      setValue("category_id", value, { shouldValidate: true });
+    }
+  };
+
+  // حقول التحقق للأسعار
   const requiredNumberSchema = z
     .string()
     .min(1, t("addCourse.validation.priceRequired"))
@@ -46,8 +144,12 @@ const EditCourse = () => {
     .transform((val) => Number(val))
     .refine((val) => val >= 0, t("addCourse.validation.priceRequired"));
 
-  // بناء الـ Schema بحيث تكون مطابقة تماماً لصفحة الإضافة
+  // بناء الـ Schema
   const courseSchema = z.object({
+    category_id: z
+      .union([z.string(), z.number()])
+      .refine((val) => !!val, t("addCourse.validation.categoryRequired")),
+
     link: z
       .string()
       .url(t("addCourse.validation.invalidLink"))
@@ -101,10 +203,12 @@ const EditCourse = () => {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(courseSchema),
     defaultValues: {
+      category_id: "",
       link: "",
       name_ar: "",
       name_en: "",
@@ -126,16 +230,16 @@ const EditCourse = () => {
     },
   });
 
-  // التحكم بميزات الكورس ديناميكيًا
   const { fields, append, remove } = useFieldArray({
     control,
     name: "learnings",
   });
 
-  // دالة مساعدة لتشكيل وتجهيز البيانات القادمة من الـ API لتتوافق مع الـ Form والقيم الافتراضية النصية
+  // تشكيل وتجهيز البيانات من الـ API
   const formatCourseData = (data) => {
     if (!data) return {};
     return {
+      category_id: String(data.category_id) || "",
       link: data.link || "",
       name_ar: data.name?.ar || "",
       name_en: data.name?.en || "",
@@ -155,7 +259,6 @@ const EditCourse = () => {
         },
       ],
       duration: data.duration || "",
-      // تحويل الأرقام القادمة من الـ API لسلاسل نصية (Strings) لتتوافق مع معالجة الـ Input والـ Schema
       price:
         data.price !== undefined && data.price !== null
           ? String(data.price)
@@ -177,7 +280,6 @@ const EditCourse = () => {
     };
   };
 
-  // عمل تحديث و Reset للـ Form بمجرد جلب البيانات بنجاح من الـ API
   useEffect(() => {
     if (course) {
       reset(formatCourseData(course));
@@ -187,7 +289,6 @@ const EditCourse = () => {
     }
   }, [course, reset]);
 
-  // إدارة الـ Mutation لتحديث البيانات عبر الـ API
   const {
     mutate: updateCourseMutate,
     isPending,
@@ -204,6 +305,7 @@ const EditCourse = () => {
   const onSubmit = (data) => {
     const formData = new FormData();
 
+    formData.append("category_id", data.category_id);
     formData.append("name[en]", data.name_en);
     formData.append("name[ar]", data.name_ar);
     formData.append("description[en]", data.description_en);
@@ -221,7 +323,6 @@ const EditCourse = () => {
       formData.append("link", data.link);
     }
 
-    // مصفوفة الـ learnings بصيغة learnings[index][field][lang]
     data.learnings.forEach((item, index) => {
       formData.append(`learnings[${index}][title][en]`, item.title_en);
       formData.append(`learnings[${index}][title][ar]`, item.title_ar);
@@ -235,7 +336,6 @@ const EditCourse = () => {
       );
     });
 
-    // إرسال الصورة فقط في حال تم تغييرها واختيار ملف جديد
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -247,7 +347,6 @@ const EditCourse = () => {
 
   return (
     <div className="space-y-6">
-      {/* الهيدر العلوي المحتوي على عنوان الصفحة وزر التعديل */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
         <ProfileTitle title={t("editCourse.title")} />
 
@@ -304,6 +403,60 @@ const EditCourse = () => {
             )}
           </div>
         </div>
+
+        {/* شجرة اختيار وتعديل الفئات التفاعلية المعتمدة على الـ category_chain */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-6">
+          {renderLevels.map((level) => (
+            <div key={level.levelIndex}>
+              <label className="text-sm font-medium inline-block mb-2">
+                {level.levelIndex === 0
+                  ? t("coursesPage.mainCategory")
+                  : level.parentName}
+              </label>
+              <Select
+                disabled={categoriesLoading || level.disabled}
+                value={level.selectedValue}
+                onValueChange={(val) =>
+                  handleCategoryChange(level.levelIndex, val)
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={t("coursesPage.categoryPlaceholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectGroup>
+                    {!level.disabled && (
+                      <SelectItem value="all">
+                        {`${t("all")} ${level.parentName}`}
+                      </SelectItem>
+                    )}
+                    {level.options?.map((cat) => (
+                      <SelectItem key={cat.id} value={String(cat.id)}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
+        </div>
+
+        {/* حقل الـ Category المخفي المربوط بـ react-hook-form */}
+        <Controller
+          name="category_id"
+          control={control}
+          render={({ field }) => (
+            <input type="hidden" name={field.name} value={field.value} />
+          )}
+        />
+        {errors.category_id && (
+          <p className="text-sm text-red-500 -mt-4">
+            {errors.category_id.message}
+          </p>
+        )}
 
         {/* حقل الفيديو التعريفي (link) */}
         <Controller
@@ -485,7 +638,6 @@ const EditCourse = () => {
             </div>
           ))}
 
-          {/* زر إضافة ميزة جديدة يظهر فقط في وضع التعديل */}
           {isEditing && (
             <button
               type="button"
@@ -615,6 +767,12 @@ const EditCourse = () => {
               className="w-full md:w-40"
               onClick={() => {
                 reset(formatCourseData(course));
+                // إرجاع الأقسام لوضعها الأصلي عند الإلغاء
+                if (course?.category_chain) {
+                  setSelectedCategories(
+                    course.category_chain.map((c) => String(c.id)),
+                  );
+                }
                 setImagePreview(course?.image || null);
                 setImageFile(null);
                 setIsEditing(false);

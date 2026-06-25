@@ -1,155 +1,211 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
   const { t } = useTranslation();
+  const isRtl = lang === "ar";
+
+  // الاحتفاظ بمسار التنقل الشجري الحالي
+  const [navStack, setNavStack] = useState([]);
+
+  // تصفير الـ Stack عند إغلاق الـ القائمة بالكامل لتبدأ من جديد المرة القادمة
+  useEffect(() => {
+    if (!open) {
+      setNavStack([]);
+    }
+  }, [open]);
+
+  // العنصر النشط حالياً في القائمة (إذا كان الـ Stack يحتوي على عناصر، نأخذ آخر عنصر)
+  const currentMenu =
+    navStack.length > 0 ? navStack[navStack.length - 1] : null;
+
+  // العودة خطوة للخلف في الشجرة
+  const handleGoBack = () => {
+    setNavStack((prev) => prev.slice(0, -1));
+  };
+
+  const handleCloseAll = () => {
+    onOpenChange(false);
+  };
+
+  // دالة ذكية لبناء المسار (Path IDs) المطلوب لصفحة الكورسات بناءً على موقعنا في الشجرة والعنصر الحالي
+  const buildCategoryPath = (currentItemId) => {
+    // نأخذ الـ ids للعناصر الموجودة في الـ Stack (تجنب الروابط الرئيسية مثل 'الكورسات' إذا لم تكن تمتلك id للقسم)
+    const activeStackIds = navStack
+      .filter((item) => item.id && item.id !== "courses-root") // فلترة الجذور الوهمية إن وجدت
+      .map((item) => item.id);
+
+    return [...activeStackIds, currentItemId].join(",");
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side={lang === "en" ? "right" : "left"}
         className="w-75 sm:w-100 flex flex-col gap-6 p-6"
       >
-        {/* رأس القائمة (اللوجو) */}
+        {/* رأس القائمة (اللوجو وهيدر العودة للخلف) */}
         <SheetHeader className="border-b border-gray-100 pb-4">
           <SheetTitle>
-            <Link
-              to="/"
-              onClick={() => onOpenChange(false)}
-              className="inline-block w-full"
-            >
-              {settings?.header_logo && (
-                <img
-                  src={settings?.header_logo}
-                  alt="Logo"
-                  className="w-full object-contain"
-                />
-              )}
-            </Link>
+            {!currentMenu ? (
+              // إذا كنا في القائمة الرئيسية، نعرض اللوجو
+              <Link
+                to="/"
+                onClick={handleCloseAll}
+                className="inline-block w-full"
+              >
+                {settings?.header_logo && (
+                  <img
+                    src={settings?.header_logo}
+                    alt="Logo"
+                    className="h-10 object-contain"
+                  />
+                )}
+              </Link>
+            ) : (
+              // إذا دخلنا مستوى فرعي، نعرض زر العودة مع اسم القسم الحالي
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleGoBack}
+                  className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-600"
+                >
+                  {isRtl ? (
+                    <ArrowRight className="h-5 w-5" />
+                  ) : (
+                    <ArrowLeft className="h-5 w-5" />
+                  )}
+                </button>
+                <span className="text-base font-bold text-gray-800 truncate">
+                  {currentMenu.name}
+                </span>
+              </div>
+            )}
           </SheetTitle>
         </SheetHeader>
 
-        {/* القائمة المتداخلة بالكامل */}
-        <nav className="flex flex-col gap-1 overflow-y-auto pr-1">
-          {/* الأكورديون الرئيسي للمستوى الأول (المحاضرين / الكورسات) */}
-          <Accordion type="single" collapsible className="w-full">
-            {links.map((link) => {
-              const hasCategories = link.list && link.list.length > 0;
+        {/* جسم التنقل الديناميكي */}
+        <nav className="flex flex-col gap-1 overflow-y-auto flex-1">
+          {!currentMenu ? (
+            /* 1. عرض القائمة الرئيسية (المستوى الأول) */
+            links.map((link) => {
+              const hasList = link.list && link.list.length > 0;
 
-              // رابط عادي لو مفيش جواه لستة (مثل المحاضرين)
-              if (!hasCategories) {
-                return (
-                  <div key={link.id} className="py-3 border-b border-gray-100">
+              return (
+                <div
+                  key={link.id}
+                  className="flex items-center justify-between py-3 border-b border-gray-50 text-base font-bold text-gray-800"
+                >
+                  {hasList ? (
+                    // لو جواه لستة، نضغط عليه فيفتح المستوى التالي (ندفعه للـ Stack)
+                    <button
+                      onClick={() =>
+                        setNavStack([
+                          {
+                            id: "courses-root",
+                            name: link.name,
+                            sub_categories: link.list,
+                          },
+                        ])
+                      }
+                      className="flex items-center justify-between w-full text-start cursor-pointer hover:text-primary transition-colors"
+                    >
+                      {link.name}
+                      {isRtl ? (
+                        <ChevronLeft className="h-5 w-5 opacity-60" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5 opacity-60" />
+                      )}
+                    </button>
+                  ) : (
+                    // لو ممش جواه لستة (زي المحاضرين)، يوجه مباشرة
                     <Link
                       to={link.url}
-                      className="text-gray-800 font-bold text-base hover:text-primary transition-colors block w-full"
-                      onClick={() => onOpenChange(false)}
+                      className="w-full hover:text-primary transition-colors"
+                      onClick={handleCloseAll}
                     >
                       {link.name}
                     </Link>
-                  </div>
-                );
-              }
-
-              // إذا كان لديه أقسام (مثل الكورسات)
-              return (
-                <AccordionItem
-                  key={link.id}
-                  value={`link-${link.id}`}
-                  className="border-b border-gray-100"
-                >
-                  <AccordionTrigger className="text-gray-800 font-bold text-base hover:text-primary hover:no-underline py-3">
-                    {link.name}
-                  </AccordionTrigger>
-
-                  <AccordionContent className="pt-1 pb-3 flex flex-col gap-2">
-                    {/* الأكورديون الثاني للمستوى الثاني (الأقسام الرئيسية) */}
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="w-full ps-2 border-s-2 border-primary flex flex-col gap-1"
-                    >
-                      <Link
-                        to={link.url}
-                        className="text-primary font-medium text-sm py-2 block border-b border-dashed border-gray-100"
-                        onClick={() => onOpenChange(false)}
-                      >
-                        {t("header.all")} {link.name}
-                      </Link>
-
-                      {link.list.map((category) => {
-                        const hasSubCategories =
-                          category.sub_categories &&
-                          category.sub_categories.length > 0;
-
-                        // لو القسم الرئيسي مفيش جواه أقسام فرعية
-                        if (!hasSubCategories) {
-                          return (
-                            <Link
-                              key={category.id}
-                              to={`/courses?category_id=${category.id}`}
-                              className="text-gray-700 font-medium text-sm hover:text-primary transition-colors py-2 block"
-                              onClick={() => onOpenChange(false)}
-                            >
-                              {category.name}
-                            </Link>
-                          );
-                        }
-
-                        // لو القسم الرئيسي جواه أقسام فرعية، نعمله هو كمان AccordionItem
-                        return (
-                          <AccordionItem
-                            key={category.id}
-                            value={`cat-${category.id}`}
-                            className="border-none outline-none focus:ring-0"
-                          >
-                            <AccordionTrigger className="text-gray-700 font-medium text-sm hover:text-primary hover:no-underline py-2">
-                              {category.name}
-                            </AccordionTrigger>
-
-                            <AccordionContent className="pt-1 pb-2 flex flex-col gap-1.5 ps-2">
-                              {/* رابط للذهاب للقسم الرئيسي نفسه */}
-                              <Link
-                                to={`/courses?category_id=${category.id}`}
-                                className="text-gray-600 font-medium text-xs hover:text-primary transition-colors py-1 block"
-                                onClick={() => onOpenChange(false)}
-                              >
-                                - {t("header.all")} {category.name}
-                              </Link>
-
-                              {/* عرض الأقسام الفرعية (المستوى الثالث) */}
-                              {category.sub_categories.map((subCategory) => (
-                                <Link
-                                  key={subCategory.id}
-                                  to={`/courses?category_id=${category.id}&sub_category_id=${subCategory.id}`}
-                                  className="text-gray-800 text-xs hover:text-primary transition-colors py-1 block"
-                                  onClick={() => onOpenChange(false)}
-                                >
-                                  - {subCategory.name}
-                                </Link>
-                              ))}
-                            </AccordionContent>
-                          </AccordionItem>
-                        );
-                      })}
-                    </Accordion>
-                  </AccordionContent>
-                </AccordionItem>
+                  )}
+                </div>
               );
-            })}
-          </Accordion>
+            })
+          ) : (
+            /* 2. عرض القوائم الفرعية المتتالية (المستويات الأعمق) */
+            <div className="flex flex-col gap-1">
+              {/* خيار عرض الكل للقسم الحالي */}
+              {currentMenu.id === "courses-root" ? (
+                <div className="py-3 border-b border-gray-50 text-sm font-bold">
+                  <Link
+                    to="/courses" // يذهب لصفحة الكورسات بدون فلاتر
+                    className="text-primary block w-full text-start"
+                    onClick={handleCloseAll}
+                  >
+                    {t("all")} {currentMenu.name}
+                  </Link>
+                </div>
+              ) : (
+                /* أما إذا كنا في مستوى داخلي عميق (مثل Biology)، نعرض "كل الأحياء" بالـ Path الخاص بها */
+                <div className="py-3 border-b border-gray-50 text-sm font-bold">
+                  <Link
+                    to={`/courses?category_path=${buildCategoryPath(currentMenu.id)}`}
+                    className="text-primary block w-full text-start"
+                    onClick={handleCloseAll}
+                  >
+                    {t("all")} {currentMenu.name}
+                  </Link>
+                </div>
+              )}
+
+              {/* تكرار العناصر الفرعية المتاحة في هذا المستوى */}
+              {(currentMenu.sub_categories || currentMenu.list || []).map(
+                (item) => {
+                  const hasSubCategories =
+                    item.sub_categories && item.sub_categories.length > 0;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between py-3 border-b border-gray-50 text-sm font-medium text-gray-700"
+                    >
+                      {hasSubCategories ? (
+                        // لو القسم الفرعي جواه تفريعات أكتر، الزر يدخلنا عمق أكتر بالـ Stack
+                        <button
+                          onClick={() => setNavStack((prev) => [...prev, item])}
+                          className="flex items-center justify-between w-full text-start cursor-pointer hover:text-primary transition-colors"
+                        >
+                          {item.name}
+                          <div className="px-3 py-2 bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700 h-full">
+                            {isRtl ? (
+                              <ChevronLeft className="h-4 w-4 opacity-60" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 opacity-60" />
+                            )}
+                          </div>
+                        </button>
+                      ) : (
+                        // لو مفيش جواه حاجة، يروح فوراً على صفحة الفلترة بالـ Path كامل
+                        <Link
+                          to={`/courses?category_path=${buildCategoryPath(item.id)}`}
+                          className="w-full hover:text-primary transition-colors text-start"
+                          onClick={handleCloseAll}
+                        >
+                          {item.name}
+                        </Link>
+                      )}
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          )}
         </nav>
       </SheetContent>
     </Sheet>

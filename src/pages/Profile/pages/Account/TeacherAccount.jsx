@@ -11,8 +11,8 @@ import FormError from "@/components/form/FormError";
 import { FaPen } from "react-icons/fa";
 import { isValidPhoneNumber } from "react-phone-number-input";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getProfile, updateProfile } from "@/api/authServices";
+import { useMutation } from "@tanstack/react-query";
+import { updateProfile } from "@/api/authServices";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
@@ -20,20 +20,10 @@ import { toast } from "sonner";
 import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
 import { setCredentials } from "@/store/auth/authSlice";
-import LoadingPage from "@/components/Loading/LoadingPage";
 
-const TeacherAccount = () => {
+const TeacherAccount = ({ user }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["profile"],
-    queryFn: getProfile,
-  });
 
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -146,13 +136,6 @@ const TeacherAccount = () => {
       setErrorMsg(error?.response?.data?.message);
     },
   });
-
-  if (isLoading) return <LoadingPage />;
-
-  if (isError)
-    return (
-      <div className="text-red-500 py-20">{t("teacherAccount.loadError")}</div>
-    );
 
   const onSubmit = (values) => {
     const formData = new FormData();

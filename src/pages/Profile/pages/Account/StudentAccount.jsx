@@ -14,17 +14,16 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { useMutation } from "@tanstack/react-query";
 import { updateProfile } from "@/api/authServices";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
 import { setCredentials } from "@/store/auth/authSlice";
 
-const StudentAccount = () => {
+const StudentAccount = ({ user }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
 
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");

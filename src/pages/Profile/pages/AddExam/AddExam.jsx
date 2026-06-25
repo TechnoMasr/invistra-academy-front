@@ -41,11 +41,11 @@ const AddExam = () => {
           .number()
           .min(1, t("addExam.validation.displayedQuestionsCountRequired")),
       ),
-      attempts_allowed: z.preprocess(
+      max_attempts: z.preprocess(
         (val) => Number(val),
         z.number().min(1, t("addExam.validation.attemptsAllowedRequired")),
       ),
-      min_completion_percentage: z.preprocess(
+      required_watch_percentage: z.preprocess(
         (val) => Number(val),
         z
           .number()
@@ -116,8 +116,8 @@ const AddExam = () => {
       max_degree: "",
       duration: "",
       displayed_questions_count: "",
-      attempts_allowed: "",
-      min_completion_percentage: "",
+      max_attempts: "",
+      required_watch_percentage: "",
 
       questions: [
         {
@@ -169,10 +169,10 @@ const AddExam = () => {
       "displayed_questions_count",
       String(data.displayed_questions_count),
     );
-    formData.append("attempts_allowed", String(data.attempts_allowed));
+    formData.append("max_attempts", String(data.max_attempts));
     formData.append(
-      "min_completion_percentage",
-      String(data.min_completion_percentage),
+      "required_watch_percentage",
+      String(data.required_watch_percentage),
     );
 
     data.questions.forEach((q, qIndex) => {
@@ -316,7 +316,7 @@ const AddExam = () => {
             )}
           />
           <Controller
-            name="attempts_allowed"
+            name="max_attempts"
             control={control}
             render={({ field }) => (
               <MainInput
@@ -324,12 +324,12 @@ const AddExam = () => {
                 type="number"
                 label={t("addExam.attemptsAllowed")}
                 placeholder={t("addExam.attemptsAllowedPlaceholder")}
-                error={errors.attempts_allowed?.message}
+                error={errors.max_attempts?.message}
               />
             )}
           />
           <Controller
-            name="min_completion_percentage"
+            name="required_watch_percentage"
             control={control}
             render={({ field }) => (
               <MainInput
@@ -337,7 +337,7 @@ const AddExam = () => {
                 type="number"
                 label={t("addExam.minCompletionPercentage")}
                 placeholder={t("addExam.minCompletionPercentagePlaceholder")}
-                error={errors.min_completion_percentage?.message}
+                error={errors.required_watch_percentage?.message}
               />
             )}
           />

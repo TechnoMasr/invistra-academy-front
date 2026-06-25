@@ -117,11 +117,11 @@ const Details = ({ data }) => {
 
         <div className="text-lg font-bold flex items-center gap-1">
           {t("courseDetails.price")}{" "}
-          {data?.price_before_discount && (
+          {data?.price_before_discount ? (
             <p className="text-lg font-bold text-red-500 line-through">
               {data?.price_before_discount} {data?.currency}
             </p>
-          )}
+          ) : null}
           <p className="text-green-600 text-4xl">
             {data?.price} {data?.currency}
           </p>

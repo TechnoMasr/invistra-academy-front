@@ -2,13 +2,22 @@ import { FaRegCircleQuestion } from "react-icons/fa6";
 import { SlLayers } from "react-icons/sl";
 import { Link } from "react-router";
 import { Button } from "../ui/button";
-import { RiFileList3Line, RiTimerLine } from "react-icons/ri";
+import {
+  RiErrorWarningLine,
+  RiFileList3Line,
+  RiTimerLine,
+} from "react-icons/ri";
 import { GrEdit } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 
 const ExamCard = ({ item }) => {
   const { t } = useTranslation();
+
+  // الحالات الثلاثة بناءً على الـ status
   const isCompleted = item?.status === "ended";
+  const isRetryAvailable = item?.status === "retry_available";
+  const isComing = item?.status === "coming";
+
   const timeInMinutes = item?.duration;
 
   // دالة لتحويل الدقائق إلى صيغة HH:MM
@@ -17,7 +26,6 @@ const ExamCard = ({ item }) => {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
 
-    // padStart بتضمن إن الرقم يظهر بخانتين دايماً (مثلاً 1 يبقى 01)
     const formattedHours = String(hours).padStart(2, "0");
     const formattedMinutes = String(minutes).padStart(2, "0");
 
@@ -37,10 +45,12 @@ const ExamCard = ({ item }) => {
 
       <div className="flex items-center flex-wrap gap-2">
         <p
-          className={`font-medium text-xs py-1 px-4 border  rounded-full ${
+          className={`font-medium text-xs py-1 px-4 border rounded-full ${
             isCompleted
               ? "text-red-600 border-red-600"
-              : "bg-green-50 text-green-700 border border-green-400"
+              : isRetryAvailable
+                ? "text-primary border-primary"
+                : "bg-green-50 text-green-700 border border-green-400"
           }`}
         >
           {t("examCard.exam")}: {item?.status_translated}
@@ -58,6 +68,13 @@ const ExamCard = ({ item }) => {
         )}
       </div>
 
+      <p className="text-sm flex items-center gap-1 font-semibold text-orange-600">
+        {t("examCard.attempts", {
+          count: item?.attempts_count,
+          max: item?.max_attempts,
+        })}
+      </p>
+
       <div className="flex items-center gap-2">
         <div className="w-8 aspect-square overflow-hidden rounded-full border">
           {item?.instructor_image && (
@@ -74,30 +91,56 @@ const ExamCard = ({ item }) => {
 
       <hr className="mt-auto" />
 
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <p>
-          {t("examCard.testScore", { score: item?.score ? item?.score : "??" })}
-        </p>
+      {!item?.is_accessible ? (
+        <div className="bg-red-100 border border-red-600 py-1 px-4 rounded-full flex items-center justify-center text-center gap-1">
+          <p className="font-semibold text-red-600 flex items-center gap-1">
+            <RiErrorWarningLine />
+            {t("examCard.notAccessible")}
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <p className="font-medium">
+              {t("examCard.testScore", {
+                score: item?.score !== null ? item?.score : "??",
+                max: item?.full_mark,
+              })}
+            </p>
+            <p className="font-medium">
+              {t("examCard.passMark", {
+                score: item?.pass_mark,
+              })}
+            </p>
+          </div>
 
-        {isCompleted ? (
-          <Link
-            to={`/profile/exam-result/${item?.id}`}
-            className="rounded-full"
-          >
-            <Button variant="outline">
-              <RiFileList3Line />
-              {t("examCard.viewExam")}
-            </Button>
-          </Link>
-        ) : (
-          <Link to={`/enter-exam/${item?.id}`} className="rounded-full">
-            <Button>
-              <GrEdit />
-              {t("examCard.startExam")}
-            </Button>
-          </Link>
-        )}
-      </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isCompleted || isRetryAvailable ? (
+              <Link
+                to={`/profile/exam-result/${item?.id}`}
+                className="rounded-full flex-1"
+              >
+                <Button variant="outline" className="w-full">
+                  <RiFileList3Line />
+                  {t("examCard.viewExam")}
+                </Button>
+              </Link>
+            ) : null}
+
+            {isRetryAvailable || isComing ? (
+              <Link
+                to={`/enter-exam/${item?.id}`}
+                className="rounded-full flex-1"
+              >
+                <Button className="w-full">
+                  <GrEdit />
+                  {t("examCard.startExam")}
+                </Button>
+              </Link>
+            ) : null}
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -43,12 +43,12 @@ const Header = () => {
           )}
         </Link>
 
-        <div className="w-full max-w-xs hidden xl:block">
-          <SearchInput />
-        </div>
-
         <div className="hidden xl:block">
           <NavBar links={links} />
+        </div>
+
+        <div className="w-full max-w-xs hidden xl:block">
+          <SearchInput />
         </div>
 
         <HeaderActions

@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import CoursesPageSkeleton from "@/components/Loading/SkeletonLoading/CoursesPageSkeleton";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 
-// Custom Hook للـ Debounce لمنع إرسال طلبات مع كل حرف يكتبه المستخدم
+// Custom Hook للـ Debounce
 function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -32,19 +32,25 @@ function useDebounce(value, delay) {
 
 const Courses = () => {
   const { t } = useTranslation();
-  // استخدام useSearchParams الخاصة بـ react-router
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // قراءة القيم الحالية من الـ URL (مع إضافة الترقيم)
+  // قراءة القيم من الـ URL
   const currentSearch = searchParams.get("search") || "";
-  const currentCategory = searchParams.get("category_id") || "all";
-  const currentSubCategory = searchParams.get("sub_category_id") || "all";
   const currentInstructor = searchParams.get("instructor_id") || "all";
-  const currentPage = Number(searchParams.get("page")) || 1; // قراءة الصفحة الحالية
+  const currentPage = Number(searchParams.get("page")) || 1;
 
-  // State محلي للـ Input عشان الكتابة تكون سريعة وسلسة
+  // قراءة مسار الأقسام من الـ URL
+  const categoryPathString = searchParams.get("category_path") || "";
+  const selectedCategories = categoryPathString
+    ? categoryPathString.split(",")
+    : [];
+
+  // الـ ID الفعلي المختار حالياً لإرساله للـ API
+  const activeCategoryId =
+    selectedCategories[selectedCategories.length - 1] || "all";
+
   const [searchInput, setSearchInput] = useState(currentSearch);
-  const debouncedSearch = useDebounce(searchInput, 500); // ينتظر نصف ثانية بعد توقف الكتابة
+  const debouncedSearch = useDebounce(searchInput, 500);
 
   // جلب البيانات من Redux
   const { categories, categoriesLoading } = useSelector(
@@ -54,28 +60,52 @@ const Courses = () => {
     (state) => state.instructors,
   );
 
-  // استخراج الأقسام الفرعية بناءً على القسم الرئيسي المختار
-  const selectedCategoryData = categories?.find(
-    (cat) => String(cat.id) === currentCategory,
-  );
-  const availableSubCategories = selectedCategoryData?.sub_categories || [];
+  // بناء قائمة المستويات المتاحة للعرض ديناميكياً مع تعديل المسميات
+  const renderLevels = [];
+  let currentLevelOptions = categories || [];
 
-  // دالة لتحديث الـ URLParams مع الحفاظ على الفلاتر الأخرى
+  // المستوى الأول دائماً متاح (الأقسام الرئيسية)
+  renderLevels.push({
+    levelIndex: 0,
+    options: currentLevelOptions,
+    selectedValue: selectedCategories[0] || "all",
+    parentName: "", // لا يوجد أب للمستوى الأول
+  });
+
+  // تتبع شجرة الأقسام لبناء القوائم الفرعية التالية وحفظ اسم الأب المختار
+  for (let i = 0; i < selectedCategories.length; i++) {
+    const selectedId = selectedCategories[i];
+    const foundCategory = currentLevelOptions.find(
+      (cat) => String(cat.id) === selectedId,
+    );
+
+    if (
+      foundCategory &&
+      foundCategory.sub_categories &&
+      foundCategory.sub_categories.length > 0
+    ) {
+      currentLevelOptions = foundCategory.sub_categories;
+      renderLevels.push({
+        levelIndex: i + 1,
+        options: currentLevelOptions,
+        selectedValue: selectedCategories[i + 1] || "all",
+        parentName: foundCategory.name, // حفظ اسم القسم المختار ليصبح عنواناً للمستوى الفرعي
+      });
+    } else {
+      break;
+    }
+  }
+
+  // دالة تحديث الفلاتر الشاملة
   const updateFilters = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
 
     if (value && value !== "all") {
       newParams.set(key, value);
     } else {
-      newParams.delete(key); // لو اختار "الكل" أو مسح السيرش بيتحذف من الـ URL تماماً
+      newParams.delete(key);
     }
 
-    // لقطة ذكية: لو غيرنا القسم الرئيسي، لازم نمسح القسم الفرعي القديم من الـ URL
-    if (key === "category_id") {
-      newParams.delete("sub_category_id");
-    }
-
-    // تصفير الصفحة وإعادتها للأولى عند تغيير أي فلتر آخر غير الترقيم نفسه
     if (key !== "page") {
       newParams.delete("page");
     }
@@ -83,40 +113,53 @@ const Courses = () => {
     setSearchParams(newParams);
   };
 
-  // مراقبة الـ Debounced Search أول ما يتغير يحدث الـ URL تلقائياً
+  // دالة خاصة بالتعامل مع تغيير الأقسام الشجرية
+  const handleCategoryChange = (levelIndex, value) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (value === "all") {
+      const newPath = selectedCategories.slice(0, levelIndex);
+      if (newPath.length > 0) {
+        newParams.set("category_path", newPath.join(","));
+      } else {
+        newParams.delete("category_path");
+      }
+    } else {
+      const newPath = [...selectedCategories.slice(0, levelIndex), value];
+      newParams.set("category_path", newPath.join(","));
+    }
+
+    newParams.delete("page");
+    setSearchParams(newParams);
+  };
+
   useEffect(() => {
     updateFilters("search", debouncedSearch);
   }, [debouncedSearch]);
 
-  // عمل تزامن لو الـ URL اتغير من بره، الـ Input يتحدث
   useEffect(() => {
     setSearchInput(currentSearch);
   }, [currentSearch]);
 
-  // جلب البيانات بناءً على الفلاتر الحالية في الـ URL
+  // جلب البيانات بناءً على الـ ID النشط من السلسلة
   const { data: courses, isLoading } = useQuery({
-    // ربط الـ queryKey بكافة الفلاتر بما فيها الصفحة الحالية لعمل refetch تلقائي
     queryKey: [
       "courses-page",
       currentSearch,
-      currentCategory,
-      currentSubCategory,
+      activeCategoryId,
       currentInstructor,
-      currentPage, // أضيف هنا لمراقبة الترقيم
+      currentPage,
     ],
     queryFn: () =>
       getCoursesPage({
         search: currentSearch || undefined,
-        category_id: currentCategory !== "all" ? currentCategory : undefined,
-        sub_category_id:
-          currentSubCategory !== "all" ? currentSubCategory : undefined,
+        category_id: activeCategoryId !== "all" ? activeCategoryId : undefined,
         instructor_id:
           currentInstructor !== "all" ? currentInstructor : undefined,
-        page: currentPage, // إرسال رقم الصفحة للـ API
+        page: currentPage,
       }),
   });
 
-  // استخراج إجمالي عدد الصفحات ديناميكياً من الـ meta الخاصة بالسيرفر
   const totalPages = courses?.meta?.last_page || 1;
 
   return (
@@ -161,11 +204,15 @@ const Courses = () => {
                 onValueChange={(val) => updateFilters("instructor_id", val)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("coursesPage.instructorPlaceholder")} />
+                  <SelectValue
+                    placeholder={t("coursesPage.instructorPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectGroup>
-                    <SelectItem value="all">{t("coursesPage.allInstructors")}</SelectItem>
+                    <SelectItem value="all">
+                      {t("coursesPage.allInstructors")}
+                    </SelectItem>
                     {instructors?.map((ins) => (
                       <SelectItem key={ins.id} value={String(ins.id)}>
                         {ins.name}
@@ -176,63 +223,46 @@ const Courses = () => {
               </Select>
             </div>
 
-            {/* فلتر الأقسام الرئيسية */}
-            <div>
-              <label className="text-sm font-medium inline-block mb-2">
-                {t("coursesPage.mainCategory")}
-              </label>
-              <Select
-                disabled={categoriesLoading}
-                value={currentCategory}
-                onValueChange={(val) => updateFilters("category_id", val)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("coursesPage.mainCategoryPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectGroup>
-                    <SelectItem value="all">{t("coursesPage.allCategories")}</SelectItem>
-                    {categories?.map((cat) => (
-                      <SelectItem key={cat.id} value={String(cat.id)}>
-                        {cat.name}
+            {/* عرض قوائم الأقسام ديناميكياً بالمسميات الجديدة */}
+            {renderLevels.map((level) => (
+              <div key={level.levelIndex}>
+                <label className="text-sm font-medium inline-block mb-2">
+                  {level.levelIndex === 0
+                    ? t("coursesPage.mainCategory")
+                    : level.parentName}
+                </label>
+                <Select
+                  disabled={categoriesLoading}
+                  value={level.selectedValue}
+                  onValueChange={(val) =>
+                    handleCategoryChange(level.levelIndex, val)
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={t("coursesPage.categoryPlaceholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectGroup>
+                      <SelectItem value="all">
+                        {level.levelIndex === 0
+                          ? t("coursesPage.allCategories")
+                          : `${t("all")} ${level.parentName}`}
                       </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* فلتر الأقسام الفرعية */}
-            <div>
-              <label className="text-sm font-medium inline-block mb-2">
-                {t("coursesPage.subCategory")}
-              </label>
-              <Select
-                disabled={
-                  currentCategory === "all" ||
-                  availableSubCategories.length === 0
-                }
-                value={currentSubCategory}
-                onValueChange={(val) => updateFilters("sub_category_id", val)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("coursesPage.subCategoryPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectGroup>
-                    <SelectItem value="all">{t("coursesPage.allSubCategories")}</SelectItem>
-                    {availableSubCategories.map((subCat) => (
-                      <SelectItem key={subCat.id} value={String(subCat.id)}>
-                        {subCat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+                      {level.options?.map((cat) => (
+                        <SelectItem key={cat.id} value={String(cat.id)}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
           </div>
 
-          {/* حالة التحميل وعرض كروت الكورسات */}
+          {/* عرض البيانات أو الهيكل العظمي للتحميل */}
           {isLoading ? (
             <CoursesPageSkeleton />
           ) : (
@@ -249,7 +279,6 @@ const Courses = () => {
             </>
           )}
 
-          {/* الكومبوننت الفعلي للترقيم بعد ربطه */}
           <MainPagination
             totalPages={totalPages}
             currentPage={currentPage}

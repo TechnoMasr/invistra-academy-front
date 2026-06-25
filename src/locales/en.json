@@ -1,6 +1,7 @@
 {
   "loading": "Loading...",
   "downloading": "Downloading...",
+  "all": "All",
 
   "privacyPolicy": "Privacy Policy",
   "termsAndConditions": "Terms and Conditions",
@@ -300,7 +301,8 @@
 
   "CompleteRegister": {
     "title": "Your data has been submitted successfully",
-    "description": "Your information will be reviewed and you will be notified via email"
+    "description": "Your information will be reviewed and you will be notified via email",
+    "goHome": "Go to Home"
   },
 
   "account": {
@@ -444,9 +446,12 @@
     "exam": "Exam",
     "questions": "{{count}} question",
     "questions_plural": "{{count}} questions",
-    "testScore": "Test score: {{score}}",
+    "attempts": "Attempts: {{count}} / {{max}}",
+    "testScore": "Test score: {{score}} / {{max}}",
+    "passMark": "Pass mark: {{score}}",
     "viewExam": "View Exam",
-    "startExam": "Start Exam"
+    "startExam": "Start Exam",
+    "notAccessible": "This exam is not available at this moment"
   },
 
   "teacherCourseCard": {
@@ -818,12 +823,14 @@
   },
 
   "lectureDetails": {
-    "title": "No data available",
+    "noData": "No data available",
     "videoNotSupported": "Your browser does not support this video.",
     "attachments": "Lecture Files and Attachments",
     "attachmentsDesc": "You can download the summaries and educational files for this lecture to study later.",
     "noFiles": "No files available",
-    "download": "Download"
+    "download": "Download",
+    "watched": "Watched",
+    "markAsWatched": "Mark as watched"
   },
 
   "enterExam": {

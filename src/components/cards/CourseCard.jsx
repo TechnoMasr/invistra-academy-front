@@ -8,7 +8,8 @@ const CourseCard = ({ course }) => {
     <Link
       to={`/courses/${course?.slug}`}
       key={course?.id}
-      className="border rounded-lg overflow-hidden bg-white hover:shadow-xl hover:border-primary hover:bg-gray-100 transition duration-300 ease-in-out"
+      className="border rounded-lg overflow-hidden bg-white hover:shadow-xl hover:border-primary hover:bg-gray-100 transition duration-300 ease-in-out
+      flex flex-col"
     >
       <div className="w-full aspect-5/3 overflow-hidden">
         {course?.image && (
@@ -21,7 +22,7 @@ const CourseCard = ({ course }) => {
         )}
       </div>
 
-      <div className="flex flex-col gap-2 lg:gap-4 p-4">
+      <div className="flex flex-col gap-2 lg:gap-4 p-4 flex-1">
         <h3 className="text-2xl font-bold line-clamp-2">{course?.name}</h3>
 
         <div
@@ -43,18 +44,18 @@ const CourseCard = ({ course }) => {
           <h4 className="font-medium">{course?.instructor.name}</h4>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center justify-between flex-wrap gap-2 mt-auto">
           <div className="flex items-center gap-2 py-1 px-4 border border-primary rounded-full text-xs font-semibold">
             <HiOutlineCollection size={18} />
             {t("courseCard.lecturesCount", { count: course?.lectures_count })}
           </div>
 
           <div>
-            {course?.price_before_discount && (
+            {course?.price_before_discount ? (
               <p className="text-lg font-bold text-red-500 line-through">
                 {course?.price_before_discount} {course?.currency}
               </p>
-            )}
+            ) : null}
 
             <p className="text-2xl font-bold text-green-500">
               {course?.price} {course?.currency}

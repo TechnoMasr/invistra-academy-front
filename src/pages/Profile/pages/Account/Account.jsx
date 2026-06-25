@@ -3,12 +3,12 @@ import TeacherAccount from "./TeacherAccount";
 import useAuthGuard from "@/hooks/useAuthGuard";
 
 const Account = () => {
-  const { isStudent, isInstructor } = useAuthGuard();
+  const { isStudent, isInstructor, user } = useAuthGuard();
 
   return (
     <>
-      {isStudent && <StudentAccount />}
-      {isInstructor && <TeacherAccount />}
+      {isStudent && <StudentAccount user={user} />}
+      {isInstructor && <TeacherAccount user={user} />}
     </>
   );
 };

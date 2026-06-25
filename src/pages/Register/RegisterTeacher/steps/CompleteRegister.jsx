@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
 import doneImg from "../../../../assets/images/complete.png";
+import { Link } from "react-router";
+import { Button } from "@/components/ui/button";
 
 const CompleteRegister = () => {
   const { t } = useTranslation();
@@ -13,6 +15,10 @@ const CompleteRegister = () => {
       </h1>
 
       <p>{t("CompleteRegister.description")}</p>
+
+      <Link to="/">
+        <Button>{t("CompleteRegister.goHome")}</Button>
+      </Link>
     </div>
   );
 };

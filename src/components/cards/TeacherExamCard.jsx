@@ -80,7 +80,7 @@ const TeacherExamCard = ({ item }) => {
         <h4 className="font-medium">{item?.instructor_name}</h4>
       </div>
 
-      <div className="flex flex-col gap-2 mt-auto">
+      <div className="flex items-center gap-2 flex-wrap mt-auto">
         <Link
           to={`/profile/edit-exam/${item?.id}`}
           className="flex-1 rounded-full"
@@ -91,8 +91,12 @@ const TeacherExamCard = ({ item }) => {
         </Link>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="destructive" disabled={isPending}>
+          <DialogTrigger asChild className="flex-1">
+            <Button
+              variant="destructive"
+              disabled={isPending}
+              className={`w-full`}
+            >
               {isPending ? (
                 <Loader2 className="animate-spin h-4 w-4" />
               ) : (

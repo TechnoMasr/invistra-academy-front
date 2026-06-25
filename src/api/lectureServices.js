@@ -40,3 +40,10 @@ export const deleteLecture = async (id) => {
   const { data } = await api.delete(`/instructor-profile/lectures/${id}`);
   return data?.data || null;
 };
+
+export const setShowLecture = async (id) => {
+  const { data } = await api.post(
+    `/student-profile/my-courses/lectures/${id}/progress`,
+  );
+  return data?.data || null;
+};

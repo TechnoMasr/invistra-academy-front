@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,14 +13,111 @@ import ProfileTitle from "@/components/common/ProfileTitle";
 import { createCourse } from "@/api/myCoursesServices";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import useAuthGuard from "@/hooks/useAuthGuard";
+import { useSelector } from "react-redux";
+
+// استيراد مكونات الـ Select
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AddCourse = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuthGuard();
 
-  // 1. الحقول الإلزامية (الأسعار الحالية بعد الخصم)
+  // جلب الفئات المتاحة من Redux لتتبع الفئات الفرعية
+  const { categories, categoriesLoading } = useSelector(
+    (state) => state.categories,
+  );
+
+  // تتبع مسار الفئات الفرعية المختارة من قبل المستخدم في الـ State
+  // نبدأ بمصفوفة تحتوي على القسم الرئيسي الخاص بالمستخدم لمنع تعديله
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
+  // تحديث القسم الرئيسي تلقائياً فور توفر بيانات المستخدم
+  useEffect(() => {
+    if (user?.category?.id) {
+      setSelectedCategories([String(user.category.id)]);
+    }
+  }, [user?.category?.id]);
+
+  // بناء قائمة المستويات المتاحة للعرض ديناميكياً
+  const renderLevels = [];
+  let currentLevelOptions = categories || [];
+
+  // المستوى الأول (القسم الرئيسي للمدرس)
+  if (user?.category?.id) {
+    const mainCategoryObj = currentLevelOptions.find(
+      (cat) => String(cat.id) === String(user.category.id),
+    );
+
+    renderLevels.push({
+      levelIndex: 0,
+      options: currentLevelOptions,
+      selectedValue: String(user.category.id),
+      disabled: true, // معطل دائماً بناءً على طلبك
+      parentName: "",
+    });
+
+    // بناء القوائم الفرعية المتتالية إذا اختار المستخدم مستويات أدنى
+    if (mainCategoryObj && mainCategoryObj.sub_categories) {
+      currentLevelOptions = mainCategoryObj.sub_categories;
+
+      for (let i = 1; i < selectedCategories.length + 1; i++) {
+        const parentId = selectedCategories[i - 1];
+        const foundParent =
+          i === 1
+            ? mainCategoryObj
+            : renderLevels[i - 1]?.options?.find(
+                (cat) => String(cat.id) === parentId,
+              );
+
+        if (
+          foundParent &&
+          foundParent.sub_categories &&
+          foundParent.sub_categories.length > 0
+        ) {
+          currentLevelOptions = foundParent.sub_categories;
+          renderLevels.push({
+            levelIndex: i,
+            options: currentLevelOptions,
+            selectedValue: selectedCategories[i] || "all",
+            disabled: false,
+            parentName: foundParent.name,
+          });
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  // التعامل مع تغيير قيم الفئات الفرعية
+  const handleCategoryChange = (levelIndex, value) => {
+    if (value === "all") {
+      // إذا اختار "الكل" نعود إلى مسار الأب فقط
+      setSelectedCategories(selectedCategories.slice(0, levelIndex));
+    } else {
+      // تحديث المسار بإضافة العنصر الجديد وحذف الفروع التالية له
+      const newPath = [...selectedCategories.slice(0, levelIndex)];
+      newPath[levelIndex] = value;
+      setSelectedCategories(newPath);
+    }
+  };
+
+  // الـ ID الفعلي والنهائي المختار لإرساله للـ API (آخر عنصر نشط في المصفوفة)
+  const activeCategoryId =
+    selectedCategories[selectedCategories.length - 1] || user?.category?.id;
+
+  // التحقق من صحة المدخلات (Zod)
   const requiredNumberSchema = z
     .string()
     .min(1, t("addCourse.validation.priceRequired"))
@@ -31,21 +128,15 @@ const AddCourse = () => {
     .transform((val) => Number(val))
     .refine((val) => val >= 0, t("addCourse.validation.priceRequired"));
 
-  // بناء الـ Schema بحيث تكون جميع الحقول مطلوبة عدا الـ link
   const courseSchema = z.object({
-    // الرابط اختياري (يمكن تركه فارغاً)
     link: z
       .string()
       .url(t("addCourse.validation.invalidLink"))
       .optional()
       .or(z.literal("")),
-
-    // الصورة مطلوبة (نتحقق من وجود ملف الـ File)
     image: z.any().refine((file) => file instanceof File, {
       message: t("addCourse.validation.imageRequired"),
     }),
-
-    // بيانات الكورس الأساسية باللغتين
     name_ar: z.string().min(3, t("addCourse.validation.nameArRequired")),
     name_en: z.string().min(3, t("addCourse.validation.nameEnRequired")),
     description_ar: z
@@ -54,8 +145,6 @@ const AddCourse = () => {
     description_en: z
       .string()
       .min(10, t("addCourse.validation.descEnRequired")),
-
-    // ميزات تعلم الكورس
     learnings: z
       .array(
         z.object({
@@ -70,24 +159,18 @@ const AddCourse = () => {
         }),
       )
       .min(1, t("addCourse.validation.atLeastOneFeature")),
-
-    // الحقول السفلية للكورس (جميعها مطلوبة الآن)
     duration: z
       .string()
       .min(1, t("addCourse.validation.durationRequired"))
       .regex(/^\d{2}:\d{2}$/, t("addCourse.validation.durationFormat")),
-
     price: requiredNumberSchema,
     dollar_price: requiredNumberSchema,
     price_before_discount: z.preprocess(
       (val) => Number(val),
-
       z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
-
     dollar_price_before_discount: z.preprocess(
       (val) => Number(val),
-
       z.number().min(0, t("addCourse.validation.priceRequired")),
     ),
   });
@@ -108,12 +191,7 @@ const AddCourse = () => {
       description_ar: "",
       description_en: "",
       learnings: [
-        {
-          title_ar: "",
-          title_en: "",
-          description_ar: "",
-          description_en: "",
-        },
+        { title_ar: "", title_en: "", description_ar: "", description_en: "" },
       ],
       duration: "",
       price: "",
@@ -137,6 +215,7 @@ const AddCourse = () => {
     onSuccess: () => {
       reset();
       setImagePreview(null);
+      if (user?.category?.id) setSelectedCategories([String(user.category.id)]);
       toast.success(t("addCourse.success"));
       navigate("/profile/my-courses");
     },
@@ -157,6 +236,11 @@ const AddCourse = () => {
       data.dollar_price_before_discount,
     );
     formData.append("duration", data.duration);
+
+    // إرسال الـ category_id النهائي للشجرة النشطة
+    if (activeCategoryId) {
+      formData.append("category_id", activeCategoryId);
+    }
 
     if (data.link) {
       formData.append("link", data.link);
@@ -228,6 +312,46 @@ const AddCourse = () => {
           )}
         </div>
 
+        {/* شجرة اختيار الفئات ديناميكياً */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-6">
+          {renderLevels.map((level) => (
+            <div key={level.levelIndex}>
+              <label className="text-sm font-medium inline-block mb-2">
+                {level.levelIndex === 0
+                  ? t("coursesPage.mainCategory")
+                  : level.parentName}
+              </label>
+              <Select
+                disabled={categoriesLoading || level.disabled}
+                value={level.selectedValue}
+                onValueChange={(val) =>
+                  handleCategoryChange(level.levelIndex, val)
+                }
+              >
+                <SelectTrigger className="w-full bg-accent">
+                  <SelectValue
+                    placeholder={t("coursesPage.categoryPlaceholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectGroup>
+                    {!level.disabled && (
+                      <SelectItem value="all">
+                        {`${t("all")} ${level.parentName}`}
+                      </SelectItem>
+                    )}
+                    {level.options?.map((cat) => (
+                      <SelectItem key={cat.id} value={String(cat.id)}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
+        </div>
+
         {/* حقل الفيديو التعريفي (link) */}
         <Controller
           name="link"
@@ -244,7 +368,7 @@ const AddCourse = () => {
           )}
         />
 
-        {/* اسم الكورس (عربي وإنجليزي) */}
+        {/* اسم الكورس وعناوين الوصف وباقي الحقول */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="name_ar"
@@ -276,7 +400,6 @@ const AddCourse = () => {
           />
         </div>
 
-        {/* وصف الكورس (عربي وإنجليزي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="description_ar"
@@ -310,12 +433,11 @@ const AddCourse = () => {
           />
         </div>
 
-        {/* قسم إضافة ميزات تعلم الكورس الديناميكي (learnings) */}
+        {/* قسم الـ learnings */}
         <div className="border-t pt-4">
           <h3 className="text-lg font-semibold mb-4">
             {t("addCourse.learningsTitle")}
           </h3>
-
           {fields.map((item, index) => (
             <div
               key={item.id}
@@ -330,8 +452,6 @@ const AddCourse = () => {
                   {t("addCourse.delete")}
                 </button>
               )}
-
-              {/* عنوان الميزة */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Controller
                   name={`learnings.${index}.title_ar`}
@@ -362,8 +482,6 @@ const AddCourse = () => {
                   )}
                 />
               </div>
-
-              {/* وصف الميزة */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Controller
                   name={`learnings.${index}.description_ar`}
@@ -398,8 +516,6 @@ const AddCourse = () => {
               </div>
             </div>
           ))}
-
-          {/* زر إضافة ميزة جديدة */}
           <button
             type="button"
             onClick={() =>
@@ -414,14 +530,9 @@ const AddCourse = () => {
           >
             {t("addCourse.addFeature")}
           </button>
-          {errors.learnings?.message && (
-            <p className="text-sm text-red-500 mt-2">
-              {errors.learnings.message}
-            </p>
-          )}
         </div>
 
-        {/* مدة الكورس */}
+        {/* مدة الكورس وأسعاره */}
         <Controller
           name="duration"
           control={control}
@@ -438,7 +549,6 @@ const AddCourse = () => {
           )}
         />
 
-        {/* سعر الكورس (جنيه مصري ودولار أمريكي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="price"
@@ -472,7 +582,6 @@ const AddCourse = () => {
           />
         </div>
 
-        {/* السعر قبل الخصم (جنيه مصري ودولار أمريكي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="price_before_discount"
@@ -506,12 +615,10 @@ const AddCourse = () => {
           />
         </div>
 
-        {/* زر الحفظ وأخطاء الخادم */}
         <div className="mt-4 flex flex-col gap-3 items-center">
           <Button type="submit" className="w-full md:w-60" disabled={isPending}>
             {isPending ? t("addCourse.saving") : t("addCourse.save")}
           </Button>
-
           {error && (
             <FormError
               errorMsg={error?.response?.data?.message || t("addCourse.error")}

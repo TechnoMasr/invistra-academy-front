@@ -5,6 +5,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { sendSearch } from "@/api/mainServices";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { Input } from "@/components/ui/input";
 
 const SearchInput = () => {
   const { t } = useTranslation();
@@ -36,7 +37,8 @@ const SearchInput = () => {
     // هنا يمكنك التوجيه بناءً على النوع:
     if (type === "course") navigate(`/courses/${item.slug}`);
     if (type === "instructor") navigate(`/instructors/${item.slug}`);
-    if (type === "category") navigate(`/courses?category_id=${item.id}`);
+    // if (type === "category") navigate(`/courses?category_id=${item.id}`);
+    if (type === "category") navigate(`/courses?category_path=${item.id}`);
   };
 
   const handleClear = () => {
@@ -91,7 +93,7 @@ const SearchInput = () => {
           </span>
           {type === "course" && item.instructor && (
             <span className="text-xs text-gray-400">
-               {t("search.instructor")}: {item.instructor.name}
+              {t("search.instructor")}: {item.instructor.name}
             </span>
           )}
         </div>
@@ -102,7 +104,7 @@ const SearchInput = () => {
   return (
     <div ref={wrapperRef} className="relative w-full" onBlur={handleBlur}>
       {/* Input */}
-      <input
+      <Input
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -110,7 +112,7 @@ const SearchInput = () => {
         }}
         onFocus={() => query && setIsOpen(true)}
         placeholder={t("search.placeholder")}
-        className="bg-white py-2 px-8 pe-8 rounded-full outline-0 border w-full focus:border-primary"
+        className="bg-white py-2 px-8 pe-8 rounded-full w-full focus-visible:border-primary focus-visible:ring-primary/50"
       />
 
       {/* Search icon */}
@@ -129,7 +131,7 @@ const SearchInput = () => {
 
       {/* Dropdown */}
       {isOpen && query.trim() && (
-        <div className="absolute top-[calc(100%+8px)] custom_scrollbar w-full bg-white rounded-2xl shadow-lg z-50 overflow-hidden min-h-[50px] max-h-[400px] overflow-y-auto border border-gray-100">
+        <div className="absolute top-[calc(100%+8px)] custom_scrollbar w-full bg-white rounded-2xl shadow-lg z-50 overflow-hidden min-h-14 max-h-100 overflow-y-auto border border-gray-100">
           {isLoading ? (
             <div className="py-6 flex justify-center text-sm text-gray-500">
               {t("search.searching")}

@@ -7,9 +7,11 @@ export const getMyCoursesStudent = async (filters = {}) => {
   return data?.data || {};
 };
 
-export const getMyCertificates = async () => {
-  const { data } = await api.get("/student-profile/certificates");
-  return data?.data || [];
+export const getMyCertificates = async (filters = {}) => {
+  const { data } = await api.get("/student-profile/certificates", {
+    params: filters,
+  });
+  return data?.data || {};
 };
 
 // ++++++++++++++++ instructor ++++++++++++++++

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import {
   ChevronDown,
   ChevronLeft,
@@ -13,14 +13,12 @@ import { useSelector } from "react-redux";
 const NavBar = ({ links }) => {
   const { t } = useTranslation();
   const { lang } = useSelector((state) => state.language);
+  const location = useLocation();
 
   const isRtl = lang === "ar";
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
-
-  // حفظ مسار التنقل داخل الشجرة لتسهيل العودة للخلف (تخزن كـ Objects للـ Categories المفتوحة)
   const [navStack, setNavStack] = useState([]);
-
   const navRef = useRef(null);
 
   const toggleDropdown = (id) => {
@@ -28,7 +26,7 @@ const NavBar = ({ links }) => {
       closeAll();
     } else {
       setOpenDropdownId(id);
-      setNavStack([]); // تصفير المسار عند فتح دروب داون جديدة
+      setNavStack([]);
     }
   };
 
@@ -62,12 +60,18 @@ const NavBar = ({ links }) => {
         const isDropdownOpen = openDropdownId === link.id;
         const hasList = link.list && link.list.length > 0;
 
+        // التحقق من أن المسار الحالي يطابق رابط هذا الـ Dropdown (مثلاً يبدأ بـ /courses)
+        const isParentActive = location.pathname.startsWith(link.url);
+
         if (hasList) {
           return (
             <div key={link.id} className="relative">
+              {/* إضافة كلاس active هنا بناءً على الشرط */}
               <button
                 onClick={() => toggleDropdown(link.id)}
-                className="nav_link flex items-center gap-1 focus:outline-none cursor-pointer"
+                className={`nav_link flex items-center gap-1 focus:outline-none cursor-pointer ${
+                  isParentActive ? "active" : ""
+                }`}
               >
                 {link.name}
                 <ChevronDown
@@ -107,7 +111,6 @@ const NavBar = ({ links }) => {
                           <div
                             className={`flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer`}
                           >
-                            {/* تعديل هنا: المستوى الأول يأخذ الـ ID الخاص به فقط في المسار */}
                             <NavLink
                               to={`/courses?category_path=${category.id}`}
                               onClick={closeAll}
@@ -130,7 +133,6 @@ const NavBar = ({ links }) => {
                   {/* القائمة الفرعية الديناميكية */}
                   {currentSubMenu && (
                     <div className="absolute top-0 ltr:left-full rtl:right-full w-60 h-full bg-white border border-gray-200 rounded-md shadow-lg z-50 overflow-y-auto flex flex-col">
-                      {/* الهيدر الخاص بالمنيو الفرعية */}
                       <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-700">
                         <button
                           onClick={handleGoBack}
@@ -148,7 +150,6 @@ const NavBar = ({ links }) => {
                         </span>
                       </div>
 
-                      {/* عرض العناصر الفرعية */}
                       <div className="py-1 flex-1">
                         {currentSubMenu.sub_categories &&
                           currentSubMenu.sub_categories.map((subItem) => {
@@ -156,8 +157,6 @@ const NavBar = ({ links }) => {
                               subItem.sub_categories &&
                               subItem.sub_categories.length > 0;
 
-                            // ─── الذكاء هنا ───
-                            // نقوم بجلب كل المعرفات المفتوحة حالياً في الـ Stack ونضيف إليها الـ id الخاص بالعنصر الحالي لإنشاء سلسلة الرابط كاملة
                             const currentPathIds = [
                               ...navStack.map((item) => item.id),
                               subItem.id,
@@ -168,7 +167,6 @@ const NavBar = ({ links }) => {
                                 key={subItem.id}
                                 className="flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer"
                               >
-                                {/* تعديل هنا: تمرير المسار المجمع بالكامل للرابط */}
                                 <NavLink
                                   to={`/courses?category_path=${currentPathIds}`}
                                   onClick={closeAll}

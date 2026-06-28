@@ -91,7 +91,7 @@ const ExamCard = ({ item }) => {
 
       <hr className="mt-auto" />
 
-      {item?.is_accessible ? (
+      {!item?.is_accessible ? (
         <div className="bg-gray-100 border border-gray-600 py-1 px-4 rounded-lg flex items-center justify-center text-center gap-1">
           <p className="font-medium text-gray-600 flex items-center gap-1">
             {t("examCard.notAccessible", {

@@ -39,8 +39,8 @@ const CartCard = ({ item, course_id }) => {
   });
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-white flex items-start gap-4 p-4">
-      <div className="w-1/3 aspect-6/4 border rounded-md overflow-hidden">
+    <div className="border rounded-lg overflow-hidden bg-white flex flex-col sm:flex-row items-start gap-4 p-4">
+      <div className="w-full sm:w-40 md:w-64 aspect-6/4 shrink-0 border rounded-md overflow-hidden">
         {item.image && (
           <img
             loading="lazy"
@@ -51,12 +51,12 @@ const CartCard = ({ item, course_id }) => {
         )}
       </div>
 
-      <div className="flex-1 flex flex-col gap-2 lg:gap-2">
-        <h3 className="text-lg lg:text-2xl font-bold line-clamp-2">
+      <div className="flex-1 flex flex-col gap-2 w-full">
+        <h3 className="text-lg lg:text-xl font-bold line-clamp-2">
           {item.name}
         </h3>
 
-        <div className="flex flex-wrap items-center gap-2 font-medium text-sm lg:text-base mb-3">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-medium text-sm mb-2 text-muted-foreground">
           <p className="flex items-center gap-1">
             <HiOutlineSquares2X2 />
             {t("cartCard.lecturesCount", { count: item.lectures_count })}
@@ -67,8 +67,8 @@ const CartCard = ({ item, course_id }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="w-10 aspect-square overflow-hidden rounded-full border">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-8 h-8 overflow-hidden rounded-full border shrink-0">
             {item.instructor?.image && (
               <img
                 loading="lazy"
@@ -78,17 +78,17 @@ const CartCard = ({ item, course_id }) => {
               />
             )}
           </div>
-          <h4 className="font-medium">{item.instructor?.name}</h4>
+          <h4 className="font-medium text-sm">{item.instructor?.name}</h4>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-end justify-between flex-wrap gap-2 pt-2 border-t border-gray-50 mt-auto">
           <div>
             {item?.price_before_discount ? (
-              <p className="text-lg font-bold text-red-500 line-through">
+              <p className="text-sm font-semibold text-red-500 line-through">
                 {item?.price_before_discount} {item?.currency}
               </p>
-            ): null}
-            <p className="text-3xl font-bold text-green-500">
+            ) : null}
+            <p className="text-2xl font-bold text-green-500">
               {item.price} {item.currency}
             </p>
           </div>
@@ -97,14 +97,14 @@ const CartCard = ({ item, course_id }) => {
             <DialogTrigger asChild>
               <button
                 disabled={isPending}
-                className="flex items-center gap-1 text-destructive bg-destructive/20 px-4 py-1 rounded-full cursor-pointer hover:bg-destructive/30 transition disabled:opacity-50"
+                className="flex items-center gap-1 text-destructive bg-destructive/10 hover:bg-destructive/20 px-4 py-2 text-sm font-medium rounded-full cursor-pointer transition disabled:opacity-50"
               >
                 {isPending ? (
-                  <Loader2 className="animate-spin h-5 w-5" />
+                  <Loader2 className="animate-spin h-4 w-4" />
                 ) : (
                   <>
                     {t("cartCard.delete")}{" "}
-                    <MdOutlineDelete className="text-xl" />
+                    <MdOutlineDelete className="text-lg" />
                   </>
                 )}
               </button>

@@ -460,7 +460,14 @@
     "price": "السعر:",
     "viewLectures": "عرض المحاضرات",
     "viewCourseDetails": "عرض تفاصيل الكورس",
-    "addLecture": "اضافة محاضرة"
+    "addLecture": "اضافة محاضرة",
+    "deleteCourse": "حذف الكورس",
+    "deleteTitle": "تأكيد حذف الكورس",
+    "deleteDescription": "هل أنت متأكد من رغبتك في حذف كورس \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+    "confirmDelete": "نعم، احذف",
+    "cancel": "إلغاء",
+    "deleteSuccess": "تم حذف الكورس بنجاح",
+    "deleteError": "حدث خطأ أثناء حذف الكورس"
   },
 
   "teacherLectureCard": {
@@ -879,7 +886,17 @@
 
   "myExams": {
     "title": "اختباراتي",
-    "emptyMessage": "لا توجد اختبارات حتى الآن"
+    "emptyMessage": "لا توجد اختبارات حتى الآن",
+    "searchLabel": "بحث باسم الاختبار",
+    "searchPlaceholder": "أدخل اسم الاختبار للبحث...",
+    "statusLabel": "حالة الاختبار",
+    "statusPlaceholder": "اختر حالة الاختبار",
+    "all": "الكل",
+    "status": {
+      "coming": "قادم",
+      "ended": "منتهي",
+      "retry_available": "متاح للإعادة"
+    }
   },
 
   "teacherExams": {
@@ -890,7 +907,25 @@
 
   "orders": {
     "title": "طلباتي",
-    "emptyMessage": "لا توجد طلبات حتى الآن"
+    "emptyMessage": "لا توجد طلبات حتى الآن",
+    "searchLabel": "بحث بكود الطلب",
+    "searchPlaceholder": "أدخل كود الطلب...",
+    "orderStatusLabel": "حالة الطلب",
+    "statusPlaceholder": "اختر حالة الطلب",
+    "paymentStatusLabel": "حالة الدفع",
+    "paymentPlaceholder": "اختر حالة الدفع",
+    "fromDate": "من تاريخ",
+    "toDate": "إلى تاريخ",
+    "all": "الكل",
+    "status": {
+      "ongoing": "جاري",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
+    },
+    "payment": {
+      "paid": "مدفوع",
+      "unpaid": "غير مدفوع"
+    }
   },
 
   "orderDetails": {

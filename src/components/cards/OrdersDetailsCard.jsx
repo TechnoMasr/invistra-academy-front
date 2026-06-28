@@ -2,12 +2,13 @@ import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { SlLayers } from "react-icons/sl";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { Button } from "../ui/button";
 
 const OrdersDetailsCard = ({ item }) => {
   const { t } = useTranslation();
   return (
-    <div className="border rounded-lg overflow-hidden bg-white flex items-start gap-3 p-3">
-      <div className="w-1/3 aspect-square rounded-md overflow-hidden border">
+    <div className="border rounded-lg overflow-hidden bg-white flex flex-col xs:flex-row items-start gap-4 p-4">
+      <div className="w-full h-50 xs:w-36 xs:h-36 md:w-30 md:h-30 xl:w-40 xl:h-40 aspect-square shrink-0 rounded-md overflow-hidden border">
         {item?.image && (
           <img
             loading="lazy"
@@ -18,12 +19,14 @@ const OrdersDetailsCard = ({ item }) => {
         )}
       </div>
 
-      <div className="flex-1 flex flex-col gap-2 lg:gap-2">
+      <div className="flex-1 flex flex-col gap-2 w-full">
         <h3 className="text-lg font-bold line-clamp-2">{item?.name}</h3>
 
-        <p className="line-clamp-2 text-sm">{item?.description}</p>
+        <p className="line-clamp-2 text-sm text-gray-600">
+          {item?.description}
+        </p>
 
-        <div className="flex flex-wrap items-center gap-2 font-semibold text-sm">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-semibold text-sm text-gray-500">
           <p className="flex items-center gap-1">
             <HiOutlineSquares2X2 />
             {t("ordersDetailsCard.lecturesCount", {
@@ -36,13 +39,13 @@ const OrdersDetailsCard = ({ item }) => {
           </p>
         </div>
 
-        <div className="flex items-center flex-wrap gap-1">
+        <div className="flex items-center flex-wrap gap-1 text-sm">
           <p className="font-medium">{t("ordersDetailsCard.courseStatus")}</p>
-          <span>{item?.status}</span>
+          <span className="font-semibold text-amber-600">{item?.status}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="w-8 aspect-square overflow-hidden border rounded-full">
+        <div className="flex items-center gap-2 my-1">
+          <div className="w-8 h-8 shrink-0 overflow-hidden border rounded-full">
             {item?.instructor_image && (
               <img
                 loading="lazy"
@@ -52,26 +55,28 @@ const OrdersDetailsCard = ({ item }) => {
               />
             )}
           </div>
-          <h4 className="font-medium">{item?.instructor}</h4>
+          <h4 className="font-medium text-sm">{item?.instructor}</h4>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-gray-50 mt-auto">
           <div>
-            <p className="text-3xl font-bold text-green-500">
-              {item?.price} {item?.currency}
-            </p>
             {item?.price_before_discount ? (
-              <p className="text-lg font-bold text-red-500 line-through">
+              <p className="text-sm font-semibold text-red-500 line-through">
                 {item?.price_before_discount} {item?.currency}
               </p>
-            ): null}
+            ) : null}
+            <p className="text-2xl font-bold text-green-500">
+              {item?.price} {item?.currency}
+            </p>
           </div>
 
           <Link
             to={`/profile/lectures/${item?.id}`}
-            className="flex items-center gap-2 py-1 px-4 border border-primary rounded-full text-xs font-semibold hover:bg-primary/10 transition"
+            className="xs:w-auto w-full rounded-full"
           >
-            {t("ordersDetailsCard.viewLectures")}
+            <Button size="sm" variant="outline" className={`w-full`}>
+              {t("ordersDetailsCard.viewLectures")}
+            </Button>
           </Link>
         </div>
       </div>

@@ -460,7 +460,14 @@
     "price": "Price:",
     "viewLectures": "View Lectures",
     "viewCourseDetails": "View Course Details",
-    "addLecture": "Add Lecture"
+    "addLecture": "Add Lecture",
+    "deleteCourse": "Delete Course",
+    "deleteTitle": "Confirm Course Deletion",
+    "deleteDescription": "Are you sure you want to delete the course \"{{name}}\"? This action cannot be undone.",
+    "confirmDelete": "Yes, Delete",
+    "cancel": "Cancel",
+    "deleteSuccess": "Course deleted successfully",
+    "deleteError": "An error occurred while deleting the course"
   },
 
   "teacherLectureCard": {
@@ -881,7 +888,17 @@
 
   "myExams": {
     "title": "My Exams",
-    "emptyMessage": "No exams yet"
+    "emptyMessage": "No exams yet",
+    "searchLabel": "Search by Exam Name",
+    "searchPlaceholder": "Enter exam name...",
+    "statusLabel": "Exam Status",
+    "statusPlaceholder": "Select exam status",
+    "all": "All",
+    "status": {
+      "coming": "Upcoming",
+      "ended": "Ended",
+      "retry_available": "Retry Available"
+    }
   },
 
   "teacherExams": {
@@ -892,7 +909,25 @@
 
   "orders": {
     "title": "My Orders",
-    "emptyMessage": "No orders yet"
+    "emptyMessage": "No orders yet",
+    "searchLabel": "Search by Order Code",
+    "searchPlaceholder": "Enter order code...",
+    "orderStatusLabel": "Order Status",
+    "statusPlaceholder": "Select order status",
+    "paymentStatusLabel": "Payment Status",
+    "paymentPlaceholder": "Select payment status",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "all": "All",
+    "status": {
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "payment": {
+      "paid": "Paid",
+      "unpaid": "Unpaid"
+    }
   },
 
   "orderDetails": {

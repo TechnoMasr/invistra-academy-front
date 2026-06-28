@@ -15,7 +15,7 @@ const TeacherCourses = () => {
   const [page, setPage] = useState(1);
 
   const { data: myCourses, isLoading } = useQuery({
-    queryKey: ["myCourses", page],
+    queryKey: ["myCoursesTeacher", page],
     queryFn: () => getMyCoursesInstructor({ page }),
   });
 

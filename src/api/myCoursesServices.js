@@ -50,3 +50,8 @@ export const updateCourse = async (formData, id) => {
 
   return data?.data || null;
 };
+
+export const deleteCourse = async (id) => {
+  const { data } = await api.delete(`/instructor-profile/courses/${id}`);
+  return data?.data || null;
+};

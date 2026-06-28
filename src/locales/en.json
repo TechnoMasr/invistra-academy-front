@@ -449,8 +449,10 @@
     "attempts": "Attempts: {{count}} / {{max}}",
     "testScore": "Test score: {{score}} / {{max}}",
     "passMark": "Pass mark: {{score}}",
+    "grade": "Grade: {{grade}}",
     "viewExam": "View Exam",
     "startExam": "Start Exam",
+    "progress": "Course Progress",
     "notAccessible": "This exam will be available after watching {{percentage}}% of the course lectures."
   },
 
@@ -508,7 +510,8 @@
     "lecturesCount": "{{count}} lecture",
     "lecturesCount_plural": "{{count}} lectures",
     "courseStatus": "Course status:",
-    "viewLectures": "View Lectures"
+    "viewLectures": "View Lectures",
+    "progress": "Course Progress"
   },
 
   "certificatesCard": {
@@ -877,7 +880,16 @@
 
   "myCourses": {
     "title": "My Courses",
-    "emptyMessage": "No courses yet"
+    "emptyMessage": "No courses yet",
+    "searchLabel": "Search by course name",
+    "searchPlaceholder": "Type course name to search...",
+    "statusLabel": "Course Status",
+    "statusPlaceholder": "Select status",
+    "all": "All",
+    "status": {
+      "pending": "Pending",
+      "done": "Done"
+    }
   },
 
   "teacherCourses": {

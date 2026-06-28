@@ -449,8 +449,10 @@
     "attempts": "عدد المحاولات : {{count}} / {{max}}",
     "testScore": "درجة الاختبار: {{score}} / {{max}}",
     "passMark": "درجة النجاح: {{score}}",
+    "grade": "التقدير: {{grade}}",
     "viewExam": "عرض الاختبار",
     "startExam": "ابدأ الاختبار",
+    "progress": "التقدم في المشاهدة",
     "notAccessible": " هذا الاختبار متاحًا بعد مشاهدة {{percentage}}% من محاضرات الدورة."
   },
 
@@ -508,7 +510,8 @@
     "lecturesCount": "{{count}} محاضرة",
     "lecturesCount_plural": "{{count}} محاضرات",
     "courseStatus": "حالة الكورس:",
-    "viewLectures": "عرض المحاضرات"
+    "viewLectures": "عرض المحاضرات",
+    "progress": "التقدم في المشاهدة"
   },
 
   "certificatesCard": {
@@ -855,6 +858,7 @@
     "failed": "لم يجتز",
     "questions": "{{count}} أسئلة",
     "score": "النتيجة: {{score}} / {{total}}",
+    "grade": "التقدير: {{grade}}",
     "reviewAnswers": "مراجعة الإجابات:"
   },
 
@@ -875,7 +879,16 @@
 
   "myCourses": {
     "title": "كورساتي",
-    "emptyMessage": "لا توجد كورسات حتى الآن"
+    "emptyMessage": "لا توجد كورسات حتى الآن",
+    "searchLabel": "البحث باسم الكورس",
+    "searchPlaceholder": "اكتب اسم الكورس للبحث...",
+    "statusLabel": "حالة الكورس",
+    "statusPlaceholder": "اختر الحالة",
+    "all": "الكل",
+    "status": {
+      "pending": "جاري",
+      "done": "منتهي"
+    }
   },
 
   "teacherCourses": {

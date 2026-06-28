@@ -92,27 +92,75 @@ const ExamCard = ({ item }) => {
       <hr className="mt-auto" />
 
       {!item?.is_accessible ? (
-        <div className="bg-gray-100 border border-gray-600 py-1 px-4 rounded-lg flex items-center justify-center text-center gap-1">
-          <p className="font-medium text-gray-600 flex items-center gap-1">
-            {t("examCard.notAccessible", {
-              percentage: item?.required_watch_percentage,
-            })}
-          </p>
-        </div>
+        <>
+          {/* شريط تقدم مخصص بـ Tailwind */}
+          <div className="flex flex-col gap-1 my-1">
+            <div className="flex justify-between items-center text-xs font-medium text-slate-700">
+              <span>{t("examCard.progress", "نسبة مشاهدة الدورة")}</span>
+              <span dir="ltr" className="font-semibold">
+                {item?.watched_lectures}/{item?.lectures_count} (
+                {Math.round(item?.progress_percentage || 0)}%)
+              </span>
+            </div>
+
+            {/* خلفية الشريط */}
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-200/50">
+              {/* الجزء الملون الممثل للنسبة */}
+              <div
+                className="bg-green-500 h-full rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${item?.progress_percentage || 0}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-gray-100 border border-gray-600 py-1 px-4 rounded-lg flex items-center justify-center text-center gap-1">
+            <p className="font-medium text-gray-600 flex items-center gap-1">
+              {t("examCard.notAccessible", {
+                percentage: item?.required_watch_percentage,
+              })}
+            </p>
+          </div>
+        </>
       ) : (
         <>
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <p className="font-medium">
-              {t("examCard.testScore", {
-                score: item?.score !== null ? item?.score : "??",
-                max: item?.full_mark,
-              })}
-            </p>
-            <p className="font-medium">
-              {t("examCard.passMark", {
-                score: item?.pass_mark,
-              })}
-            </p>
+          <div className="grid grid-cols-3 gap-2 my-2 text-center text-xs">
+            {/* صندوق درجة الاختبار */}
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-2 flex flex-col justify-center">
+              <span className="text-primary font-medium block mb-0.5">
+                {t("examCard.testScoreLabel", "درجة الاختبار")}
+              </span>
+              <span className="font-bold text-slate-800 text-sm">
+                {item?.score !== null ? item?.score : "??"}{" "}
+                <span className="text-gray-600 font-normal">
+                  / {item?.full_mark}
+                </span>
+              </span>
+            </div>
+
+            {/* صندوق درجة النجاح */}
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-2 flex flex-col justify-center">
+              <span className="text-primary font-medium block mb-0.5">
+                {t("examCard.passMarkLabel", "درجة النجاح")}
+              </span>
+              <span className="font-bold text-green-600 text-sm">
+                {item?.pass_mark}
+              </span>
+            </div>
+
+            {/* صندوق التقدير - يظهر بكامل العرض لو شاشة صغيرة، أو في خانة ثالثة لو شاشة واسعة */}
+            {item?.grade ? (
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-2 flex flex-col justify-center">
+                <span className="text-primary font-medium block mb-0.5">
+                  {t("examCard.gradeLabel", "التقدير")}
+                </span>
+                <span className="font-extrabold text-primary text-sm">
+                  {item?.grade}
+                </span>
+              </div>
+            ) : (
+              // للحفاظ على توازن الـ Grid إذا لم يكن هناك تقدير على الشاشات الكبيرة
+              <div className="hidden sm:block opacity-0" />
+            )}
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">

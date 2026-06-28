@@ -54,11 +54,19 @@ const ExamResult = () => {
             </span>
           </p>
 
-          <p className="font-medium py-1 px-4 border rounded-full flex items-center gap-1.5">
+          <p className="font-semibold py-1 px-4 border rounded-full flex items-center gap-1.5">
             <span>
               {t("examResult.score", {
                 score: examData?.score,
                 total: examData?.full_mark,
+              })}
+            </span>
+          </p>
+
+          <p className="font-semibold py-1 px-4 border rounded-full flex items-center gap-1.5">
+            <span>
+              {t("examResult.grade", {
+                grade: examData?.grade,
               })}
             </span>
           </p>
@@ -90,7 +98,7 @@ const ExamResult = () => {
               </div>
 
               {/* الخيارات الأربعة */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                 {q.options?.map((opt) => {
                   // هل هذا الخيار هو الذي اختاره الطالب؟
                   const isStudentSelection = q.student_option_id === opt.id;

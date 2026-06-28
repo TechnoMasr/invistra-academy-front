@@ -41,7 +41,7 @@ const OrdersDetailsCard = ({ item }) => {
 
         <div className="flex items-center flex-wrap gap-1 text-sm">
           <p className="font-medium">{t("ordersDetailsCard.courseStatus")}</p>
-          <span className="font-semibold text-amber-600">{item?.status}</span>
+          <span className="font-semibold">{item?.status}</span>
         </div>
 
         <div className="flex items-center gap-2 my-1">
@@ -78,6 +78,26 @@ const OrdersDetailsCard = ({ item }) => {
               {t("ordersDetailsCard.viewLectures")}
             </Button>
           </Link>
+        </div>
+
+        {/* شريط تقدم مخصص بـ Tailwind */}
+        <div className="flex flex-col gap-1 my-1">
+          <div className="flex justify-between items-center text-xs font-medium text-slate-700">
+            <span>{t("ordersDetailsCard.progress", "نسبة مشاهدة الدورة")}</span>
+            <span dir="ltr" className="font-semibold">
+              {item?.watched_lectures}/{item?.lectures_count} (
+              {Math.round(item?.progress_percentage || 0)}%)
+            </span>
+          </div>
+
+          {/* خلفية الشريط */}
+          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-200/50">
+            {/* الجزء الملون الممثل للنسبة */}
+            <div
+              className="bg-green-500 h-full rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${item?.progress_percentage || 0}%` }}
+            />
+          </div>
         </div>
       </div>
     </div>

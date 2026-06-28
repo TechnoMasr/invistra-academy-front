@@ -53,7 +53,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
         className="w-75 sm:w-100 flex flex-col gap-6 p-6"
       >
         {/* رأس القائمة (اللوجو وهيدر العودة للخلف) */}
-        <SheetHeader className="border-b border-gray-100 pb-4">
+        <SheetHeader className="border-b border-gray-100 pb-4 px-0">
           <SheetTitle>
             {!currentMenu ? (
               // إذا كنا في القائمة الرئيسية، نعرض اللوجو
@@ -179,10 +179,10 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                         // لو القسم الفرعي جواه تفريعات أكتر، الزر يدخلنا عمق أكتر بالـ Stack
                         <button
                           onClick={() => setNavStack((prev) => [...prev, item])}
-                          className="flex items-center justify-between w-full text-start cursor-pointer hover:text-primary transition-colors"
+                          className="flex items-center justify-between gap-2 w-full text-start cursor-pointer hover:text-primary transition-colors"
                         >
                           {item.name}
-                          <div className="px-3 py-2 bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700 h-full">
+                          <div className="text-primary">
                             {isRtl ? (
                               <ChevronLeft className="h-4 w-4 opacity-60" />
                             ) : (

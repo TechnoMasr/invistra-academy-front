@@ -1,4 +1,4 @@
-import React from "react";
+import twmLogo from "@/assets/images/twm-logo.png";
 import { useTranslation } from "react-i18next";
 import { FaFacebookF, FaLinkedinIn, FaYoutube, FaTiktok } from "react-icons/fa";
 import { Link } from "react-router";
@@ -11,7 +11,6 @@ import { useDispatch } from "react-redux";
 
 const Footer = () => {
   const { t } = useTranslation();
-
   const dispatch = useDispatch();
 
   const { data: footerData, isLoading } = useQuery({
@@ -32,7 +31,6 @@ const Footer = () => {
       icon: <FiInstagram />,
       url: footerData?.social_links?.instagram,
     },
-
     {
       name: "Youtube",
       icon: <FaYoutube />,
@@ -129,6 +127,18 @@ const Footer = () => {
             {t("contactUs")}
           </button>
         </div>
+      </div>
+
+      <div className="container mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-center gap-2 text-sm">
+        <span>{t("developedBy")}</span>
+        <a
+          href="https://technomasr.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-transform duration-300 hover:scale-105"
+        >
+          <img src={twmLogo} alt="TWM Logo" className="h-8 object-contain" />
+        </a>
       </div>
     </footer>
   );

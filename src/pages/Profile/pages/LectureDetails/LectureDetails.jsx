@@ -1,4 +1,3 @@
-// import video from "@/assets/images/video.mp4";
 import { FaRegFolderOpen } from "react-icons/fa";
 import { FiDownloadCloud, FiCheckCircle } from "react-icons/fi";
 import { FaFilePdf } from "react-icons/fa6";

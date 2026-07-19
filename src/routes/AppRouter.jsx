@@ -90,8 +90,9 @@ const ForgotPassword = React.lazy(
   () => import("../pages/ForgotPassword/ForgotPassword"),
 );
 
-const Terms = React.lazy(() => import("../pages/Terms/Terms"));
-const Policy = React.lazy(() => import("../pages/Policy/Policy"));
+const WebsitePages = React.lazy(
+  () => import("../pages/WebsitePages/WebsitePages"),
+);
 
 const NotFound = React.lazy(() => import("../pages/NotFound/NotFound"));
 const ErrorPage = React.lazy(() => import("../pages/ErrorPage/ErrorPage"));
@@ -108,8 +109,7 @@ const router = createBrowserRouter([
       { path: "/instructors", element: <Teachers /> },
       { path: "/instructors/:slug", element: <TeacherDetails /> },
 
-      { path: "/terms-and-conditions", element: <Terms /> },
-      { path: "/privacy-policy", element: <Policy /> },
+      { path: "/page/:slug", element: <WebsitePages /> },
 
       {
         element: <ProtectedRoute />,

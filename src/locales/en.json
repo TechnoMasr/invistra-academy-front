@@ -3,8 +3,6 @@
   "downloading": "Downloading...",
   "all": "All",
 
-  "privacyPolicy": "Privacy Policy",
-  "termsAndConditions": "Terms and Conditions",
   "contactUs": "Contact Us",
   "developedBy": "Developed by Techno Web Masr",
 
@@ -14,6 +12,15 @@
   "registerAsTeacher": "Register as Instructor",
   "phone": "Phone",
   "whatsapp": "WhatsApp",
+
+  "websitePages": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms and Conditions",
+    "refund": "Refund Policy",
+    "about": "About Us",
+    "shipping": "Shipping Policy",
+    "pricing": "Pricing in Egyptian Pounds"
+  },
 
   "NotificationsPopUp": {
     "notFound": "No notifications found",

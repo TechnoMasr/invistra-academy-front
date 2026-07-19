@@ -7,6 +7,7 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getCategories, getCourses } from "@/api/homeServices";
 import CoursesSectionSkeleton from "@/components/Loading/SkeletonLoading/CoursesSectionSkeleton";
+import EmptyDataSection from "@/components/sections/EmptyDataSection";
 
 const CoursesSection = ({ data, loading }) => {
   const { t } = useTranslation();
@@ -61,11 +62,19 @@ const CoursesSection = ({ data, loading }) => {
           ))}
         </div>
 
-        <div className="flex justify-center mt-6">
-          <Link to="/courses" className="rounded-full">
-            <Button className="px-6">{t("coursesSection.moreCourses")}</Button>
-          </Link>
-        </div>
+        {courses?.length === 0 && (
+          <EmptyDataSection msg={t("coursesPage.noCourses")} />
+        )}
+
+        {courses?.length > 0 && (
+          <div className="flex justify-center mt-6">
+            <Link to="/courses" className="rounded-full">
+              <Button className="px-6">
+                {t("coursesSection.moreCourses")}
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -48,6 +48,33 @@ const Footer = () => {
     },
   ];
 
+  const websitePages = [
+    {
+      name: t("websitePages.privacy"),
+      url: "/page/privacy",
+    },
+    {
+      name: t("websitePages.terms"),
+      url: "/page/terms",
+    },
+    {
+      name: t("websitePages.refund"),
+      url: "/page/refund",
+    },
+    {
+      name: t("websitePages.about"),
+      url: "/page/about",
+    },
+    {
+      name: t("websitePages.shipping"),
+      url: "/page/shipping",
+    },
+    {
+      name: t("websitePages.pricing"),
+      url: "/page/pricing",
+    },
+  ];
+
   return (
     <footer className="sectionPadding bg-[#111418] text-white">
       <div className="container flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-4">
@@ -106,19 +133,15 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col items-center lg:items-start gap-3">
-          <Link
-            to="/privacy-policy"
-            className="hover:text-secondary transition-all duration-300"
-          >
-            {t("privacyPolicy")}
-          </Link>
-
-          <Link
-            to="/terms-and-conditions"
-            className="hover:text-secondary transition-all duration-300"
-          >
-            {t("termsAndConditions")}
-          </Link>
+          {websitePages.map((page) => (
+            <Link
+              key={page.name}
+              to={page.url}
+              className="hover:text-secondary transition-all duration-300"
+            >
+              {page.name}
+            </Link>
+          ))}
 
           <button
             onClick={() => dispatch(openModal({ modalName: "ContactUsModal" }))}

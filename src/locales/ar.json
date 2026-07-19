@@ -3,8 +3,6 @@
   "downloading": "جاري التحميل",
   "all": "كل",
 
-  "privacyPolicy": "سياسة الخصوصية",
-  "termsAndConditions": "الشروط والأحكام",
   "contactUs": "تواصل معنا",
   "developedBy": "تطوير بواسطة Techno Web Masr",
 
@@ -14,6 +12,15 @@
   "registerAsTeacher": "التسجيل كمحاضر",
   "phone": "اتصال",
   "whatsapp": "واتساب",
+
+  "websitePages": {
+    "privacy": "سياسة الخصوصية",
+    "terms": "الشروط والأحكام",
+    "refund": "سياسة الاسترجاع",
+    "about": "معلومات عنا",
+    "shipping": "سياسة الشحن",
+    "pricing": "التسعير بالجنيه المصري"
+  },
 
   "NotificationsPopUp": {
     "notFound": "لا توجد إشعارات",

@@ -3,18 +3,20 @@ import SectionTitle from "@/components/common/SectionTitle";
 import TextSkeleton from "@/components/Loading/SkeletonLoading/TextSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router";
 
-const Policy = () => {
+const WebsitePages = () => {
   const { t } = useTranslation();
+  const { slug } = useParams();
 
   const { data: page, isLoading } = useQuery({
-    queryKey: ["page", "privacy"],
-    queryFn: () => getPages("privacy"),
+    queryKey: ["page", slug],
+    queryFn: () => getPages(slug),
   });
 
   return (
     <main className="container pagePadding">
-      <SectionTitle title={t("privacyPolicy")} />
+      <SectionTitle title={t(`websitePages.${slug}`)} />
 
       {isLoading ? (
         <TextSkeleton />
@@ -30,4 +32,4 @@ const Policy = () => {
   );
 };
 
-export default Policy;
+export default WebsitePages;

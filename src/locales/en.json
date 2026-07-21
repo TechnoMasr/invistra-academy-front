@@ -19,7 +19,7 @@
     "refund": "Refund Policy",
     "about": "About Us",
     "shipping": "Shipping Policy",
-    "pricing": "Pricing in Egyptian Pounds"
+    "pricing": "Pricing Policy"
   },
 
   "NotificationsPopUp": {
@@ -418,7 +418,7 @@
 
   "header": {
     "instructors": "Instructors",
-    "courses": "Courses",
+    "courses": "Career Path",
     "all": "All",
     "subCategories": "Sub Categories"
   },

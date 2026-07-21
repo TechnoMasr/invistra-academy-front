@@ -19,7 +19,7 @@
     "refund": "سياسة الاسترجاع",
     "about": "معلومات عنا",
     "shipping": "سياسة الشحن",
-    "pricing": "التسعير بالجنيه المصري"
+    "pricing": "سياسات التسعير"
   },
 
   "NotificationsPopUp": {
@@ -418,7 +418,7 @@
 
   "header": {
     "instructors": "المحاضرين",
-    "courses": "الكورسات",
+    "courses": "المسار المهني",
     "all": "الكل",
     "subCategories": "القسم الفرعي"
   },

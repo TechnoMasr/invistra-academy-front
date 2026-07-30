@@ -125,7 +125,7 @@ const RegisterStudent = () => {
 
           <div
             onClick={() => fileInputRef.current.click()}
-            className="w-20 aspect-square bg-muted rounded-full cursor-pointer 
+            className="w-32 aspect-square bg-muted rounded-full cursor-pointer 
             flex items-center justify-center border-2 border-primary overflow-hidden"
           >
             {imagePreview ? (

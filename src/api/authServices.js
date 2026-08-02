@@ -54,3 +54,17 @@ export const updateProfile = async (formData) => {
 
   return data?.data;
 };
+
+export const googleAuthenticate = async (formData) => {
+  const { data } = await api.post("/auth/google", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  if (data?.data?.token) {
+    Cookies.set("token", data?.data?.token);
+  }
+
+  return data?.data;
+};

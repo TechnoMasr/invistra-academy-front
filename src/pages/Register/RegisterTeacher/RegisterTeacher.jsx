@@ -13,8 +13,8 @@ const RegisterTeacher = () => {
   const [completed, setCompleted] = useState(false);
   const [step, setStep] = useState(1);
 
-  const goNext = () => {
-    if (step >= steps.length) {
+  const goNext = (completed = false) => {
+    if (completed || step >= steps.length) {
       setCompleted(true);
       return;
     }

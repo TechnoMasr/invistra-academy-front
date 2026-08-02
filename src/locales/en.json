@@ -56,6 +56,13 @@
     "cancel": "Cancel"
   },
 
+  "requiredSetCategoryModal": {
+    "title": "Category Selection Required",
+    "description": "You must select a category for your account to access this page",
+    "goToProfile": "Go to Profile",
+    "cancel": "Cancel"
+  },
+
   "TermsModal": {
     "title": "Terms & Conditions",
     "description": "Terms and conditions of the registration form."

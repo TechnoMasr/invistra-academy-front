@@ -9,14 +9,16 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router";
 import { IoImageOutline } from "react-icons/io5";
+import { FcGoogle } from "react-icons/fc"; // أيقونة جوجل الملونة لـ UI احترافي
 import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { registerUser } from "@/api/authServices";
+import { registerUser, googleAuthenticate } from "@/api/authServices"; // استيراد الدالتين
 import FormError from "@/components/form/FormError";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
 import { setCredentials } from "@/store/auth/authSlice";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google"; // الـ hook الرسمي من المكتبة
 
 const RegisterStudent = () => {
   const { t } = useTranslation();
@@ -25,7 +27,9 @@ const RegisterStudent = () => {
   const fileInputRef = useRef(null);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  // مخطط التحقق (Validation Schema) للـ Form العادي
   const registerSchema = z
     .object({
       name: z.string().min(3, t("RegisterStudent.nameTooShort")),
@@ -33,7 +37,6 @@ const RegisterStudent = () => {
       phone: z.string().refine((value) => isValidPhoneNumber(value || ""), {
         message: t("RegisterStudent.invalidPhone"),
       }),
-
       password: z.string().min(6, t("RegisterStudent.passwordMin")),
       password_confirmation: z
         .string()
@@ -62,8 +65,8 @@ const RegisterStudent = () => {
       terms_accepted: false,
     },
   });
-  const dispatch = useDispatch();
 
+  // 1. Mutation الخاص بالتسجيل التقليدي
   const {
     mutate: registerMutate,
     isPending,
@@ -71,20 +74,33 @@ const RegisterStudent = () => {
   } = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
+      dispatch(setCredentials({ user: data.user }));
+      navigate("/verify-email", { replace: true });
+    },
+  });
+
+  // 2. Mutation الخاص بالتسجيل عبر Google (الذي يضرب الـ API المطلوبة)
+  const {
+    mutate: googleMutate,
+    isPending: isGooglePending,
+    error: googleError,
+  } = useMutation({
+    mutationFn: googleAuthenticate,
+    onSuccess: (data) => {
+      // حفظ بيانات المستخدم في Redux بعد نجاح المصادقة
       dispatch(
         setCredentials({
           user: data.user,
         }),
       );
-      // OtpRoute هتوجهه أوتوماتيك لأن isEmailVerified = false
-      navigate("/verify-email", { replace: true });
+      // التوجيه إلى الصفحة الرئيسية مباشرة لأن الحساب موثق تلقائياً من جوجل
+      navigate("/", { replace: true });
     },
   });
 
+  // معالجة الـ Submit للـ Form العادي
   const onSubmit = (data) => {
-    // eslint-disable-next-line no-unused-vars
     const { terms_accepted, ...payload } = data;
-
     const formData = new FormData();
 
     Object.keys(payload).forEach((key) => {
@@ -107,6 +123,7 @@ const RegisterStudent = () => {
       description={t("RegisterStudent.enterDetails")}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        {/* حقل رفع الصورة الشخصية وتثبيتها بالمعاينة */}
         <div className="flex flex-col items-center justify-center">
           <input
             type="file"
@@ -148,7 +165,7 @@ const RegisterStudent = () => {
           </label>
         </div>
 
-        {/* Name */}
+        {/* الحقول النصية للنموذج العادي */}
         <Controller
           name="name"
           control={control}
@@ -162,7 +179,6 @@ const RegisterStudent = () => {
           )}
         />
 
-        {/* Email */}
         <Controller
           name="email"
           control={control}
@@ -177,7 +193,6 @@ const RegisterStudent = () => {
           )}
         />
 
-        {/* Phone */}
         <Controller
           name="phone"
           control={control}
@@ -191,7 +206,6 @@ const RegisterStudent = () => {
           )}
         />
 
-        {/* Password */}
         <Controller
           name="password"
           control={control}
@@ -206,7 +220,6 @@ const RegisterStudent = () => {
           )}
         />
 
-        {/* Confirm Password */}
         <Controller
           name="password_confirmation"
           control={control}
@@ -221,7 +234,7 @@ const RegisterStudent = () => {
           )}
         />
 
-        {/* Terms */}
+        {/* الموافقة على الشروط والأحكام */}
         <div>
           <Controller
             name="terms_accepted"
@@ -235,7 +248,7 @@ const RegisterStudent = () => {
                 />
                 <label
                   htmlFor="terms"
-                  className="text-sm  leading-none flex items-center gap-1"
+                  className="text-sm leading-none flex items-center gap-1"
                 >
                   {t("RegisterStudent.agreeTo")}{" "}
                   <span
@@ -259,16 +272,54 @@ const RegisterStudent = () => {
           )}
         </div>
 
-        <Button type="submit" className="w-full mt-4" disabled={isPending}>
+        {/* زر التسجيل العادي بالبريد وكلمة المرور */}
+        <Button
+          type="submit"
+          className="w-full mt-4"
+          disabled={isPending || isGooglePending}
+        >
           {isPending
             ? t("RegisterStudent.creating")
             : t("RegisterStudent.createAccount")}
         </Button>
 
-        {error && (
+        {/* خط فاصل مرئي بين نموذج التسجيل العادي وزر جوجل */}
+        <div className="relative flex py-2 items-center">
+          <div className="flex-grow border-t border-muted"></div>
+          <span className="flex-shrink mx-4 text-muted-foreground text-xs uppercase">
+            {t("or")}
+          </span>
+          <div className="flex-grow border-t border-muted"></div>
+        </div>
+
+        <div className="w-full flex justify-center">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              const formData = new FormData();
+
+              // هنا الـ id_token الحقيقي المكون من 3 أجزاء
+              formData.append("id_token", credentialResponse.credential);
+              formData.append("type", "student");
+
+              // ضرب الـ API
+              googleMutate(formData);
+            }}
+            onError={() => {
+              console.log("Google Login Failed");
+            }}
+            theme="outline"
+            size="large"
+            width="100%"
+            className="w-full flex justify-center"
+          />
+        </div>
+
+        {/* إظهار رسائل الخطأ من الـ API سواء للتسجيل العادي أو جوجل */}
+        {(error || googleError) && (
           <FormError
             errorMsg={
               error?.response?.data?.message ||
+              googleError?.response?.data?.message ||
               t("RegisterStudent.somethingWentWrong")
             }
           />

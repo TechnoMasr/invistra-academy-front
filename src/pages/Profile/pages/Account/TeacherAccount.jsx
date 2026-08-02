@@ -21,6 +21,25 @@ import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
 import { setCredentials } from "@/store/auth/authSlice";
 
+// ✅ منطق واحد موحّد لتحويل بيانات اليوزر لشكل الفورم، يتستخدم في كل الأماكن
+// (defaultValues, useEffect, handleCancelEdit) عشان محدش يبقى مختلف عن التاني
+const mapUserToForm = (u, fallbackCategoryId = "") => ({
+  name_ar: u?.name_ar || "",
+  name_en: u?.name_en || "",
+  email: u?.email || "",
+  phone: u?.phone || "",
+  image: u?.image || null,
+  category_id: u?.category?.id
+    ? String(u.category.id)
+    : u?.category_id
+      ? String(u.category_id)
+      : fallbackCategoryId,
+  job_title_ar: u?.job_title_ar || "",
+  job_title_en: u?.job_title_en || "",
+  bio_ar: u?.bio_ar || "",
+  bio_en: u?.bio_en || "",
+});
+
 const TeacherAccount = ({ user }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -28,7 +47,11 @@ const TeacherAccount = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [avatar, setAvatar] = useState(user?.image || null);
-  const [savedData, setSavedData] = useState(user); // ✅ جديد
+  const [savedData, setSavedData] = useState(user);
+
+  // ✅ بنحتفظ بآخر category_id اتبعت في آخر submit عشان نستخدمه كـ fallback
+  // لو الـ response الجايه من الـ backend رجعت من غير category_id واضح
+  const lastSentCategoryIdRef = useRef("");
 
   const fileInputRef = useRef(null);
 
@@ -64,35 +87,17 @@ const TeacherAccount = ({ user }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(accountSchema),
-    defaultValues: {
-      name_ar: user?.name_ar || "",
-      name_en: user?.name_en || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-      image: user?.image || null,
-      category_id: user?.category?.id ? String(user.category.id) : "",
-      job_title_ar: user?.job_title_ar || "",
-      job_title_en: user?.job_title_en || "",
-      bio_ar: user?.bio_ar || "",
-      bio_en: user?.bio_en || "",
-    },
+    defaultValues: mapUserToForm(user),
     mode: "onChange",
   });
 
+  // ✅ مصدر الحقيقة الوحيد للـ reset دلوقتي هو الـ useEffect ده.
+  // أي تحديث لليوزر (سواء جاي من الـ mutation success عن طريق setCredentials
+  // أو من أي مكان تاني بيحدث الـ Redux store) هيعدي من هنا وبس،
+  // فمفيش تعارض/race بين reset جوه الـ mutation و reset جوه الـ effect.
   useEffect(() => {
     if (user) {
-      reset({
-        name_ar: user?.name_ar || "",
-        name_en: user?.name_en || "",
-        email: user?.email || "",
-        phone: user?.phone || "",
-        image: user?.image || null,
-        category_id: user?.category?.id ? String(user.category.id) : "",
-        job_title_ar: user?.job_title_ar || "",
-        job_title_en: user?.job_title_en || "",
-        bio_ar: user?.bio_ar || "",
-        bio_en: user?.bio_en || "",
-      });
+      reset(mapUserToForm(user, lastSentCategoryIdRef.current));
       setAvatar(user?.image || null);
       setSavedData(user);
     }
@@ -100,36 +105,20 @@ const TeacherAccount = ({ user }) => {
 
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
-    onSuccess: (data, variables) => {
-      setSavedData(data); // ✅ حدّث آخر بيانات محفوظة
+    onSuccess: (data) => {
+      // ✅ من غير reset() أو setAvatar() هنا خالص —
+      // الـ dispatch هيحدث الـ Redux store، والـ useEffect فوق هو اللي
+      // هياخد بالُه من مزامنة الفورم مع أحدث بيانات جايه من السيرفر
+
+      console.log("profile data:", data);
+
       dispatch(
         setCredentials({
-          user: data,
+          user: { ...data },
         }),
       );
       setErrorMsg("");
       setIsEditing(false);
-
-      const sentCategoryId = variables.get("category_id") || "";
-
-      reset({
-        name_ar: data?.name_ar || "",
-        name_en: data?.name_en || "",
-        email: data?.email || "",
-        phone: data?.phone || "",
-        image: data?.image || null,
-        category_id: data?.category?.id
-          ? String(data.category.id)
-          : data?.category_id
-            ? String(data.category_id)
-            : sentCategoryId,
-        job_title_ar: data?.job_title_ar || "",
-        job_title_en: data?.job_title_en || "",
-        bio_ar: data?.bio_ar || "",
-        bio_en: data?.bio_en || "",
-      });
-
-      setAvatar(data?.image);
       toast.success(t("account.messages.success"));
     },
     onError: (error) => {
@@ -153,28 +142,16 @@ const TeacherAccount = ({ user }) => {
       formData.append("image", values.image);
     }
 
+    // ✅ بنسجل آخر category_id اتبعت عشان نستخدمه كـ fallback في الـ useEffect
+    // لو الـ response رجعت من غيره
+    lastSentCategoryIdRef.current = values.category_id || "";
+
     updateProfileMutation.mutate(formData);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    reset({
-      name_ar: savedData?.name_ar || "",
-      name_en: savedData?.name_en || "",
-      email: savedData?.email || "",
-      phone: savedData?.phone || "",
-      image: savedData?.image || null,
-      // ✅ نفس منطق الـ onSuccess
-      category_id: savedData?.category?.id
-        ? String(savedData.category.id)
-        : savedData?.category_id
-          ? String(savedData.category_id)
-          : "",
-      job_title_ar: savedData?.job_title_ar || "",
-      job_title_en: savedData?.job_title_en || "",
-      bio_ar: savedData?.bio_ar || "",
-      bio_en: savedData?.bio_en || "",
-    });
+    reset(mapUserToForm(savedData));
     setAvatar(savedData?.image || null);
   };
 

@@ -7,6 +7,7 @@ import LoadingModal from "./LoadingModal";
 import ContactUsModal from "./ContactUsModal";
 import SuccessesPaymentModal from "./SuccessesPaymentModal";
 import SearchModal from "./SearchModal";
+import RequiredSetCategoryModal from "./RequiredSetCategoryModal";
 
 const ModalManager = () => {
   return (
@@ -16,6 +17,7 @@ const ModalManager = () => {
       <LogOutModal />
       <RequiredLoginModal />
       <RequiredVerifyEmailModal />
+      <RequiredSetCategoryModal />
       <TermsModal />
       <ChangePasswordModal />
       <ContactUsModal />

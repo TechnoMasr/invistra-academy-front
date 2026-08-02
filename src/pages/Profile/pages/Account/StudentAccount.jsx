@@ -15,11 +15,19 @@ import { useMutation } from "@tanstack/react-query";
 import { updateProfile } from "@/api/authServices";
 
 import { useDispatch } from "react-redux";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
 import { setCredentials } from "@/store/auth/authSlice";
+
+// ✅ منطق واحد موحّد لتحويل بيانات اليوزر لشكل الفورم
+const mapUserToForm = (u) => ({
+  name: u?.name || "",
+  email: u?.email || "",
+  phone: u?.phone || "",
+  image: u?.image || null,
+});
 
 const StudentAccount = ({ user }) => {
   const { t } = useTranslation();
@@ -28,10 +36,11 @@ const StudentAccount = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [avatar, setAvatar] = useState(user?.image || null);
+  // ✅ آخر بيانات محفوظة فعليًا، عشان الـ Cancel يرجع لها مش لأول قيم وقت الـ mount
+  const [savedData, setSavedData] = useState(user);
 
   const fileInputRef = useRef(null);
 
-  // تحديث الـ Schema لتشمل الحقول الثنائية
   const accountSchema = z.object({
     name: z.string().min(2, t("account.form.name.validation.min")),
     email: z.string().email(t("account.form.email.validation.invalid")),
@@ -54,18 +63,26 @@ const StudentAccount = ({ user }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(accountSchema),
-    defaultValues: {
-      name: user?.name || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-      image: user?.image || null,
-    },
+    defaultValues: mapUserToForm(user),
     mode: "onChange",
   });
+
+  // ✅ مصدر الحقيقة الوحيد لمزامنة الفورم مع أحدث بيانات لليوزر.
+  // بيشتغل أول مرة وكل مرة الـ user prop يتغير (سواء بسبب الـ mutation
+  // أو أي تحديث تاني في الـ Redux store)
+  useEffect(() => {
+    if (user) {
+      reset(mapUserToForm(user));
+      setAvatar(user?.image || null);
+      setSavedData(user);
+    }
+  }, [user]);
 
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: (data) => {
+      // ✅ من غير reset()/setAvatar() هنا؛ الـ useEffect فوق هو المسؤول
+      // عن مزامنة الفورم لما الـ Redux store يتحدث بالبيانات الجديدة
       dispatch(
         setCredentials({
           user: data,
@@ -73,15 +90,6 @@ const StudentAccount = ({ user }) => {
       );
       setErrorMsg("");
       setIsEditing(false);
-
-      reset({
-        name: data?.name,
-        email: data?.email,
-        phone: data?.phone,
-        image: data?.image,
-      });
-
-      setAvatar(data?.image);
       toast.success(t("account.messages.success"));
     },
     onError: (error) => {
@@ -103,8 +111,9 @@ const StudentAccount = ({ user }) => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    reset();
-    setAvatar(user?.image || null);
+    // ✅ بترجع لآخر بيانات محفوظة فعليًا، مش لأول قيم وقت الـ mount
+    reset(mapUserToForm(savedData));
+    setAvatar(savedData?.image || null);
   };
 
   return (

@@ -56,6 +56,13 @@
     "cancel": "تراجع"
   },
 
+  "requiredSetCategoryModal": {
+    "title": "تحديد القسم مطلوب",
+    "description": "يجب تحديد القسم لحسابك لتتمكن من الوصول إلى هذه الصفحة",
+    "goToProfile": "الذهاب للملف الشخصي",
+    "cancel": "تراجع"
+  },
+
   "TermsModal": {
     "title": "الشروط والأحكام",
     "description": "شروط وأحكام نموذج التسجيل."

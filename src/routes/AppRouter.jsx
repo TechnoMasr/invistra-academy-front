@@ -7,6 +7,7 @@ import AuthGuard from "@/components/protectRoutes/AuthGuard";
 import VerifyEmailGuard from "@/components/protectRoutes/VerifyEmailGuard";
 import CheckVerifiedEmailGuard from "@/components/protectRoutes/CheckVerifiedEmailGuard";
 import RoleGuard from "@/components/protectRoutes/RoleGuard";
+import CheckSetCategory from "@/components/protectRoutes/CheckSetCategory";
 
 const Home = React.lazy(() => import("../pages/Home/Home"));
 const Courses = React.lazy(() => import("../pages/Courses/Courses"));
@@ -175,7 +176,9 @@ const router = createBrowserRouter([
                 path: "add-course",
                 element: (
                   <RoleGuard allowedRole="instructor">
-                    <AddCourse />
+                    <CheckSetCategory>
+                      <AddCourse />
+                    </CheckSetCategory>
                   </RoleGuard>
                 ),
               },
@@ -207,7 +210,9 @@ const router = createBrowserRouter([
                 path: "add-exam",
                 element: (
                   <RoleGuard allowedRole="instructor">
-                    <AddExam />
+                    <CheckSetCategory>
+                      <AddExam />
+                    </CheckSetCategory>
                   </RoleGuard>
                 ),
               },

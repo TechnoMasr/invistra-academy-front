@@ -11,6 +11,10 @@ import { IoImageOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
+import { GoogleLogin } from "@react-oauth/google"; // 1. استيراد المكون الجاهز
+import { useMutation } from "@tanstack/react-query"; // استيراد useMutation
+import { googleAuthenticate } from "@/api/authServices"; // استيراد الـ API الخاص بجوجل
+import FormError from "@/components/form/FormError";
 
 const Step1 = ({ setParentData, parentData, goNext }) => {
   const { t } = useTranslation();
@@ -57,15 +61,26 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
     },
   });
 
+  // 2. إعداد Mutation الخاص بـ Google Auth للمعلم
+  const {
+    mutate: googleMutate,
+    isPending: isGooglePending,
+    error: googleError,
+  } = useMutation({
+    mutationFn: googleAuthenticate,
+    onSuccess: () => {
+      goNext(true);
+    },
+  });
+
   const onSubmit = (data) => {
-    // eslint-disable-next-line no-unused-vars
     const { terms_accepted, ...rest } = data;
 
     setParentData({
       ...parentData,
       ...rest,
       terms_accepted: 1,
-      type: "company",
+      type: "instructor", // تعديل القيمة لتكون متوافقة مع المعلم
       image: imageFile,
     });
 
@@ -241,9 +256,48 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
         )}
       </div>
 
-      <Button type="submit" className="w-full mt-4">
+      {/* زر المتابعة العادي */}
+      <Button type="submit" className="w-full mt-4" disabled={isGooglePending}>
         {t("RegisterTeacherStep1.continueNextStep")}
       </Button>
+
+      {/* 3. خط فاصل وزر التسجيل بجوجل كاملاً */}
+      <div className="relative flex py-2 items-center">
+        <div className="flex-grow border-t border-muted"></div>
+        <span className="flex-shrink mx-4 text-muted-foreground text-xs uppercase">
+          {t("or")}
+        </span>
+        <div className="flex-grow border-t border-muted"></div>
+      </div>
+
+      <div className="w-full flex justify-center">
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            const formData = new FormData();
+            formData.append("id_token", credentialResponse.credential);
+            formData.append("type", "instructor");
+
+            googleMutate(formData);
+          }}
+          onError={() => {
+            console.log("Google Login Failed");
+          }}
+          theme="outline"
+          size="large"
+          width="100%"
+          disabled={isGooglePending}
+        />
+      </div>
+
+      {/* إظهار خطأ جوجل إن وجد */}
+      {googleError && (
+        <FormError
+          errorMsg={
+            googleError?.response?.data?.message ||
+            t("RegisterTeacherStep1.somethingWentWrong")
+          }
+        />
+      )}
     </form>
   );
 };

@@ -16,6 +16,11 @@ const useRequireAuth = () => {
       return;
     }
 
+    if (user?.type === "instructor" && !user?.category?.id) {
+      dispatch(openModal({ modalName: "requiredSetCategoryModal" }));
+      return;
+    }
+
     onSuccess();
   };
 

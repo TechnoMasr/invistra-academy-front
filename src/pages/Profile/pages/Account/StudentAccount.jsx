@@ -21,14 +21,6 @@ import { openModal } from "@/store/modals/modalsSlice";
 import PhoneInputField from "@/components/form/PhoneInputField";
 import { setCredentials } from "@/store/auth/authSlice";
 
-// ✅ منطق واحد موحّد لتحويل بيانات اليوزر لشكل الفورم
-const mapUserToForm = (u) => ({
-  name: u?.name || "",
-  email: u?.email || "",
-  phone: u?.phone || "",
-  image: u?.image || null,
-});
-
 const StudentAccount = ({ user }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -36,7 +28,8 @@ const StudentAccount = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [avatar, setAvatar] = useState(user?.image || null);
-  // ✅ آخر بيانات محفوظة فعليًا، عشان الـ Cancel يرجع لها مش لأول قيم وقت الـ mount
+
+  // ✅ مصدر الحقيقة المحلي للبيانات المحفوظة
   const [savedData, setSavedData] = useState(user);
 
   const fileInputRef = useRef(null);
@@ -63,33 +56,54 @@ const StudentAccount = ({ user }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(accountSchema),
-    defaultValues: mapUserToForm(user),
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      image: user?.image || null,
+    },
     mode: "onChange",
   });
 
-  // ✅ مصدر الحقيقة الوحيد لمزامنة الفورم مع أحدث بيانات لليوزر.
-  // بيشتغل أول مرة وكل مرة الـ user prop يتغير (سواء بسبب الـ mutation
-  // أو أي تحديث تاني في الـ Redux store)
+  // ✅ الـ useEffect الذكي: يتم استدعاؤه فقط عند التحميل الأول أو تغيير الحساب بالكامل
   useEffect(() => {
     if (user) {
-      reset(mapUserToForm(user));
-      setAvatar(user?.image || null);
       setSavedData(user);
+      reset({
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        image: user?.image || null,
+      });
+      setAvatar(user?.image || null);
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: (data) => {
-      // ✅ من غير reset()/setAvatar() هنا؛ الـ useEffect فوق هو المسؤول
-      // عن مزامنة الفورم لما الـ Redux store يتحدث بالبيانات الجديدة
-      dispatch(
-        setCredentials({
-          user: data,
-        }),
-      );
+      // ✅ 1. تحديث الحالة المحلية فورًا بالبيانات الجديدة
+      setSavedData(data);
+      setAvatar(data?.image);
       setErrorMsg("");
       setIsEditing(false);
+
+      // ✅ 2. تحديث الـ Redux Store بنسخة جديدة من كائن البيانات
+      dispatch(
+        setCredentials({
+          user: { ...data },
+        }),
+      );
+
+      // ✅ 3. إعادة تعيين حقول الفورم بالبيانات الجديدة
+      reset({
+        name: data?.name || "",
+        email: data?.email || "",
+        phone: data?.phone || "",
+        image: data?.image || null,
+      });
+
       toast.success(t("account.messages.success"));
     },
     onError: (error) => {
@@ -111,8 +125,13 @@ const StudentAccount = ({ user }) => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    // ✅ بترجع لآخر بيانات محفوظة فعليًا، مش لأول قيم وقت الـ mount
-    reset(mapUserToForm(savedData));
+    // ✅ العودة إلى آخر بيانات تم حفظها بنجاح بدلاً من تفريغ الحقول
+    reset({
+      name: savedData?.name || "",
+      email: savedData?.email || "",
+      phone: savedData?.phone || "",
+      image: savedData?.image || null,
+    });
     setAvatar(savedData?.image || null);
   };
 
@@ -137,7 +156,8 @@ const StudentAccount = ({ user }) => {
               </div>
             )}
 
-            <UserAvatar name={user?.name} image={avatar} size={150} />
+            {/* ✅ استخدام savedData هنا لعرض البيانات المحدثة بثبات */}
+            <UserAvatar name={savedData?.name} image={avatar} size={150} />
 
             <input
               type="file"
@@ -157,7 +177,7 @@ const StudentAccount = ({ user }) => {
           </div>
         </div>
 
-        {/* الاسم باللغة العربية */}
+        {/* الاسم */}
         <Controller
           name="name"
           control={control}

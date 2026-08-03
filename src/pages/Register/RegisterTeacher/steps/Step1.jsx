@@ -11,10 +11,12 @@ import { IoImageOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
-import { GoogleLogin } from "@react-oauth/google"; // 1. استيراد المكون الجاهز
-import { useMutation } from "@tanstack/react-query"; // استيراد useMutation
-import { googleAuthenticate } from "@/api/authServices"; // استيراد الـ API الخاص بجوجل
+import { GoogleLogin } from "@react-oauth/google";
+import { useMutation } from "@tanstack/react-query";
+import { googleAuthenticate } from "@/api/authServices";
 import FormError from "@/components/form/FormError";
+// 1. استيراد الأكشن المسؤول عن حفظ التوكن وبيانات المستخدم (تأكد من المسار الصحيح)
+import { setCredentials } from "@/store/auth/authSlice";
 
 const Step1 = ({ setParentData, parentData, goNext }) => {
   const { t } = useTranslation();
@@ -61,15 +63,29 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
     },
   });
 
-  // 2. إعداد Mutation الخاص بـ Google Auth للمعلم
+  // 2. تحديث الـ Mutation لفحص الـ Response والتعامل مع الحالتين
   const {
     mutate: googleMutate,
     isPending: isGooglePending,
     error: googleError,
   } = useMutation({
     mutationFn: googleAuthenticate,
-    onSuccess: () => {
-      goNext(true);
+    onSuccess: (data) => {
+      // استخراج البيانات القادمة من الـ API (تأكد إذا كان الـ API يرجع res مباشرة أو res.data)
+      // const data = res?.data || res;
+
+      if (data?.requires_activation) {
+        // الحالة الأولى: يحتاج تفعيل -> اذهب للخطوة التالية
+        goNext(true);
+      } else if (data?.token) {
+        // الحالة الثانية: تسجيل دخول مباشر -> حفظ البيانات في ريدكس
+        dispatch(
+          setCredentials({
+            user: data.user,
+            token: data.token, // يفضل تمرير التوكن أيضاً إذا كان الأكشن يستقبله
+          }),
+        );
+      }
     },
   });
 
@@ -80,7 +96,7 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
       ...parentData,
       ...rest,
       terms_accepted: 1,
-      type: "instructor", // تعديل القيمة لتكون متوافقة مع المعلم
+      type: "instructor",
       image: imageFile,
     });
 
@@ -261,7 +277,7 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
         {t("RegisterTeacherStep1.continueNextStep")}
       </Button>
 
-      {/* 3. خط فاصل وزر التسجيل بجوجل كاملاً */}
+      {/* خط فاصل وزر التسجيل بجوجل */}
       <div className="relative flex py-2 items-center">
         <div className="flex-grow border-t border-muted"></div>
         <span className="flex-shrink mx-4 text-muted-foreground text-xs uppercase">

@@ -17,7 +17,7 @@ import { z } from "zod";
 
 import { useMutation } from "@tanstack/react-query";
 import { updateProfile } from "@/api/authServices";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +25,10 @@ import { closeModal } from "@/store/modals/modalsSlice";
 
 const ChangePasswordModal = () => {
   const { modalName } = useSelector((state) => state.modals);
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
+  const isGoogleUser = user?.is_google_user === true;
 
   const onClose = () => {
     dispatch(closeModal());
@@ -35,22 +38,28 @@ const ChangePasswordModal = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   /* ---------------- schema ---------------- */
-  const changePasswordSchema = z
-    .object({
-      old_password: z
-        .string()
-        .min(6, t("changePassword.form.currentPassword.validation.min")),
-      password: z
-        .string()
-        .min(6, t("changePassword.form.newPassword.validation.min")),
-      password_confirmation: z
-        .string()
-        .min(6, t("changePassword.form.confirmPassword.validation.min")),
-    })
-    .refine((data) => data.password === data.password_confirmation, {
-      message: t("changePassword.form.confirmPassword.validation.match"),
-      path: ["password_confirmation"],
-    });
+  // استخدام useMemo لتحديث الـ Schema ديناميكيًا إذا تغيرت حالة المستخدم
+  const changePasswordSchema = useMemo(() => {
+    return z
+      .object({
+        // لو مستخدم جوجل، الحقل بيكون اختياري ومش مطلوب، غير كده بيكون إجباري
+        old_password: isGoogleUser
+          ? z.string().optional()
+          : z
+              .string()
+              .min(6, t("changePassword.form.currentPassword.validation.min")),
+        password: z
+          .string()
+          .min(6, t("changePassword.form.newPassword.validation.min")),
+        password_confirmation: z
+          .string()
+          .min(6, t("changePassword.form.confirmPassword.validation.min")),
+      })
+      .refine((data) => data.password === data.password_confirmation, {
+        message: t("changePassword.form.confirmPassword.validation.match"),
+        path: ["password_confirmation"],
+      });
+  }, [isGoogleUser, t]);
 
   /* ---------------- form ---------------- */
   const {
@@ -83,11 +92,17 @@ const ChangePasswordModal = () => {
 
   /* ---------------- submit ---------------- */
   const onSubmit = (data) => {
-    changePasswordMutation.mutate({
-      old_password: data.old_password,
+    // تجهيز البيانات لإرسالها، وحذف old_password لو كان الحساب جوجل
+    const payload = {
       password: data.password,
       password_confirmation: data.password_confirmation,
-    });
+    };
+
+    if (!isGoogleUser) {
+      payload.old_password = data.old_password;
+    }
+
+    changePasswordMutation.mutate(payload);
   };
 
   return (
@@ -105,19 +120,21 @@ const ChangePasswordModal = () => {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Current Password */}
-          <Controller
-            name="old_password"
-            control={control}
-            render={({ field }) => (
-              <MainInput
-                {...field}
-                label={t("changePassword.form.currentPassword.label")}
-                type="password"
-                error={errors.old_password?.message}
-              />
-            )}
-          />
+          {/* إخفاء خانة الباسورد القديم تماماً لمستخدمي جوجل */}
+          {!isGoogleUser && (
+            <Controller
+              name="old_password"
+              control={control}
+              render={({ field }) => (
+                <MainInput
+                  {...field}
+                  label={t("changePassword.form.currentPassword.label")}
+                  type="password"
+                  error={errors.old_password?.message}
+                />
+              )}
+            />
+          )}
 
           {/* New Password */}
           <Controller

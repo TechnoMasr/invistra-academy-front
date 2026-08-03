@@ -46,7 +46,8 @@ const CoursesSection = ({ data, loading }) => {
           {categoriesList?.map((category) => (
             <li
               key={category.id}
-              className={`px-4 py-2 rounded-full cursor-pointer bg-white border hover:bg-primary hover:text-white transition duration-300 ease-in-out ${
+              className={`px-2 py-1 md:px-4 md:py-2 rounded-full cursor-pointer bg-white border text-sm md:text-base
+              hover:bg-primary hover:text-white transition duration-300 ease-in-out ${
                 selectedCategory === category.id ? "bg-primary! text-white" : ""
               }`}
               onClick={() => handleCategoryClick(category.id)}

@@ -15,10 +15,19 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { user, token } = action.payload;
-      state.user = user;
-      state.token = token;
+
+      // تحديث اليوزر فقط لو مبعوث في الـ payload
+      if (user) {
+        state.user = user;
+        state.isEmailVerified = user?.is_verified ?? false;
+      }
+
+      // تحديث التوكن فقط لو مبعوث (عشان ما يمسحش التوكن القديم عند تحديث البروفايل)
+      if (token) {
+        state.token = token;
+      }
+
       state.isAuthenticated = true;
-      state.isEmailVerified = user?.is_verified ?? false;
       state.isInitialized = true;
     },
     setInitialized: (state) => {

@@ -31,6 +31,7 @@ const ForgotPassword = () => {
   const [parentData, setParentData] = useState({});
 
   const goNext = () => {
+    window.scrollTo(0, 0);
     if (step >= steps.length) return;
     setStep((prev) => prev + 1);
   };

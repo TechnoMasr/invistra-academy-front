@@ -14,13 +14,14 @@ const RegisterTeacher = () => {
   const [step, setStep] = useState(1);
 
   const goNext = (completed = false) => {
+    window.scrollTo(0, 0);
+
     if (completed || step >= steps.length) {
       setCompleted(true);
       return;
     }
 
     setStep((prev) => prev + 1);
-    window.scrollTo(0, 0);
   };
 
   const [parentData, setParentData] = useState({});

@@ -19,6 +19,7 @@ import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
 import { setCredentials } from "@/store/auth/authSlice";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google"; // الـ hook الرسمي من المكتبة
+import { toast } from "sonner";
 
 const RegisterStudent = () => {
   const { t } = useTranslation();
@@ -77,6 +78,10 @@ const RegisterStudent = () => {
       dispatch(setCredentials({ user: data.user }));
       navigate("/verify-email", { replace: true });
     },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+      console.log(error);
+    },
   });
 
   // 2. Mutation الخاص بالتسجيل عبر Google (الذي يضرب الـ API المطلوبة)
@@ -95,6 +100,10 @@ const RegisterStudent = () => {
       );
       // التوجيه إلى الصفحة الرئيسية مباشرة لأن الحساب موثق تلقائياً من جوجل
       navigate("/", { replace: true });
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+      console.log(error);
     },
   });
 

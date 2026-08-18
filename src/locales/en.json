@@ -165,7 +165,8 @@
     "createAccount": "Create an Account",
     "invalidEmail": "Invalid email address",
     "invalidPhone": "Invalid phone number",
-    "passwordMin": "Password must be at least 6 characters"
+    "passwordMin": "Password must be at least 6 characters",
+    "success": "Logged in successfully"
   },
 
   "changePassword": {
@@ -303,8 +304,8 @@
     "validation": {
       "jobTitleAr": "Please enter the job title in Arabic",
       "jobTitleEn": "Please enter the job title in English",
-      "bioAr": "Please provide a short bio in Arabic",
-      "bioEn": "Please provide a short bio in English",
+      "bioAr": "Please provide a short bio in Arabic minimum 5 characters",
+      "bioEn": "Please provide a short bio in English minimum 5 characters",
       "department": "Please select a department"
     },
     "departments": {

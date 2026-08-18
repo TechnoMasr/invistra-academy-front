@@ -1,3 +1,4 @@
+// useNotificationsPolling.js
 import { useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNewNotifications } from "@/api/notificationsServices";
@@ -15,8 +16,8 @@ const useNotificationsPolling = ({ lastId, user }) => {
 
   const { data: newNotifications } = useQuery({
     queryKey: ["new-notifications", lastId],
-    queryFn: () => getNewNotifications(lastId),
-    enabled: !!user && !!lastId,
+    queryFn: () => getNewNotifications(lastId ?? 0),
+    enabled: !!user, // اتشالت شرط lastId عشان الـ polling تشتغل حتى لو مفيش إشعارات لسه
     refetchInterval: 20000,
     refetchOnWindowFocus: false,
   });
@@ -31,9 +32,11 @@ const useNotificationsPolling = ({ lastId, user }) => {
       // تشغيل الصوت
       audioRef.current?.play().catch(() => {});
 
-      // تحديث الكاش القديم
+      // تحديث الكاش القديم (أو إنشاء واحد جديد لو مفيش)
       queryClient.setQueryData(["notifications"], (oldData) => {
-        if (!oldData) return oldData;
+        if (!oldData) {
+          return { items: [...newNotifications] };
+        }
 
         return {
           ...oldData,
@@ -41,7 +44,7 @@ const useNotificationsPolling = ({ lastId, user }) => {
         };
       });
 
-      // تحديث unread count لو حابب تزوده مباشرة
+      // تحديث unread count
       queryClient.invalidateQueries({
         queryKey: ["unread-count"],
       });

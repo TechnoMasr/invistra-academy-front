@@ -84,7 +84,10 @@ const TeacherAccount = ({ user }) => {
   // ✅ تعديل الـ useEffect: يشتغل فقط عند تغيير الـ user القادم من الـ props لأول مرة (Initial Load)
   // أو إذا تغير الـ user من الخارج تمامًا (مثل تسجيل خروج/دخول بمستخدم آخر)
   useEffect(() => {
-    if (user) {
+    console.log("USER PROP:", user);
+    console.log("USER CATEGORY:", user?.category);
+
+    if (user && !isEditing) {
       setSavedData(user);
       reset({
         name_ar: user?.name_ar || "",
@@ -101,7 +104,7 @@ const TeacherAccount = ({ user }) => {
       setAvatar(user?.image || null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]); // 👈 نراقب فقط الـ id لضمان عدم تكرار الـ reset عند تحديث البيانات الفرعية من الـ props القديمة
+  }, [user]);
 
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
@@ -293,6 +296,7 @@ const TeacherAccount = ({ user }) => {
               render={({ field }) => (
                 <MainInput
                   {...field}
+                  key={categories?.length ? "loaded" : "loading"}
                   type="select"
                   label={t("account.form.department.label")}
                   placeholder={t("account.form.department.placeholder")}

@@ -16,10 +16,11 @@ const authSlice = createSlice({
     setCredentials: (state, action) => {
       const { user, token } = action.payload;
 
-      // تحديث اليوزر فقط لو مبعوث في الـ payload
+      // تحديث اليوزر: merge مع البيانات القديمة بدل استبدال كامل
+      // عشان لو تحديث جديد جالك ناقص (مثلاً مبعتش category)، ميمسحش القديم
       if (user) {
-        state.user = user;
-        state.isEmailVerified = user?.is_verified ?? false;
+        state.user = state.user ? { ...state.user, ...user } : user;
+        state.isEmailVerified = user?.is_verified ?? state.isEmailVerified;
       }
 
       // تحديث التوكن فقط لو مبعوث (عشان ما يمسحش التوكن القديم عند تحديث البروفايل)

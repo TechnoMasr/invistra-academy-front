@@ -3,18 +3,11 @@ import AppRouter from "./routes/AppRouter.jsx";
 import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 import "./index.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient.js";
 import "./i18n";
 import { DirectionProvider } from "./components/ui/direction.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 const lang = localStorage.getItem("lang") || "en";
 

@@ -30,6 +30,7 @@ const OTP = ({ goNext, parentData, setParentData }) => {
     handleSubmit,
     control,
     getValues,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(otpSchema),
@@ -85,6 +86,7 @@ const OTP = ({ goNext, parentData, setParentData }) => {
   };
 
   const handleResend = () => {
+    reset({ otp: "" });
     resendOtpMutation(parentData.email);
   };
 

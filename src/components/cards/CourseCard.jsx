@@ -44,7 +44,7 @@ const CourseCard = ({ course }) => {
           <h4 className="font-medium">{course?.instructor.name}</h4>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-2 mt-auto">
+        <div className="flex items-end justify-between flex-wrap gap-2 mt-auto">
           <div className="flex items-center gap-2 py-1 px-4 border border-primary rounded-full text-xs font-semibold">
             <HiOutlineCollection size={18} />
             {t("courseCard.lecturesCount", { count: course?.lectures_count })}

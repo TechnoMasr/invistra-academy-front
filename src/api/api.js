@@ -1,3 +1,5 @@
+import { logout } from "@/store/auth/authSlice";
+import { store } from "@/store/store";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -20,5 +22,16 @@ api.interceptors.request.use((config) => {
   config.headers.lang = localStorage.getItem("lang") || "en";
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      Cookies.remove("token");
+      store.dispatch(logout());
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default api;

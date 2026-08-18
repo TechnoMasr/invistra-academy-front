@@ -27,7 +27,7 @@ const OrderDetails = () => {
       ) : isEmpty ? (
         <EmptyDataSection msg={t("orderDetails.emptyMessage")} />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {orders?.items?.map((item) => (
             <OrdersDetailsCard key={item.id} item={item} />
           ))}

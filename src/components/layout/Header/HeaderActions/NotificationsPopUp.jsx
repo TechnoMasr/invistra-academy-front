@@ -1,3 +1,4 @@
+// NotificationsPopUp.jsx
 import {
   Popover,
   PopoverContent,
@@ -32,13 +33,13 @@ const NotificationsPopUp = () => {
     enabled: !!user,
   });
 
-  // استخراج اخر id
+  // استخراج اخر id (ممكن تكون null لو مفيش إشعارات لسه)
   const lastId =
     notifications?.items && notifications.items.length > 0
       ? notifications.items[0].id
       : null;
 
-  // تشغيل polling
+  // تشغيل polling (بتشتغل حتى لو lastId لسه null)
   useNotificationsPolling({ lastId, user });
 
   return (

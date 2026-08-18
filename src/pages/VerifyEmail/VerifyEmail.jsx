@@ -38,6 +38,7 @@ const VerifyEmail = () => {
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(otpSchema),
@@ -100,6 +101,7 @@ const VerifyEmail = () => {
   };
 
   const handleResend = () => {
+    reset({ otp: "" });
     sendOtpMutation(user?.email);
   };
 

@@ -68,3 +68,13 @@ export const googleAuthenticate = async (formData) => {
 
   return data?.data;
 };
+
+export const googleCompleteInstructor = async (payload) => {
+  const { data } = await api.post("/auth/google/complete-instructor", payload);
+
+  if (data?.data?.token) {
+    Cookies.set("token", data?.data?.token);
+  }
+
+  return data?.data;
+};

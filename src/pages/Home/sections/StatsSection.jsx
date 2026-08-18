@@ -42,7 +42,7 @@ const StatsSection = ({ data = {}, loading }) => {
       <div className="container">
         <SectionTitle title={data?.title} description={data?.description} />
 
-        <ul className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {list.map((item) => (
             <li
               key={item.id}

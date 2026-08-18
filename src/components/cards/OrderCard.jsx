@@ -1,6 +1,7 @@
 import { IoCalendarOutline } from "react-icons/io5";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { buttonVariants } from "../ui/button";
 
 const OrderCard = ({ item }) => {
   const { t } = useTranslation();
@@ -35,21 +36,19 @@ const OrderCard = ({ item }) => {
         <span>{date}</span>
       </div>
 
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center flex-wrap gap-1">
-          <p className="font-semibold">{t("orderCard.price")}</p>
-          <span className="text-2xl font-bold text-green-500">
-            {item.total_price} {item.currency}
-          </span>
-        </div>
-
-        <Link
-          to={`/profile/order-details/${item.id}`}
-          className="flex items-center gap-2 py-1 px-4 border border-primary rounded-full text-xs font-semibold hover:bg-primary/10 transition"
-        >
-          {t("orderCard.viewDetails")}
-        </Link>
+      <div className="flex items-center flex-wrap gap-1">
+        <p className="font-semibold">{t("orderCard.price")}</p>
+        <span className="text-2xl font-bold text-green-500">
+          {item.total_price} {item.currency}
+        </span>
       </div>
+
+      <Link
+        to={`/profile/order-details/${item.id}`}
+        className={`${buttonVariants({ variant: "outline", size: "sm" })} w-full`}
+      >
+        {t("orderCard.viewDetails")}
+      </Link>
     </div>
   );
 };

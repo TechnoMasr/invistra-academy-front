@@ -17,6 +17,7 @@ import { googleAuthenticate } from "@/api/authServices";
 import FormError from "@/components/form/FormError";
 // 1. استيراد الأكشن المسؤول عن حفظ التوكن وبيانات المستخدم (تأكد من المسار الصحيح)
 import { setCredentials } from "@/store/auth/authSlice";
+import { toast } from "sonner";
 
 const Step1 = ({ setParentData, parentData, goNext }) => {
   const { t } = useTranslation();
@@ -74,9 +75,18 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
       // استخراج البيانات القادمة من الـ API (تأكد إذا كان الـ API يرجع res مباشرة أو res.data)
       // const data = res?.data || res;
 
+      console.log("data", data);
+
       if (data?.requires_activation) {
-        // الحالة الأولى: يحتاج تفعيل -> اذهب للخطوة التالية
         goNext(true);
+      } else if (data?.id_token) {
+        // الحالة الأولى: يحتاج تفعيل -> اذهب للخطوة التالية
+        setParentData({
+          ...parentData,
+          ...data,
+          type: "instructor",
+        });
+        goNext();
       } else if (data?.token) {
         // الحالة الثانية: تسجيل دخول مباشر -> حفظ البيانات في ريدكس
         dispatch(
@@ -87,9 +97,14 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
         );
       }
     },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+      console.log(error);
+    },
   });
 
   const onSubmit = (data) => {
+    // eslint-disable-next-line no-unused-vars
     const { terms_accepted, ...rest } = data;
 
     setParentData({

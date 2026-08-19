@@ -43,8 +43,12 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [imageError, setImageError] = useState("");
-  const [paymentMethodError, setPaymentMethodError] = useState(""); // حالة جديدة للخطأ
+  const [paymentMethodError, setPaymentMethodError] = useState("");
   const [copied, setCopied] = useState(false);
+
+  // الطرق التي لا تتطلب رفع صورة إيصال وتعتمد على رابط تحويل خارجي
+  const isRedirectPayment =
+    selectedMethod === "online" || selectedMethod === "vodafone_cash";
 
   const filteredPaymentList = STATIC_PAYMENT_METHODS.filter((staticMethod) =>
     payment_methods.some((apiMethod) => apiMethod.key === staticMethod.key),
@@ -54,7 +58,6 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
     (m) => m.key === selectedMethod,
   );
 
-  // إدارة رابط معاينة الصورة لتجنب تسريب الذاكرة
   useEffect(() => {
     if (!imageFile) {
       setPreviewUrl("");
@@ -76,15 +79,15 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
   const orderMutation = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
-      // إذا كان دفع أونلاين خارجي، يتم تحويله مباشرة
-      if (selectedMethod === "online" && data?.payment_link) {
-        window.location.href = data.payment_link;
+      const paymentLink = data?.paymob?.redirect_url;
+
+      // إذا كانت الطريقة تحويل خارجي ويوجد رابط دفع، يتم التحويل فوراً
+      if (paymentLink) {
+        window.location.href = paymentLink;
         return;
       }
 
-      // إظهار التوست وتحديث الكاش
       dispatch(openModal({ modalName: "SuccessesPaymentModal" }));
-      // toast.success("تم إنشاء الطلب بنجاح!");
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cartItemsCount"] });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -120,21 +123,20 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
   };
 
   const handleFinalPayment = () => {
-    // التعديل هنا: إذا لم يتم اختيار طريقة دفع، يظهر الخطأ ولا يكمل الدالة
     if (!selectedMethod) {
       setPaymentMethodError(t("orderSummary.selectPaymentError"));
-      // toast.warning("برجاء اختيار طريقة الدفع أولاً");
       return;
     }
 
-    if (selectedMethod !== "online" && !imageFile) {
+    // التحقق من وجود الصورة فقط إذا لم تكن طريقة الدفع تحويل مباشر عبر رابط
+    if (!isRedirectPayment && !imageFile) {
       setImageError(t("orderSummary.uploadImageError"));
       return;
     }
 
     const formData = new FormData();
     formData.append("payment_method", selectedMethod);
-    if (imageFile && selectedMethod !== "online") {
+    if (imageFile && !isRedirectPayment) {
       formData.append("transfer_image", imageFile);
     }
 
@@ -194,7 +196,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
                     setSelectedMethod(item.key);
                     setImageFile(null);
                     setImageError("");
-                    setPaymentMethodError(""); // مسح رسالة الخطأ عند الاختيار
+                    setPaymentMethodError("");
                   }}
                   className={`group relative flex flex-col items-center p-2 border rounded-xl cursor-pointer transition-all duration-300 select-none text-center ${
                     isSelected
@@ -258,7 +260,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
             </div>
           )}
 
-          {/* Transfer Number Box */}
+          {/* Transfer Number Box (إذا كان موجوداً في الـ API) */}
           {currentMethodDetails?.transfer_number && (
             <div className="bg-gray-100 p-2.5 rounded-xl border border-gray-100 text-center space-y-1.5">
               <p className="text-sm text-gray-600 font-medium">
@@ -290,8 +292,8 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
             </div>
           )}
 
-          {/* Image Uploader */}
-          {selectedMethod !== "online" && (
+          {/* Image Uploader (يظهر فقط إن لم تكن طريقة تحويل مباشر عبر لينك) */}
+          {!isRedirectPayment && (
             <div className="space-y-1.5">
               <label className="block text-sm font-bold text-gray-600">
                 {t("orderSummary.attachReceipt")}
@@ -361,7 +363,6 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
 
       {/* Action Buttons */}
       <div className="space-y-2 pt-2">
-        {/* إظهار رسالة الخطأ هنا أسفل الأزرار عند الضغط بدون اختيار طريقة */}
         {paymentMethodError && (
           <p className="flex items-center justify-center gap-1 text-[12px] font-bold text-red-600 mt-1 bg-red-50 p-2 rounded-lg border border-red-200 dynamic-error">
             <FiAlertTriangle className="w-4 h-4 shrink-0 animate-bounce" />{" "}
@@ -370,7 +371,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
         )}
 
         <Button
-          className={`w-full`}
+          className="w-full"
           onClick={handleFinalPayment}
           disabled={isComponentLoading}
         >
@@ -381,7 +382,7 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
         </Button>
 
         <Link to="/courses" className="block w-full">
-          <Button className={`w-full`} variant="outline">
+          <Button className="w-full" variant="outline">
             {t("orderSummary.continueShopping")}
             <GrCart className="mr-1.5 w-3.5 h-3.5" />
           </Button>

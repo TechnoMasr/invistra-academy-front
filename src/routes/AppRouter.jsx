@@ -237,7 +237,7 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "payment/:status?",
+            path: "/payment/:status?/:payment_id?",
             element: (
               <CheckVerifiedEmailGuard>
                 <RoleGuard allowedRole="student">

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -8,19 +8,18 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 const Payment = () => {
-  const { status } = useParams();
-  const navigate = useNavigate();
+  const { status, payment_id } = useParams();
   const { t } = useTranslation();
 
   const isSuccess = status === "success";
   const isFailed = status === "failed";
 
   return (
-    <section className="container min-h-screen pt-20 flex items-center justify-center">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center space-y-4">
+    <section className="container min-h-[calc(100vh-90px)] py-8 flex items-center justify-center">
+      <div className="w-full max-w-md bg-white border rounded-2xl shadow-lg p-4 md:p-8 text-center space-y-4">
         {/* Icon */}
         {isSuccess && (
-          <FaCheckCircle className="mx-auto text-primary text-[90px]" />
+          <FaCheckCircle className="mx-auto text-green-600 text-[90px]" />
         )}
 
         {isFailed && (
@@ -46,7 +45,7 @@ const Payment = () => {
         </p>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-3 justify-center pt-4">
+        <div className="flex flex-wrap gap-2 justify-center pt-4">
           {isFailed && (
             <a href="/cart">
               <Button variant="destructive">

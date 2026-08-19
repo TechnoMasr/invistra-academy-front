@@ -6,8 +6,11 @@
   "contactUs": "Contact Us",
   "developedBy": "Developed by Techno Web Masr",
 
+  "quickLinks": "Quick Links",
+  "importantPages": "Important Pages",
+
   "noDataFound": "No data found",
-  "teachers": "Instructors",
+  "instructors": "Instructors",
   "courses": "Courses",
   "registerAsTeacher": "Register as Instructor",
   "phone": "Phone",
@@ -950,7 +953,8 @@
     "status": {
       "ongoing": "Ongoing",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
     },
     "payment": {
       "paid": "Paid",

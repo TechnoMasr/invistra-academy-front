@@ -29,7 +29,11 @@ const OrderDetails = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {orders?.items?.map((item) => (
-            <OrdersDetailsCard key={item.id} item={item} />
+            <OrdersDetailsCard
+              key={item.id}
+              item={item}
+              orderStatus={orders?.order_status}
+            />
           ))}
         </div>
       )}

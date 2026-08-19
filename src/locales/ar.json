@@ -6,8 +6,11 @@
   "contactUs": "تواصل معنا",
   "developedBy": "تطوير بواسطة Techno Web Masr",
 
+  "quickLinks": "روابط سريعة",
+  "importantPages": "صفحات تهمك",
+
   "noDataFound": "لا توجد بيانات",
-  "teachers": "المحاضرين",
+  "instructors": "المحاضرين",
   "courses": "الكورسات",
   "registerAsTeacher": "التسجيل كمحاضر",
   "phone": "اتصال",
@@ -949,7 +952,8 @@
     "status": {
       "ongoing": "جاري",
       "completed": "مكتمل",
-      "cancelled": "ملغي"
+      "cancelled": "ملغي",
+      "refunded": "مسترجع"
     },
     "payment": {
       "paid": "مدفوع",

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router"; // أو react-router-dom حسب مشروعك
 import { useTranslation } from "react-i18next";
-import OrdersDetailsCard from "@/components/cards/OrdersDetailsCard";
+import StudentCourseCard from "@/components/cards/StudentCourseCard";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import MyCoursesSkeleton from "@/components/Loading/SkeletonLoading/MyCoursesSkeleton";
 import { getMyCoursesStudent } from "@/api/myCoursesServices";
@@ -140,7 +140,7 @@ const StudentCourses = () => {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {myCourses?.items?.map((item) => (
-              <OrdersDetailsCard key={item.id} item={item} />
+              <StudentCourseCard key={item.id} item={item} />
             ))}
           </div>
 

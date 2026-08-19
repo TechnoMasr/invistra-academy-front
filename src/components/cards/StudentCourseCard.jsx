@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
 
-const OrdersDetailsCard = ({ item, orderStatus }) => {
+const StudentCourseCard = ({ item }) => {
   const { t } = useTranslation();
   return (
     <div className="border rounded-lg overflow-hidden bg-white flex flex-col xl:flex-row items-start gap-4 p-4">
@@ -70,43 +70,41 @@ const OrdersDetailsCard = ({ item, orderStatus }) => {
           ) : null}
         </div>
 
-        {orderStatus === "completed" && (
-          <div className="flex flex-col gap-2 pt-2 border-t border-gray-200 mt-auto">
-            <Link
-              to={`/profile/lectures/${item?.id}`}
-              className="w-full rounded-full"
-            >
-              <Button size="sm" variant="outline" className={`w-full`}>
-                {t("ordersDetailsCard.viewLectures")}
-              </Button>
-            </Link>
+        <div className="flex flex-col gap-2 pt-2 border-t border-gray-200 mt-auto">
+          <Link
+            to={`/profile/lectures/${item?.id}`}
+            className="w-full rounded-full"
+          >
+            <Button size="sm" variant="outline" className={`w-full`}>
+              {t("ordersDetailsCard.viewLectures")}
+            </Button>
+          </Link>
 
-            {/* شريط تقدم مخصص بـ Tailwind */}
-            <div className="flex flex-col gap-1 my-1">
-              <div className="flex justify-between items-center text-xs font-medium text-slate-700">
-                <span>
-                  {t("ordersDetailsCard.progress", "نسبة مشاهدة الدورة")}
-                </span>
-                <span dir="ltr" className="font-semibold">
-                  {item?.watched_lectures}/{item?.lectures_count} (
-                  {Math.round(item?.progress_percentage || 0)}%)
-                </span>
-              </div>
+          {/* شريط تقدم مخصص بـ Tailwind */}
+          <div className="flex flex-col gap-1 my-1">
+            <div className="flex justify-between items-center text-xs font-medium text-slate-700">
+              <span>
+                {t("ordersDetailsCard.progress", "نسبة مشاهدة الدورة")}
+              </span>
+              <span dir="ltr" className="font-semibold">
+                {item?.watched_lectures}/{item?.lectures_count} (
+                {Math.round(item?.progress_percentage || 0)}%)
+              </span>
+            </div>
 
-              {/* خلفية الشريط */}
-              <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-200/50">
-                {/* الجزء الملون الممثل للنسبة */}
-                <div
-                  className="bg-green-500 h-full rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${item?.progress_percentage || 0}%` }}
-                />
-              </div>
+            {/* خلفية الشريط */}
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-200/50">
+              {/* الجزء الملون الممثل للنسبة */}
+              <div
+                className="bg-green-500 h-full rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${item?.progress_percentage || 0}%` }}
+              />
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default OrdersDetailsCard;
+export default StudentCourseCard;

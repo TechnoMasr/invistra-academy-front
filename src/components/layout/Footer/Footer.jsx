@@ -75,10 +75,26 @@ const Footer = () => {
     },
   ];
 
+  const quickLinks = [
+    {
+      name: t("instructors"),
+      url: "/instructors",
+    },
+    {
+      name: t("courses"),
+      url: "/courses",
+    },
+    {
+      name: t("registerAsTeacher"),
+      url: "/register/teacher",
+    },
+  ];
+
   return (
     <footer className="sectionPadding bg-[#111418] text-white">
-      <div className="container flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8 lg:gap-4">
-        <div className="flex flex-col items-center lg:items-start gap-4">
+      <div className="container flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-4">
+        {/* قسم اللوجو والشبكات الاجتماعية */}
+        <div className="flex flex-col items-start gap-4">
           {footerData?.logo && (
             <img
               loading="lazy"
@@ -88,9 +104,7 @@ const Footer = () => {
             />
           )}
 
-          <p className="text-center lg:text-start max-w-80">
-            {footerData?.footer_text}
-          </p>
+          <p className="text-start lg:max-w-80">{footerData?.footer_text}</p>
 
           <div className="flex items-center justify-center flex-wrap gap-3">
             {socialLinks
@@ -109,30 +123,29 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center lg:items-start gap-3">
-          <Link
-            to="/teachers"
-            className="hover:text-secondary transition-all duration-300"
-          >
-            {t("teachers")}
-          </Link>
+        {/* قسم الروابط السريعة */}
+        <div className="flex flex-col items-start gap-3">
+          <h4 className="text-lg font-bold mb-1 text-secondary">
+            {t("quickLinks")}
+          </h4>
 
-          <Link
-            to="/courses"
-            className="hover:text-secondary transition-all duration-300"
-          >
-            {t("courses")}
-          </Link>
-
-          <Link
-            to="/register/teacher"
-            className="hover:text-secondary transition-all duration-300"
-          >
-            {t("registerAsTeacher")}
-          </Link>
+          {quickLinks.map((link) => (
+            <Link
+              key={link.name}
+              to={link.url}
+              className="hover:text-secondary transition-all duration-300"
+            >
+              {link.name}
+            </Link>
+          ))}
         </div>
 
-        <div className="flex flex-col items-center lg:items-start gap-3">
+        {/* قسم الصفحات الهامة */}
+        <div className="flex flex-col items-start gap-3">
+          <h4 className="text-lg font-bold mb-1 text-secondary">
+            {t("importantPages")}
+          </h4>
+
           {websitePages.map((page) => (
             <Link
               key={page.name}
@@ -145,13 +158,14 @@ const Footer = () => {
 
           <button
             onClick={() => dispatch(openModal({ modalName: "ContactUsModal" }))}
-            className="hover:text-secondary transition-all duration-300 cursor-pointer"
+            className="hover:text-secondary transition-all duration-300 cursor-pointer text-start"
           >
             {t("contactUs")}
           </button>
         </div>
       </div>
 
+      {/* الحقوق والـ Branding */}
       <div className="container mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-center gap-2 text-sm">
         <span>{t("developedBy")}</span>
         <a

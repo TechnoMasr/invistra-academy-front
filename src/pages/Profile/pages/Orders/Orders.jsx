@@ -28,6 +28,21 @@ function useDebounce(value, delay) {
   return debouncedValue;
 }
 
+// خيارات الفلاتر
+const ORDER_STATUS_OPTIONS = [
+  { value: "all", labelKey: "orders.all" },
+  { value: "ongoing", labelKey: "orders.status.ongoing" },
+  { value: "completed", labelKey: "orders.status.completed" },
+  { value: "cancelled", labelKey: "orders.status.cancelled" },
+  { value: "refunded", labelKey: "orders.status.refunded" }, // الحالة الجديدة
+];
+
+const PAYMENT_STATUS_OPTIONS = [
+  { value: "all", labelKey: "orders.all" },
+  { value: "paid", labelKey: "orders.payment.paid" },
+  { value: "unpaid", labelKey: "orders.payment.unpaid" },
+];
+
 const Orders = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -103,7 +118,7 @@ const Orders = () => {
     <div className="space-y-6">
       <ProfileTitle title={t("orders.title")} />
 
-      {/* قسم الفلاتر بنفس تصميم شبكة الكورسات */}
+      {/* قسم الفلاتر */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 p-4 bg-card rounded-lg border">
         {/* بحث بكود الطلب */}
         <div>
@@ -132,16 +147,11 @@ const Orders = () => {
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
-                <SelectItem value="all">{t("orders.all")}</SelectItem>
-                <SelectItem value="ongoing">
-                  {t("orders.status.ongoing")}
-                </SelectItem>
-                <SelectItem value="completed">
-                  {t("orders.status.completed")}
-                </SelectItem>
-                <SelectItem value="cancelled">
-                  {t("orders.status.cancelled")}
-                </SelectItem>
+                {ORDER_STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {t(option.labelKey)}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -161,11 +171,11 @@ const Orders = () => {
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
-                <SelectItem value="all">{t("orders.all")}</SelectItem>
-                <SelectItem value="paid">{t("orders.payment.paid")}</SelectItem>
-                <SelectItem value="unpaid">
-                  {t("orders.payment.unpaid")}
-                </SelectItem>
+                {PAYMENT_STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {t(option.labelKey)}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>

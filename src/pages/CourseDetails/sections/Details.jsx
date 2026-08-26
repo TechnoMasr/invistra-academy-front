@@ -92,7 +92,7 @@ const Details = ({ data }) => {
         />
 
         <div className="flex items-center gap-2">
-          <div className="w-10 aspect-square overflow-hidden rounded-full">
+          <div className="w-10 aspect-square overflow-hidden rounded-full border">
             {data?.instructor?.image && (
               <img
                 loading="lazy"

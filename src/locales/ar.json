@@ -731,68 +731,139 @@
 
   "addExam": {
     "title": "إضافة اختبار",
+
+    "creationMethod": "طريقة إضافة الأسئلة",
+    "creationMethodHint": "اختر الطريقة المناسبة لإنشاء أسئلة الاختبار",
+    "methodManual": "إضافة الأسئلة يدويًا",
+    "methodManualHint": "قم بكتابة الأسئلة والاختيارات بنفسك",
+    "methodExcel": "رفع ملف Excel",
+    "methodExcelHint": "استيراد الأسئلة والاختيارات من ملف Excel",
+
+    "examType": "نوع الاختبار",
+    "examTypePlaceholder": "اختر نوع الاختبار",
+    "typeFinal": "اختبار نهائي للكورس",
+    "typeLecture": "اختبار محدد لمحاضرة",
+
     "course": "الكورس",
     "coursePlaceholder": "اختر الكورس",
+
+    "lecture": "المحاضرة",
+    "lecturePlaceholder": "اختر المحاضرة",
+    "selectCourseFirst": "اختر الكورس أولاً",
+
     "nameAr": "اسم الاختبار باللغة العربية",
     "nameArPlaceholder": "ادخل اسم الاختبار..",
+
     "nameEn": "اسم الاختبار باللغة الانجليزية",
     "nameEnPlaceholder": "ادخل اسم الاختبار..",
+
     "passMark": "الحد الأدنى للنجاح",
     "passMarkPlaceholder": "ادخل الحد الأدنى للنجاح..",
+
     "fullMark": "الدرجة النهائية للاختبار",
     "fullMarkPlaceholder": "ادخل الدرجة النهائية للاختبار..",
+
     "questionsBank": "بنك الأسئلة الخاصة بالاختبارات",
     "questionsBankHint": "* يتم الاختيار منها عشوائياً في الاختبار",
+
     "addQuestion": "+ إضافة سؤال جديد",
+
     "saving": "جاري الحفظ...",
     "save": "حفظ",
+
     "success": "تم اضافة الاختبار بنجاح",
+    "excelSuccess": "تم استيراد الاختبار بنجاح",
     "error": "حدث خطأ ما، يرجى المحاولة مرة أخرى",
+
+    "downloadTemplateTitle": "تحميل نموذج Excel",
+    "downloadTemplateDesc": "قم بتحميل الملف لتعبئة الأسئلة بناءً على التنسيق المطلوب",
+    "downloadTemplateBtn": "تحميل النموذج",
+    "downloading": "جاري التحميل...",
+    "templateDownloaded": "تم تحميل النموذج بنجاح",
+    "templateDownloadError": "حدث خطأ أثناء تحميل النموذج",
+
+    "uploadExcelLabel": "رفع ملف Excel",
+    "dropFileTitle": "اسحب ملف Excel وأفلته هنا",
+    "dropFileDescription": "أو اضغط لاختيار الملف من جهازك",
+    "chooseFile": "اختيار ملف",
+    "changeFile": "اضغط لاختيار ملف آخر",
+    "fileSelected": "تم اختيار الملف بنجاح",
+    "allowedFileTypes": "الملفات المسموحة: .xlsx و .xls",
+
     "deleteQuestion": "حذف السؤال",
     "questionNumber": "السؤال رقم ({{number}})",
+
     "questionAr": "عنوان السؤال باللغة العربية",
     "questionArPlaceholder": "أضف عنوان السؤال..",
+
     "questionEn": "عنوان السؤال باللغة الانجليزية",
     "questionEnPlaceholder": "أضف عنوان السؤال..",
+
     "answerOptions": "خيارات الإجابة:",
+
     "optionNumber": "الخيار رقم ({{number}})",
     "correctAnswer": "(الإجابة الصحيحة)",
     "deleteOption": "حذف الخيار",
+
     "optionAr": "الخيار باللغة العربية",
     "optionArPlaceholder": "ادخل الخيار بالعربي..",
+
     "optionEn": "الخيار باللغة الانجليزية",
     "optionEnPlaceholder": "ادخل الخيار بالإنجليزي..",
+
     "addOption": "+ إضافة خيار آخر لهذا السؤال",
+
     "displayedQuestionsCount": "عدد الأسئلة التي سيتم عرضها للمختبر",
     "displayedQuestionsCountPlaceholder": "ادخل عدد الأسئلة المعروضة..",
+
     "isAppearsToAllExaminees": "تثبيت هذا السؤال في جميع الاختبارات",
+
     "duration": "مدة الاختبار (بالدقائق)",
     "durationPlaceholder": "ادخل مدة الاختبار..",
+
     "attemptsAllowed": "عدد مرات المحاولة المسموح بها",
     "attemptsAllowedPlaceholder": "ادخل عدد المحاولات..",
+
     "minCompletionPercentage": "نسبة إتمام الكورس لفتح الاختبار (%)",
     "minCompletionPercentagePlaceholder": "ادخل النسبة المطلوبة (1-100)..",
 
     "validation": {
+      "examTypeRequired": "الرجاء اختيار نوع الاختبار",
+      "lectureRequired": "الرجاء اختيار المحاضرة",
       "durationRequired": "مدة الاختبار مطلوبة ويجب أن تكون أكبر من 0",
       "courseRequired": "الرجاء اختيار الكورس",
+
       "nameArRequired": "اسم الاختبار بالعربي مطلوب",
       "nameEnRequired": "اسم الاختبار بالإنجليزي مطلوب",
+
       "passMarkRequired": "الحد الأدنى للنجاح مطلوب ويجب أن يكون أكبر من 0",
       "fullMarkRequired": "الدرجة النهائية للاختبار مطلوبة",
+
       "questionArRequired": "عنوان السؤال بالعربي مطلوب",
       "questionEnRequired": "عنوان السؤال بالإنجليزي مطلوب",
+
       "optionArRequired": "الخيار بالعربي مطلوب",
       "optionEnRequired": "الخيار بالإنجليزي مطلوب",
+
       "minOptions": "يجب إضافة خيارين على الأقل للسؤال",
       "maxOptions": "الحد الأقصى هو 4 خيارات فقط",
+
       "minQuestions": "يجب إضافة سؤال واحد على الأقل",
+
       "displayedQuestionsCountRequired": "عدد الأسئلة المعروضة مطلوب ويجب أن يكون أكبر من 0",
+
       "minDegreeExceedsMax": "الحد الأدنى للنجاح لا يمكن أن يكون أكبر من الدرجة النهائية",
+
       "attemptsAllowedRequired": "عدد المحاولات مطلوب ويجب أن يكون أكبر من 0",
+
       "minCompletionPercentageRequired": "نسبة الإتمام مطلوبة ويجب أن تكون أكبر من 0",
+
       "minCompletionPercentageMax": "نسبة الإتمام لا يمكن أن تتجاوز 100%",
-      "displayedCountExceedsTotal": "عدد الأسئلة المعروضة لا يمكن أن يتجاوز عدد الأسئلة المضافة في البنك"
+
+      "displayedCountExceedsTotal": "عدد الأسئلة المعروضة لا يمكن أن يتجاوز عدد الأسئلة المضافة في البنك",
+
+      "fileRequired": "يرجى رفع ملف Excel",
+      "fileType": "يرجى اختيار ملف Excel بصيغة .xlsx أو .xls"
     }
   },
 
@@ -809,6 +880,7 @@
     "title": "إضافة محاضرة",
     "uploadVideo": "رفع فيديو المحاضرة",
     "readyToUpload": "جاهز للرفع",
+    "videoUploading": "تم رفع الفيديو وهو تحت المراجعة",
     "videoLink": "رابط المحاضرة",
     "videoLinkPlaceholder": "ادخل رابط المحاضرة..",
     "nameAr": "عنوان المحاضرة باللغة العربية",

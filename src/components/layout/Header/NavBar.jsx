@@ -1,21 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 
 const NavBar = ({ links }) => {
   const { t } = useTranslation();
-  const { lang } = useSelector((state) => state.language);
   const location = useLocation();
-
-  const isRtl = lang === "ar";
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [navStack, setNavStack] = useState([]);
@@ -120,8 +110,7 @@ const NavBar = ({ links }) => {
                             </NavLink>
                             {hasSubCategories && (
                               <span className="px-3 py-2 text-gray-400">
-                                <ChevronRight className="h-4 w-4 ltr:block rtl:hidden" />
-                                <ChevronLeft className="h-4 w-4 rtl:block ltr:hidden" />
+                                <ChevronRight className="h-4 w-4 rtl:rotate-180" />
                               </span>
                             )}
                           </div>
@@ -139,18 +128,14 @@ const NavBar = ({ links }) => {
                           className="p-1 hover:bg-gray-200 rounded-full transition-colors cursor-pointer"
                           title={t("header.back") || "Back"}
                         >
-                          {isRtl ? (
-                            <ArrowRight className="h-4 w-4" />
-                          ) : (
-                            <ArrowLeft className="h-4 w-4" />
-                          )}
+                          <ArrowRight className="h-4 w-4 ltr:rotate-180" />
                         </button>
                         <span className="truncate flex-1">
                           {currentSubMenu.name}
                         </span>
                       </div>
 
-                      <div className="py-1 flex-1">
+                      <div className="flex-1 divide-y">
                         {currentSubMenu.sub_categories &&
                           currentSubMenu.sub_categories.map((subItem) => {
                             const hasMoreSubs =
@@ -165,12 +150,12 @@ const NavBar = ({ links }) => {
                             return (
                               <div
                                 key={subItem.id}
-                                className="flex items-center justify-between text-sm hover:bg-gray-50 cursor-pointer"
+                                className="flex items-stretch text-sm hover:bg-gray-50 cursor-pointer"
                               >
                                 <NavLink
                                   to={`/courses?category_path=${currentPathIds}`}
                                   onClick={closeAll}
-                                  className="flex-1 px-4 py-2 text-start"
+                                  className="flex-1 px-4 py-2 text-start flex items-center"
                                 >
                                   {subItem.name}
                                 </NavLink>
@@ -181,10 +166,9 @@ const NavBar = ({ links }) => {
                                       e.stopPropagation();
                                       setNavStack((prev) => [...prev, subItem]);
                                     }}
-                                    className="px-3 py-2 bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700 h-full"
+                                    className="px-3 py-2 bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700 flex items-center"
                                   >
-                                    <ChevronRight className="h-5 w-5 ltr:block rtl:hidden" />
-                                    <ChevronLeft className="h-5 w-5 rtl:block ltr:hidden" />
+                                    <ChevronRight className="h-5 w-5 rtl:rotate-180" />
                                   </button>
                                 )}
                               </div>

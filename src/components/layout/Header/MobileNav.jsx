@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ArrowLeft } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -11,7 +11,6 @@ import {
 
 const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
   const { t } = useTranslation();
-  const isRtl = lang === "ar";
 
   // الاحتفاظ بمسار التنقل الشجري الحالي
   const [navStack, setNavStack] = useState([]);
@@ -77,11 +76,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                   onClick={handleGoBack}
                   className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-600"
                 >
-                  {isRtl ? (
-                    <ArrowRight className="h-5 w-5" />
-                  ) : (
-                    <ArrowLeft className="h-5 w-5" />
-                  )}
+                  <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                 </button>
                 <span className="text-base font-bold text-gray-800 truncate">
                   {currentMenu.name}
@@ -118,11 +113,8 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                       className="flex items-center justify-between w-full text-start cursor-pointer hover:text-primary transition-colors"
                     >
                       {link.name}
-                      {isRtl ? (
-                        <ChevronLeft className="h-5 w-5 opacity-60" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 opacity-60" />
-                      )}
+
+                      <ChevronLeft className="h-5 w-5 opacity-60 ltr:rotate-180" />
                     </button>
                   ) : (
                     // لو ممش جواه لستة (زي المحاضرين)، يوجه مباشرة
@@ -183,11 +175,7 @@ const MobileNav = ({ open, onOpenChange, links, lang, settings }) => {
                         >
                           {item.name}
                           <div className="text-primary">
-                            {isRtl ? (
-                              <ChevronLeft className="h-4 w-4 opacity-60" />
-                            ) : (
-                              <ChevronRight className="h-4 w-4 opacity-60" />
-                            )}
+                            <ChevronLeft className="h-4 w-4 opacity-60 ltr:rotate-180" />
                           </div>
                         </button>
                       ) : (

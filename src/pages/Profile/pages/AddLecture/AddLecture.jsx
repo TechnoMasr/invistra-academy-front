@@ -201,9 +201,10 @@ const AddLecture = () => {
                 <span className="text-lg font-bold text-emerald-800 truncate max-w-[90%]">
                   {videoFile?.name}
                 </span>
-                <span className="text-xs text-emerald-600 mt-1">
+                <span className="text-sm text-emerald-600 mt-1">
                   ({(videoFile?.size / (1024 * 1024)).toFixed(2)} MB){" "}
-                  {t("addLecture.readyToUpload")}
+                  {/* {t("addLecture.readyToUpload")} */}
+                  {t("addLecture.videoUploading")}
                 </span>
               </>
             ) : (

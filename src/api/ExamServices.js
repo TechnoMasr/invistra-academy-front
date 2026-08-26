@@ -62,6 +62,27 @@ export const submitAnswer = async (formData, id) => {
 };
 
 export const getExamsResult = async (id) => {
-  const { data } = await api.get(`student-profile/exams/${id}/result`);
+  const { data } = await api.get(`/student-profile/exams/${id}/result`);
   return data?.data || [];
+};
+
+export const getExamsTemplate = async () => {
+  const { data } = await api.get(`/instructor-profile/exams/template`, {
+    responseType: "blob",
+  });
+
+  return data;
+};
+
+export const uploadExamFile = async ({ formData, courseId }) => {
+  const { data } = await api.post(
+    `/instructor-profile/courses/${courseId}/exams/import`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+  return data;
 };

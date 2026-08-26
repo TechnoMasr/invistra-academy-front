@@ -733,68 +733,139 @@
 
   "addExam": {
     "title": "Add Exam",
+
+    "creationMethod": "Question Creation Method",
+    "creationMethodHint": "Choose the suitable method for creating exam questions",
+    "methodManual": "Add Questions Manually",
+    "methodManualHint": "Write the questions and answers yourself",
+    "methodExcel": "Upload Excel File",
+    "methodExcelHint": "Import questions and answers from an Excel file",
+
+    "examType": "Exam Type",
+    "examTypePlaceholder": "Select exam type",
+    "typeFinal": "Final Course Exam",
+    "typeLecture": "Lecture Exam",
+
     "course": "Course",
     "coursePlaceholder": "Select course",
+
+    "lecture": "Lecture",
+    "lecturePlaceholder": "Select lecture",
+    "selectCourseFirst": "Select course first",
+
     "nameAr": "Exam Name (Arabic)",
     "nameArPlaceholder": "Enter exam name...",
+
     "nameEn": "Exam Name (English)",
     "nameEnPlaceholder": "Enter exam name...",
+
     "passMark": "Minimum Pass Mark",
     "passMarkPlaceholder": "Enter minimum pass mark...",
+
     "fullMark": "Full Mark",
     "fullMarkPlaceholder": "Enter full mark...",
+
     "questionsBank": "Exam Question Bank",
     "questionsBankHint": "* Questions are randomly selected from the bank",
+
     "addQuestion": "Add New Question",
+
     "saving": "Saving...",
     "save": "Save",
+
     "success": "Exam added successfully",
+    "excelSuccess": "Exam imported successfully",
     "error": "Something went wrong, please try again",
+
+    "downloadTemplateTitle": "Download Excel Template",
+    "downloadTemplateDesc": "Download the template and fill in the questions according to the required format",
+    "downloadTemplateBtn": "Download Template",
+    "downloading": "Downloading...",
+    "templateDownloaded": "Template downloaded successfully",
+    "templateDownloadError": "An error occurred while downloading the template",
+
+    "uploadExcelLabel": "Upload Excel File",
+    "dropFileTitle": "Drag and drop your Excel file here",
+    "dropFileDescription": "Or click to select a file from your device",
+    "chooseFile": "Choose File",
+    "changeFile": "Click to choose another file",
+    "fileSelected": "File selected successfully",
+    "allowedFileTypes": "Allowed files: .xlsx and .xls",
+
     "deleteQuestion": "Delete Question",
     "questionNumber": "Question No. ({{number}})",
+
     "questionAr": "Question Title (Arabic)",
     "questionArPlaceholder": "Add question title...",
+
     "questionEn": "Question Title (English)",
     "questionEnPlaceholder": "Add question title...",
+
     "answerOptions": "Answer Options:",
+
     "optionNumber": "Option No. ({{number}})",
     "correctAnswer": "(Correct Answer)",
     "deleteOption": "Delete Option",
+
     "optionAr": "Option (Arabic)",
     "optionArPlaceholder": "Enter option in Arabic...",
+
     "optionEn": "Option (English)",
     "optionEnPlaceholder": "Enter option in English...",
+
     "addOption": "Add another option for this question",
+
     "displayedQuestionsCount": "Number of Displayed Questions",
     "displayedQuestionsCountPlaceholder": "Enter number of displayed questions...",
+
     "isAppearsToAllExaminees": "Pin this question to all exams",
+
     "duration": "Exam Duration (in minutes)",
     "durationPlaceholder": "Enter exam duration...",
+
     "attemptsAllowed": "Allowed Attempts",
     "attemptsAllowedPlaceholder": "Enter number of attempts...",
+
     "minCompletionPercentage": "Course Completion Required to Unlock Exam (%)",
     "minCompletionPercentagePlaceholder": "Enter required percentage (1-100)...",
 
     "validation": {
+      "examTypeRequired": "Please select an exam type",
+      "lectureRequired": "Please select a lecture",
       "durationRequired": "Exam duration is required and must be greater than 0",
       "courseRequired": "Please select a course",
+
       "nameArRequired": "Exam name in Arabic is required",
       "nameEnRequired": "Exam name in English is required",
+
       "passMarkRequired": "Minimum pass mark is required and must be greater than 0",
       "fullMarkRequired": "Full mark is required",
+
       "questionArRequired": "Question title in Arabic is required",
       "questionEnRequired": "Question title in English is required",
+
       "optionArRequired": "Option in Arabic is required",
       "optionEnRequired": "Option in English is required",
+
       "minOptions": "At least 2 options are required per question",
       "maxOptions": "Maximum of 4 options allowed",
+
       "minQuestions": "At least 1 question is required",
+
       "displayedQuestionsCountRequired": "Displayed questions count is required and must be greater than 0",
+
       "minDegreeExceedsMax": "Minimum pass mark cannot exceed the exam's full mark",
+
       "attemptsAllowedRequired": "Attempts count is required and must be greater than 0",
+
       "minCompletionPercentageRequired": "Completion percentage is required and must be greater than 0",
+
       "minCompletionPercentageMax": "Completion percentage cannot exceed 100%",
-      "displayedCountExceedsTotal": "Displayed questions count cannot exceed the total number of added questions"
+
+      "displayedCountExceedsTotal": "Displayed questions count cannot exceed the total number of added questions",
+
+      "fileRequired": "Please upload an Excel file",
+      "fileType": "Please select an Excel file with .xlsx or .xls extension"
     }
   },
 
@@ -811,6 +882,7 @@
     "title": "Add Lecture",
     "uploadVideo": "Upload Lecture Video",
     "readyToUpload": "Ready to upload",
+    "videoUploading": "The video has been uploaded and is currently under review.",
     "videoLink": "Lecture Link",
     "videoLinkPlaceholder": "Enter lecture link...",
     "nameAr": "Lecture Title (Arabic)",

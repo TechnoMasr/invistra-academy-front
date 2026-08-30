@@ -3,12 +3,15 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 
 import { Button } from "@/components/ui/button";
-import { createOrder, getCartSummary } from "@/api/cartServices";
+import { Input } from "@/components/ui/input";
+import { createOrder, getCartSummary, setCoupon } from "@/api/cartServices";
+import { openModal } from "@/store/modals/modalsSlice";
 
 import { GrCart } from "react-icons/gr";
-import { PiMoneyWavyBold, PiSpinnerGapBold } from "react-icons/pi";
+import { PiMoneyWavyBold, PiSpinnerGapBold, PiTagBold } from "react-icons/pi";
 import {
   FiUploadCloud,
   FiX,
@@ -20,8 +23,6 @@ import {
 import instaPay from "@/assets/icons/insta-pay.jpg";
 import vodafoneCash from "@/assets/icons/vodafone-cash.webp";
 import online from "@/assets/icons/online.jpg";
-import { useDispatch } from "react-redux";
-import { openModal } from "@/store/modals/modalsSlice";
 
 const STATIC_PAYMENT_METHODS = [
   {
@@ -46,7 +47,11 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
   const [paymentMethodError, setPaymentMethodError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // الطرق التي لا تتطلب رفع صورة إيصال وتعتمد على رابط تحويل خارجي
+  // حالة الكوبون
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCouponCode, setAppliedCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
+
   const isRedirectPayment =
     selectedMethod === "online" || selectedMethod === "vodafone_cash";
 
@@ -63,25 +68,59 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
       setPreviewUrl("");
       return;
     }
-
     const objectUrl = URL.createObjectURL(imageFile);
     setPreviewUrl(objectUrl);
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [imageFile]);
 
+  // جلب الملخص المالي بناءً على طريقة الدفع والكوبون المطبق
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
-    queryKey: ["cartSummary", selectedMethod],
-    queryFn: () => getCartSummary(selectedMethod),
-    enabled: !!selectedMethod,
+    queryKey: ["cartSummary", selectedMethod, appliedCouponCode],
+    queryFn: () =>
+      getCartSummary({
+        payment_method: selectedMethod,
+        coupon_code: appliedCouponCode,
+      }),
+    enabled: !!selectedMethod || !!appliedCouponCode,
   });
+
+  // الـ Mutation الخاص بتطبيق الكوبون
+  const couponMutation = useMutation({
+    mutationFn: setCoupon,
+    onSuccess: (data) => {
+      const code = data?.coupon?.code || couponCode.trim();
+      setAppliedCouponCode(code);
+      setCouponError(""); // تفريغ الخطأ لو الكوبون اتطبق بنجاح
+      toast.success(t("orderSummary.couponApplied"));
+    },
+    onError: (error) => {
+      // شلنا الـ toast.error وحطينا رسالة الخطأ في الـ State
+      setCouponError(
+        error?.response?.data?.message || t("orderSummary.invalidCoupon"),
+      );
+    },
+  });
+
+  const handleApplyCoupon = (e) => {
+    e.preventDefault();
+    if (!couponCode.trim()) return;
+    couponMutation.mutate({
+      coupon_code: couponCode.trim(),
+      payment_method: selectedMethod,
+    });
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCouponCode("");
+    setCouponCode("");
+  };
 
   const orderMutation = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
       const paymentLink = data?.paymob?.redirect_url;
 
-      // إذا كانت الطريقة تحويل خارجي ويوجد رابط دفع، يتم التحويل فوراً
       if (paymentLink) {
         window.location.href = paymentLink;
         return;
@@ -128,7 +167,6 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
       return;
     }
 
-    // التحقق من وجود الصورة فقط إذا لم تكن طريقة الدفع تحويل مباشر عبر رابط
     if (!isRedirectPayment && !imageFile) {
       setImageError(t("orderSummary.uploadImageError"));
       return;
@@ -136,6 +174,11 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
 
     const formData = new FormData();
     formData.append("payment_method", selectedMethod);
+
+    if (appliedCouponCode) {
+      formData.append("coupon_code", appliedCouponCode);
+    }
+
     if (imageFile && !isRedirectPayment) {
       formData.append("transfer_image", imageFile);
     }
@@ -143,7 +186,11 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
     orderMutation.mutate(formData);
   };
 
-  const isComponentLoading = isSummaryLoading || orderMutation.isPending;
+  const isComponentLoading =
+    isSummaryLoading || orderMutation.isPending || couponMutation.isPending;
+
+  // المصدر الموحد للبيانات المالية المخفضة والمحدثة
+  const activeSummary = summaryData || summary;
 
   return (
     <div className="w-full lg:w-80 xl:w-96 p-3 space-y-4 border rounded-2xl h-max bg-primary/5 shadow-xl sticky top-24 transition-all duration-300">
@@ -154,7 +201,9 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
           <p className="text-sm font-bold text-gray-700 selection:bg-transparent">
             {orderMutation.isPending
               ? t("orderSummary.processing")
-              : t("orderSummary.updating")}
+              : couponMutation.isPending
+                ? t("orderSummary.applyingCoupon")
+                : t("orderSummary.updating")}
           </p>
         </div>
       )}
@@ -163,21 +212,58 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
         {t("orderSummary.title")}
       </h2>
 
-      {/* Summary Info */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-center text-gray-700">
-          <span className="text-sm font-medium">{t("orderSummary.count")}</span>
-          <span className="text-lg font-bold">{summary?.count}</span>
-        </div>
+      {/* Coupon Input Section */}
+      <div className="pt-1">
+        {!appliedCouponCode ? (
+          <div>
+            <form onSubmit={handleApplyCoupon} className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder={t("orderSummary.couponPlaceholder")}
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value);
+                    if (couponError) setCouponError(""); // إخفاء الخطأ بمجرد ما المستخدم يكتب تاني
+                  }}
+                  className={`ps-8 text-sm bg-white ${couponError ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                />
+                <PiTagBold className="absolute inset-s-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              </div>
+              <Button
+                type="submit"
+                className="rounded-md"
+                disabled={!couponCode.trim() || couponMutation.isPending}
+              >
+                {t("orderSummary.apply")}
+              </Button>
+            </form>
 
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-700">
-            {t("orderSummary.mainTotal")}
-          </span>
-          <span className="text-2xl font-bold text-green-600 tracking-tight">
-            {summary?.total} {summary?.currency}
-          </span>
-        </div>
+            {/* عرض رسالة خطأ الكوبون */}
+            {couponError && (
+              <p className="flex items-center gap-1 text-[11px] font-bold text-red-600 mt-1.5 px-1 animate-in fade-in slide-in-from-top-1">
+                <FiAlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                {couponError}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-xl text-green-700 text-xs font-bold">
+            <div className="flex items-center gap-1.5">
+              <PiTagBold className="w-4 h-4" />
+              <span>
+                {t("orderSummary.appliedCoupon")}: {appliedCouponCode}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleRemoveCoupon}
+              className="p-1 hover:bg-green-100 rounded-md transition-colors text-red-500"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Payment Methods Selection */}
@@ -224,139 +310,151 @@ const OrderSummaryCard = ({ summary, payment_methods = [] }) => {
         </div>
       )}
 
-      {/* Dynamic Payment Details */}
-      {selectedMethod && (
-        <div className="p-3.5 bg-white rounded-xl border border-dashed border-gray-500 space-y-3.5 shadow-inner text-sm">
-          {summaryData && (
-            <div className="space-y-2 pb-2.5 border-b border-gray-100">
-              <div className="flex justify-between items-center text-gray-700">
-                <span>{t("orderSummary.subtotal")}</span>
-                <span className="font-semibold text-gray-700">
-                  {summaryData.total} {summaryData.currency}
-                </span>
-              </div>
+      {/* Financial Details Section */}
+      <div className="p-3.5 bg-white rounded-xl border border-dashed border-gray-300 space-y-2.5 text-sm shadow-inner">
+        <div className="flex justify-between items-center text-gray-700">
+          <span className="text-sm font-medium">{t("orderSummary.count")}</span>
+          <span className="text-base font-bold">{activeSummary?.count}</span>
+        </div>
 
-              {summaryData.service_fee > 0 && (
-                <div className="flex justify-between items-center text-amber-600 font-medium">
-                  <span>
-                    {t("orderSummary.serviceFee", {
-                      percent: currentMethodDetails?.service_fee,
-                    })}
-                  </span>
-                  <span>
-                    +{summaryData.service_fee} {summaryData.currency}
-                  </span>
-                </div>
-              )}
+        <div className="flex justify-between items-center text-gray-700">
+          <span className="text-sm font-medium">
+            {t("orderSummary.subtotal")}
+          </span>
+          <span className="font-semibold text-gray-900">
+            {activeSummary?.total} {activeSummary?.currency}
+          </span>
+        </div>
 
-              <div className="flex justify-between items-center pt-2 border-t border-dotted border-gray-200">
-                <span className="text-sm font-bold">
-                  {t("orderSummary.finalTotal")}
-                </span>
-                <span className="text-lg font-bold text-green-600">
-                  {summaryData.total_with_fee} {summaryData.currency}
-                </span>
-              </div>
-            </div>
-          )}
+        {/* عرض قيمة الخصم في حال وجودها */}
+        {activeSummary?.discount_amount > 0 && (
+          <div className="flex justify-between items-center text-green-600 font-medium">
+            <span>{t("orderSummary.discount")}</span>
+            <span className="font-bold">
+              -{activeSummary.discount_amount} {activeSummary.currency}
+            </span>
+          </div>
+        )}
 
-          {/* Transfer Number Box (إذا كان موجوداً في الـ API) */}
-          {currentMethodDetails?.transfer_number && (
-            <div className="bg-gray-100 p-2.5 rounded-xl border border-gray-100 text-center space-y-1.5">
-              <p className="text-sm text-gray-600 font-medium">
-                {t("orderSummary.transferTo")}
-              </p>
-              <div className="flex items-center justify-between gap-3 bg-white border border-gray-200 rounded-lg pl-1.5 pr-3 py-1 w-full shadow-sm">
-                <span className="text-base font-extrabold text-primary tracking-widest font-mono select-all">
-                  {currentMethodDetails.transfer_number}
-                </span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleCopyNumber(currentMethodDetails.transfer_number)
-                  }
-                  className={`p-1.5 rounded-md transition-all duration-200 cursor-pointer ${
-                    copied
-                      ? "text-green-600 bg-green-50"
-                      : "text-gray-600 hover:text-primary hover:bg-gray-50 active:scale-95"
-                  }`}
-                  title={t("orderSummary.copyNumber")}
-                >
-                  {copied ? (
-                    <FiCheck className="w-3.5 h-3.5" />
-                  ) : (
-                    <FiCopy className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
+        {/* عرض رسوم الخدمة للطريقة المختارة إن وجدت */}
+        {activeSummary?.service_fee > 0 && (
+          <div className="flex justify-between items-center text-amber-600 font-medium">
+            <span>{t("orderSummary.serviceFee")}</span>
+            <span>
+              +{activeSummary.service_fee} {activeSummary.currency}
+            </span>
+          </div>
+        )}
 
-          {/* Image Uploader (يظهر فقط إن لم تكن طريقة تحويل مباشر عبر لينك) */}
-          {!isRedirectPayment && (
-            <div className="space-y-1.5">
-              <label className="block text-sm font-bold text-gray-600">
-                {t("orderSummary.attachReceipt")}
-              </label>
+        {/* الإجمالي النهائي المباشر المستلم من API */}
+        <div className="flex justify-between items-center pt-2 border-t border-dotted border-gray-200">
+          <span className="text-sm font-bold">
+            {t("orderSummary.finalTotal")}
+          </span>
+          <span className="text-xl font-extrabold text-primary">
+            {activeSummary?.total_with_fee} {activeSummary?.currency}
+          </span>
+        </div>
+      </div>
 
-              {!imageFile ? (
-                <label
-                  className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-all duration-200 group ${
-                    imageError
-                      ? "border-red-400 bg-red-50/30"
-                      : "border-gray-200 hover:border-primary/40"
-                  }`}
-                >
-                  <div className="flex flex-col items-center justify-center text-center px-4">
-                    <FiUploadCloud
-                      className={`w-7 h-7 mb-1.5 transition-colors duration-200 ${
-                        imageError
-                          ? "text-red-400 group-hover:text-red-500"
-                          : "text-gray-400 group-hover:text-primary"
-                      }`}
-                    />
-                    <p
-                      className={`text-[11px] font-bold ${imageError ? "text-red-600" : "text-gray-500 group-hover:text-gray-700"}`}
-                    >
-                      {t("orderSummary.clickToUpload")}
-                    </p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
+      {/* Bank / Wallet Transfer Details */}
+      {selectedMethod && currentMethodDetails?.transfer_number && (
+        <div className="bg-gray-100 p-2.5 rounded-xl border border-gray-100 text-center space-y-1.5">
+          <p className="text-sm text-gray-600 font-medium">
+            {t("orderSummary.transferTo")}
+          </p>
+          <div className="flex items-center justify-between gap-3 bg-white border border-gray-200 rounded-lg pl-1.5 pr-3 py-1 w-full shadow-sm">
+            <span className="text-base font-extrabold text-primary tracking-widest font-mono select-all">
+              {currentMethodDetails.transfer_number}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                handleCopyNumber(currentMethodDetails.transfer_number)
+              }
+              className={`p-1.5 rounded-md transition-all duration-200 cursor-pointer ${
+                copied
+                  ? "text-green-600 bg-green-50"
+                  : "text-gray-600 hover:text-primary hover:bg-gray-50 active:scale-95"
+              }`}
+              title={t("orderSummary.copyNumber")}
+            >
+              {copied ? (
+                <FiCheck className="w-3.5 h-3.5" />
               ) : (
-                <div className="relative w-full h-36 rounded-xl border border-gray-200 overflow-hidden shadow-sm bg-gray-900 group">
-                  <img
-                    src={previewUrl}
-                    alt="Receipt Preview"
-                    className="w-full h-full object-contain"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute top-2 inset-e-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-transform duration-200 hover:scale-110"
-                    title={t("orderSummary.deleteImage")}
-                  >
-                    <FiX className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[10px] p-1 truncate text-center font-mono">
-                    {imageFile.name}
-                  </div>
-                </div>
+                <FiCopy className="w-3.5 h-3.5" />
               )}
+            </button>
+          </div>
+        </div>
+      )}
 
-              {imageError && (
-                <p className="flex items-center gap-1 text-[11px] font-bold text-red-600 mt-1">
-                  <FiAlertTriangle className="w-3.5 h-3.5 shrink-0" />{" "}
-                  {imageError}
+      {/* Image Uploader */}
+      {selectedMethod && !isRedirectPayment && (
+        <div className="space-y-1.5">
+          <label className="block text-sm font-bold text-gray-600">
+            {t("orderSummary.attachReceipt")}
+          </label>
+
+          {!imageFile ? (
+            <label
+              className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-all duration-200 group ${
+                imageError
+                  ? "border-red-400 bg-red-50/30"
+                  : "border-gray-200 hover:border-primary/40"
+              }`}
+            >
+              <div className="flex flex-col items-center justify-center text-center px-4">
+                <FiUploadCloud
+                  className={`w-7 h-7 mb-1.5 transition-colors duration-200 ${
+                    imageError
+                      ? "text-red-400 group-hover:text-red-500"
+                      : "text-gray-400 group-hover:text-primary"
+                  }`}
+                />
+                <p
+                  className={`text-[11px] font-bold ${
+                    imageError
+                      ? "text-red-600"
+                      : "text-gray-500 group-hover:text-gray-700"
+                  }`}
+                >
+                  {t("orderSummary.clickToUpload")}
                 </p>
-              )}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </label>
+          ) : (
+            <div className="relative w-full h-36 rounded-xl border border-gray-200 overflow-hidden shadow-sm bg-gray-900 group">
+              <img
+                src={previewUrl}
+                alt="Receipt Preview"
+                className="w-full h-full object-contain"
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 inset-e-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md transition-transform duration-200 hover:scale-110"
+                title={t("orderSummary.deleteImage")}
+              >
+                <FiX className="w-3.5 h-3.5" />
+              </button>
+              <div className="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[10px] p-1 truncate text-center font-mono">
+                {imageFile.name}
+              </div>
             </div>
+          )}
+
+          {imageError && (
+            <p className="flex items-center gap-1 text-[11px] font-bold text-red-600 mt-1">
+              <FiAlertTriangle className="w-3.5 h-3.5 shrink-0" /> {imageError}
+            </p>
           )}
         </div>
       )}

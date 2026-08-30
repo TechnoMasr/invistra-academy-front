@@ -24,11 +24,12 @@ export const removeFromCart = async (id) => {
   return data?.data || null;
 };
 
-export const getCartSummary = async (payment_method) => {
-  const { data } = await api.get(
-    `/cart/summary?payment_method=${payment_method}`,
-  );
+export const getCartSummary = async ({ payment_method, coupon_code }) => {
+  const params = new URLSearchParams();
+  if (payment_method) params.append("payment_method", payment_method);
+  if (coupon_code) params.append("coupon_code", coupon_code);
 
+  const { data } = await api.get(`/cart/summary?${params.toString()}`);
   return data?.data || null;
 };
 
@@ -46,4 +47,12 @@ export const createOrder = async (formData) => {
   });
 
   return data?.data || null;
+};
+
+export const setCoupon = async ({ coupon_code, payment_method }) => {
+  const payload = { coupon_code };
+  if (payment_method) payload.payment_method = payment_method;
+
+  const { data } = await api.post(`/coupons/validate`, payload);
+  return data?.data || {};
 };

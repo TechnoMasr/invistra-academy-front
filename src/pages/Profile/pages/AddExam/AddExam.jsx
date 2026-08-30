@@ -17,13 +17,7 @@ import {
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { getLecturesInstructor } from "@/api/lectureServices";
-import {
-  Download,
-  Upload,
-  FileSpreadsheet,
-  Check,
-  FileUp,
-} from "lucide-react";
+import { Download, Upload, FileSpreadsheet, Check, FileUp } from "lucide-react";
 
 const AddExam = () => {
   const navigate = useNavigate();
@@ -137,9 +131,7 @@ const AddExam = () => {
       if (isNaN(dispCount) || dispCount < 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: t(
-            "addExam.validation.displayedQuestionsCountRequired"
-          ),
+          message: t("addExam.validation.displayedQuestionsCountRequired"),
           path: ["displayed_questions_count"],
         });
       }
@@ -163,9 +155,7 @@ const AddExam = () => {
         ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t(
-              "addExam.validation.minCompletionPercentageRequired"
-            ),
+            message: t("addExam.validation.minCompletionPercentageRequired"),
             path: ["required_watch_percentage"],
           });
         }
@@ -181,9 +171,7 @@ const AddExam = () => {
         if (dispCount > data.questions.length) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t(
-              "addExam.validation.displayedCountExceedsTotal"
-            ),
+            message: t("addExam.validation.displayedCountExceedsTotal"),
             path: ["displayed_questions_count"],
           });
         }
@@ -205,11 +193,7 @@ const AddExam = () => {
             });
           }
 
-          if (
-            !q.options ||
-            q.options.length < 2 ||
-            q.options.length > 4
-          ) {
+          if (!q.options || q.options.length < 2 || q.options.length > 4) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message: t("addExam.validation.minOptions"),
@@ -221,13 +205,7 @@ const AddExam = () => {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: t("addExam.validation.optionArRequired"),
-                  path: [
-                    "questions",
-                    qIndex,
-                    "options",
-                    optIndex,
-                    "option_ar",
-                  ],
+                  path: ["questions", qIndex, "options", optIndex, "option_ar"],
                 });
               }
 
@@ -235,13 +213,7 @@ const AddExam = () => {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: t("addExam.validation.optionEnRequired"),
-                  path: [
-                    "questions",
-                    qIndex,
-                    "options",
-                    optIndex,
-                    "option_en",
-                  ],
+                  path: ["questions", qIndex, "options", optIndex, "option_en"],
                 });
               }
             });
@@ -347,30 +319,28 @@ const AddExam = () => {
   });
 
   // Mutation لتنزيل الـ Template
-  const {
-    mutate: downloadTemplateMutate,
-    isPending: isDownloadingTemplate,
-  } = useMutation({
-    mutationFn: getExamsTemplate,
-    onSuccess: (blobData) => {
-      const url = window.URL.createObjectURL(new Blob([blobData]));
-      const link = document.createElement("a");
+  const { mutate: downloadTemplateMutate, isPending: isDownloadingTemplate } =
+    useMutation({
+      mutationFn: getExamsTemplate,
+      onSuccess: (blobData) => {
+        const url = window.URL.createObjectURL(new Blob([blobData]));
+        const link = document.createElement("a");
 
-      link.href = url;
-      link.setAttribute("download", "exam_template.xlsx");
+        link.href = url;
+        link.setAttribute("download", "exam_template.xlsx");
 
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
-      window.URL.revokeObjectURL(url);
+        window.URL.revokeObjectURL(url);
 
-      toast.success(t("addExam.templateDownloaded"));
-    },
-    onError: () => {
-      toast.error(t("addExam.templateDownloadError"));
-    },
-  });
+        toast.success(t("addExam.templateDownloaded"));
+      },
+      onError: () => {
+        toast.error(t("addExam.templateDownloadError"));
+      },
+    });
 
   const isPending = isPendingManual || isPendingExcel;
   const error = manualError || excelError;
@@ -455,8 +425,7 @@ const AddExam = () => {
         formData.append("lecture_id", data.lecture_id);
       }
 
-      const fileObj =
-        data.file instanceof FileList ? data.file[0] : data.file;
+      const fileObj = data.file instanceof FileList ? data.file[0] : data.file;
 
       formData.append("file", fileObj);
 
@@ -476,7 +445,7 @@ const AddExam = () => {
     } else {
       formData.append(
         "required_watch_percentage",
-        String(data.required_watch_percentage)
+        String(data.required_watch_percentage),
       );
     }
 
@@ -489,40 +458,32 @@ const AddExam = () => {
 
     formData.append(
       "displayed_questions_count",
-      String(data.displayed_questions_count)
+      String(data.displayed_questions_count),
     );
 
     formData.append("max_attempts", String(data.max_attempts));
 
     data.questions.forEach((q, qIndex) => {
-      formData.append(
-        `questions[${qIndex}][title][en]`,
-        q.question_title_en
-      );
+      formData.append(`questions[${qIndex}][title][en]`, q.question_title_en);
 
-      formData.append(
-        `questions[${qIndex}][title][ar]`,
-        q.question_title_ar
-      );
+      formData.append(`questions[${qIndex}][title][ar]`, q.question_title_ar);
 
-      const isAppearsValue = q.is_appears_to_all_examinees
-        ? "1"
-        : "0";
+      const isAppearsValue = q.is_appears_to_all_examinees ? "1" : "0";
 
       formData.append(
         `questions[${qIndex}][is_appears_to_all_examinees]`,
-        isAppearsValue
+        isAppearsValue,
       );
 
       q.options.forEach((opt, optIndex) => {
         formData.append(
           `questions[${qIndex}][options][${optIndex}][option][en]`,
-          opt.option_en
+          opt.option_en,
         );
 
         formData.append(
           `questions[${qIndex}][options][${optIndex}][option][ar]`,
-          opt.option_ar
+          opt.option_ar,
         );
       });
     });
@@ -533,12 +494,48 @@ const AddExam = () => {
     });
   };
 
+  // =========================================================
+  // Errors
+  // =========================================================
+
+  const getFirstErrorMessage = (errors) => {
+    if (!errors || typeof errors !== "object") return null;
+
+    for (const key of Object.keys(errors)) {
+      const error = errors[key];
+
+      // Error مباشر
+      if (error?.message) {
+        return error.message;
+      }
+
+      // Nested errors
+      if (typeof error === "object") {
+        const nestedError = getFirstErrorMessage(error);
+
+        if (nestedError) {
+          return nestedError;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const handleInvalid = (errors) => {
+    const firstErrorMessage = getFirstErrorMessage(errors);
+
+    if (firstErrorMessage) {
+      toast.error(firstErrorMessage);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <ProfileTitle title={t("addExam.title")} />
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, handleInvalid)}
         className="flex flex-col gap-6"
       >
         {/* ================= طريقة إضافة الأسئلة ================= */}
@@ -556,9 +553,7 @@ const AddExam = () => {
             {/* Manual Tab */}
             <button
               type="button"
-              onClick={() =>
-                handleCreationMethodChange("manual")
-              }
+              onClick={() => handleCreationMethodChange("manual")}
               className={`group relative flex items-center gap-3 rounded-xl border p-4 text-start transition-all duration-200 cursor-pointer ${
                 creationMethod === "manual"
                   ? "border-primary bg-primary/5 shadow-sm"
@@ -601,9 +596,7 @@ const AddExam = () => {
             {/* Excel Tab */}
             <button
               type="button"
-              onClick={() =>
-                handleCreationMethodChange("excel")
-              }
+              onClick={() => handleCreationMethodChange("excel")}
               className={`group relative flex items-center gap-3 rounded-xl border p-4 text-start transition-all duration-200 cursor-pointer ${
                 creationMethod === "excel"
                   ? "border-primary bg-primary/5 shadow-sm"
@@ -656,31 +649,25 @@ const AddExam = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-xl bg-gray-100 p-1">
               <button
                 type="button"
-                onClick={() =>
-                  handleExamTypeChange("final")
-                }
+                onClick={() => handleExamTypeChange("final")}
                 className={`flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold transition-all duration-200 cursor-pointer ${
                   selectedExamType === "final"
                     ? "bg-white text-primary shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                 }`}
               >
-                {selectedExamType === "final" && (
-                  <Check className="h-4 w-4" />
-                )}
+                {selectedExamType === "final" && <Check className="h-4 w-4" />}
 
                 {t("addExam.typeFinal")}
               </button>
 
               <button
                 type="button"
-                onClick={() =>
-                  handleExamTypeChange("lecture")
-                }
+                onClick={() => handleExamTypeChange("lecture")}
                 className={`flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold transition-all duration-200 cursor-pointer ${
                   selectedExamType === "lecture"
                     ? "bg-white text-primary shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 {selectedExamType === "lecture" && (
@@ -742,9 +729,7 @@ const AddExam = () => {
                         ? t("addExam.selectCourseFirst")
                         : t("addExam.lecturePlaceholder")
                     }
-                    disabled={
-                      !selectedCourseId || isLoadingLectures
-                    }
+                    disabled={!selectedCourseId || isLoadingLectures}
                     options={
                       !isLoadingLectures && lectures
                         ? lectures.map((lecture) => ({
@@ -850,8 +835,8 @@ const AddExam = () => {
                         isDragging
                           ? "border-primary bg-primary/10 scale-[1.01]"
                           : selectedFile
-                          ? "border-green-300 bg-green-50/50"
-                          : "border-gray-200 bg-gray-50/50 hover:border-primary/50 hover:bg-primary/5"
+                            ? "border-green-300 bg-green-50/50"
+                            : "border-gray-200 bg-gray-50/50 hover:border-primary/50 hover:bg-primary/5"
                       }`}
                     >
                       {selectedFile ? (
@@ -865,12 +850,7 @@ const AddExam = () => {
                           </h4>
 
                           <p className="mt-1 text-xs text-gray-500">
-                            {(
-                              selectedFile.size /
-                              1024 /
-                              1024
-                            ).toFixed(2)}{" "}
-                            MB
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
 
                           <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-xs font-semibold text-green-700">
@@ -1008,11 +988,9 @@ const AddExam = () => {
                       type="number"
                       label={t("addExam.displayedQuestionsCount")}
                       placeholder={t(
-                        "addExam.displayedQuestionsCountPlaceholder"
+                        "addExam.displayedQuestionsCountPlaceholder",
                       )}
-                      error={
-                        errors.displayed_questions_count?.message
-                      }
+                      error={errors.displayed_questions_count?.message}
                     />
                   )}
                 />
@@ -1025,9 +1003,7 @@ const AddExam = () => {
                       {...field}
                       type="number"
                       label={t("addExam.attemptsAllowed")}
-                      placeholder={t(
-                        "addExam.attemptsAllowedPlaceholder"
-                      )}
+                      placeholder={t("addExam.attemptsAllowedPlaceholder")}
                       error={errors.max_attempts?.message}
                     />
                   )}
@@ -1041,15 +1017,11 @@ const AddExam = () => {
                       <MainInput
                         {...field}
                         type="number"
-                        label={t(
-                          "addExam.minCompletionPercentage"
-                        )}
+                        label={t("addExam.minCompletionPercentage")}
                         placeholder={t(
-                          "addExam.minCompletionPercentagePlaceholder"
+                          "addExam.minCompletionPercentagePlaceholder",
                         )}
-                        error={
-                          errors.required_watch_percentage?.message
-                        }
+                        error={errors.required_watch_percentage?.message}
                       />
                     )}
                   />
@@ -1108,17 +1080,12 @@ const AddExam = () => {
             className="w-full md:w-60 rounded-full"
             disabled={isPending}
           >
-            {isPending
-              ? t("addExam.saving")
-              : t("addExam.save")}
+            {isPending ? t("addExam.saving") : t("addExam.save")}
           </Button>
 
           {error && (
             <FormError
-              errorMsg={
-                error?.response?.data?.message ||
-                t("addExam.error")
-              }
+              errorMsg={error?.response?.data?.message || t("addExam.error")}
             />
           )}
         </div>
@@ -1173,9 +1140,7 @@ const QuestionFieldsGroup = ({
                 {...field}
                 type="checkbox"
                 checked={value}
-                onChange={(e) =>
-                  onChange(e.target.checked)
-                }
+                onChange={(e) => onChange(e.target.checked)}
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
             )}
@@ -1194,12 +1159,9 @@ const QuestionFieldsGroup = ({
               {...field}
               type="textarea"
               label={t("addExam.questionAr")}
-              placeholder={t(
-                "addExam.questionArPlaceholder"
-              )}
+              placeholder={t("addExam.questionArPlaceholder")}
               error={
-                errors.questions?.[questionIndex]
-                  ?.question_title_ar?.message
+                errors.questions?.[questionIndex]?.question_title_ar?.message
               }
             />
           )}
@@ -1213,12 +1175,9 @@ const QuestionFieldsGroup = ({
               {...field}
               type="textarea"
               label={t("addExam.questionEn")}
-              placeholder={t(
-                "addExam.questionEnPlaceholder"
-              )}
+              placeholder={t("addExam.questionEnPlaceholder")}
               error={
-                errors.questions?.[questionIndex]
-                  ?.question_title_en?.message
+                errors.questions?.[questionIndex]?.question_title_en?.message
               }
             />
           )}
@@ -1266,13 +1225,10 @@ const QuestionFieldsGroup = ({
                   <MainInput
                     {...field}
                     label={t("addExam.optionAr")}
-                    placeholder={t(
-                      "addExam.optionArPlaceholder"
-                    )}
+                    placeholder={t("addExam.optionArPlaceholder")}
                     error={
-                      errors.questions?.[questionIndex]
-                        ?.options?.[optIndex]?.option_ar
-                        ?.message
+                      errors.questions?.[questionIndex]?.options?.[optIndex]
+                        ?.option_ar?.message
                     }
                   />
                 )}
@@ -1285,13 +1241,10 @@ const QuestionFieldsGroup = ({
                   <MainInput
                     {...field}
                     label={t("addExam.optionEn")}
-                    placeholder={t(
-                      "addExam.optionEnPlaceholder"
-                    )}
+                    placeholder={t("addExam.optionEnPlaceholder")}
                     error={
-                      errors.questions?.[questionIndex]
-                        ?.options?.[optIndex]?.option_en
-                        ?.message
+                      errors.questions?.[questionIndex]?.options?.[optIndex]
+                        ?.option_en?.message
                     }
                   />
                 )}

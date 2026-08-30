@@ -505,15 +505,21 @@
   "teacherExamCard": {
     "passMark": "يجب ان يتجاوز {{mark}} للنجاح",
     "examScore": "درجة الاختبار من {{mark}}",
-    "viewExamDetails": "عرض تفاصيل الاختبار",
-    "deleteExam": "حذف الاختبار",
+    "viewExamDetails": "عرض التفاصيل",
+    "deleteExam": "حذف",
     "deleteTitle": "حذف الاختبار",
     "deleteDescription": "هل أنت متأكد من رغبتك في حذف اختبار \"{{name}}\"? لا يمكن التراجع عن هذا الإجراء بعد إتمامه.",
     "confirmDelete": "تأكيد الحذف",
     "time": "وقت الاختبار: {{time}} دقيقة",
     "cancel": "إلغاء",
     "deleteSuccess": "تم حذف الاختبار بنجاح",
-    "deleteError": "حدث خطأ أثناء حذف الاختبار"
+    "deleteError": "حدث خطأ أثناء حذف الاختبار",
+    "finalExam": "نهائي",
+    "lectureExam": "محاضرة",
+    "lectureLabel": "المحاضرة",
+    "passMarkShort": "النجاح",
+    "fullMarkShort": "الدرجة",
+    "durationShort": "المدة"
   },
 
   "orderCard": {
@@ -582,7 +588,7 @@
     "instaPay": "إنستا باي",
     "onlinePayment": "دفع أونلاين",
     "subtotal": "الإجمالي الفرعي:",
-    "serviceFee": "رسوم الخدمة ({{percent}}%):",
+    "serviceFee": "رسوم الخدمة:",
     "finalTotal": "الإجمالي النهائي:",
     "transferTo": "قم بتحويل مبلغ الطلب إلى الرقم التالي:",
     "copyNumber": "نسخ الرقم",
@@ -598,7 +604,15 @@
     "uploadImageError": "برجاء رفع صورة التحويل أولاً لتأكيد الدفع",
     "orderError": "حدث خطأ أثناء إتمام الطلب، برجاء المحاولة مرة أخرى.",
     "copySuccess": "تم نسخ الرقم بنجاح!",
-    "copyFailed": "فشل نسخ الرقم"
+    "copyFailed": "فشل نسخ الرقم",
+    "couponPlaceholder": "أدخل كود الخصم",
+    "apply": "تطبيق",
+    "appliedCoupon": "الكوبون المطبق",
+    "couponApplied": "تم تطبيق الكوبون بنجاح!",
+    "invalidCoupon": "كود الخصم غير صالح",
+    "applyingCoupon": "جاري تطبيق الكوبون...",
+    "discount": "قيمة الخصم:",
+    "totalAfterDiscount": "الإجمالي بعد الخصم:"
   },
 
   "courseDetails": {

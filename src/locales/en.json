@@ -505,15 +505,21 @@
   "teacherExamCard": {
     "passMark": "Must exceed {{mark}} to pass",
     "examScore": "Exam score out of {{mark}}",
-    "viewExamDetails": "View Exam Details",
-    "deleteExam": "Delete Exam",
+    "viewExamDetails": "View Details",
+    "deleteExam": "Delete",
     "deleteTitle": "Delete Exam",
     "deleteDescription": "Are you sure you want to delete exam \"{{name}}\"? This action cannot be undone after completion.",
     "time": "Exam time: {{time}} minute",
     "confirmDelete": "Confirm Delete",
     "cancel": "Cancel",
     "deleteSuccess": "Exam deleted successfully",
-    "deleteError": "An error occurred while deleting the exam"
+    "deleteError": "An error occurred while deleting the exam",
+    "finalExam": "Final",
+    "lectureExam": "Lecture",
+    "lectureLabel": "Lecture",
+    "passMarkShort": "Pass",
+    "fullMarkShort": "Score",
+    "durationShort": "Duration"
   },
 
   "orderCard": {
@@ -582,7 +588,7 @@
     "instaPay": "Insta Pay",
     "onlinePayment": "Online Payment",
     "subtotal": "Subtotal:",
-    "serviceFee": "Service fee ({{percent}}%):",
+    "serviceFee": "Service fee:",
     "finalTotal": "Final Total:",
     "transferTo": "Please transfer the order amount to the following number:",
     "copyNumber": "Copy number",
@@ -598,7 +604,15 @@
     "uploadImageError": "Please upload a transfer image first to confirm payment",
     "orderError": "An error occurred while completing the order, please try again.",
     "copySuccess": "Number copied successfully!",
-    "copyFailed": "Failed to copy number"
+    "copyFailed": "Failed to copy number",
+    "couponPlaceholder": "Enter coupon code",
+    "apply": "Apply",
+    "appliedCoupon": "Applied Coupon",
+    "couponApplied": "Coupon applied successfully!",
+    "invalidCoupon": "Invalid coupon code",
+    "applyingCoupon": "Applying coupon...",
+    "discount": "Discount:",
+    "totalAfterDiscount": "Total After Discount:"
   },
 
   "courseDetails": {

@@ -450,6 +450,8 @@
   },
 
   "cartCard": {
+    "subscriptionMonths": "{{count}} month subscription",
+    "subscriptionMonths_plural": "{{count}} months subscription",
     "lecturesCount": "{{count}} lecture",
     "lecturesCount_plural": "{{count}} lectures",
     "delete": "Delete",
@@ -463,16 +465,21 @@
 
   "examCard": {
     "exam": "Exam",
+    "finalExam": "Final Exam",
+    "lectureExam": "Lecture Exam",
+    "lectureLabel": "Lecture",
     "questions": "{{count}} question",
     "questions_plural": "{{count}} questions",
     "attempts": "Attempts: {{count}} / {{max}}",
-    "testScore": "Test score: {{score}} / {{max}}",
-    "passMark": "Pass mark: {{score}}",
-    "grade": "Grade: {{grade}}",
+    "testScoreLabel": "Test Score",
+    "passMarkLabel": "Pass Mark",
+    "gradeLabel": "Grade",
     "viewExam": "View Exam",
     "startExam": "Start Exam",
     "progress": "Course Progress",
-    "notAccessible": "This exam will be available after watching {{percentage}}% of the course lectures."
+    "notAccessible": "This exam will be available after watching {{percentage}}% of the course lectures.",
+    "lectureNotAccessible": "This exam will be available after watching its specific lecture.",
+    "minutes": "minutes"
   },
 
   "teacherCourseCard": {
@@ -519,7 +526,8 @@
     "lectureLabel": "Lecture",
     "passMarkShort": "Pass",
     "fullMarkShort": "Score",
-    "durationShort": "Duration"
+    "durationShort": "Duration",
+    "minutes": "minutes"
   },
 
   "orderCard": {
@@ -617,6 +625,8 @@
 
   "courseDetails": {
     "duration": "Course Duration",
+    "subscriptionMonths": "Subscription Period",
+    "months": "Months",
     "lecturesCount": "Number of Lectures",
     "category": "Category",
     "price": "Price:",
@@ -704,6 +714,8 @@
     "addFeature": "Add New Feature",
     "duration": "Course Duration",
     "durationPlaceholder": "Example: 05:30",
+    "subscriptionMonths": "Subscription Period (Months)",
+    "subscriptionMonthsPlaceholder": "Example: 6",
     "priceEg": "Price (EGP)",
     "priceEgPlaceholder": "Enter course price in EGP...",
     "priceUsd": "Price (USD)",
@@ -729,6 +741,9 @@
       "featureDescEn": "Feature description in English is required",
       "durationRequired": "Course duration is required",
       "durationFormat": "Duration format must be HH:MM like 05:30",
+      "subscriptionMonthsRequired": "Subscription period in months is required",
+      "subscriptionMonthsInvalid": "Please enter a valid whole number of months",
+      "subscriptionMonthsMin": "Subscription period must be at least 1 month",
       "priceRequired": "Price is required",
       "invalidDiscount": "Invalid discount price",
       "priceBeforeDiscountRequired": "Price before discount must be greater than the current price or empty"

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
-import { MdOutlineDelete } from "react-icons/md";
+import { MdOutlineDelete, MdOutlineCalendarMonth } from "react-icons/md";
 import { SlLayers } from "react-icons/sl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -57,10 +57,20 @@ const CartCard = ({ item, course_id }) => {
         </h3>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-medium text-sm mb-2 text-muted-foreground">
+          {item.subscription_months && (
+            <p className="flex items-center gap-1">
+              <MdOutlineCalendarMonth />
+              {t("cartCard.subscriptionMonths", {
+                count: item.subscription_months,
+              })}
+            </p>
+          )}
+
           <p className="flex items-center gap-1">
             <HiOutlineSquares2X2 />
             {t("cartCard.lecturesCount", { count: item.lectures_count })}
           </p>
+
           <p className="flex items-center gap-1">
             <SlLayers />
             {item.category}

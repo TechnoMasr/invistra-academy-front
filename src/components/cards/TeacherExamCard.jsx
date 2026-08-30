@@ -96,22 +96,12 @@ const TeacherExamCard = ({ item }) => {
           <span className="font-semibold text-foreground shrink-0">
             {t("teacherExamCard.lectureLabel")}:
           </span>
-          <span className="text-muted-foreground truncate">
-            {item?.lecture_name}
-          </span>
+          <span className="truncate">{item?.lecture_name}</span>
         </div>
       )}
 
       {/* Stats Grid: درجات ووقت الاختبار منظم بشكل كروت صغيرة */}
       <div className="grid grid-cols-3 gap-2 py-1 text-sm mt-auto">
-        <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-          <AlertCircle className="w-5 h-5 mb-1" />
-          <span className="opacity-80">
-            {t("teacherExamCard.passMarkShort")}
-          </span>
-          <span className="font-bold">{item?.pass_mark}</span>
-        </div>
-
         <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
           <Award className="w-5 h-5 mb-1" />
           <span className="opacity-80">
@@ -120,12 +110,22 @@ const TeacherExamCard = ({ item }) => {
           <span className="font-bold">{item?.full_mark}</span>
         </div>
 
+        <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+          <AlertCircle className="w-5 h-5 mb-1" />
+          <span className="opacity-80">
+            {t("teacherExamCard.passMarkShort")}
+          </span>
+          <span className="font-bold">{item?.pass_mark}</span>
+        </div>
+
         <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-sky-500/5 text-sky-600 dark:text-sky-400 border border-sky-500/20">
           <Clock className="w-5 h-5 mb-1" />
           <span className="opacity-80">
             {t("teacherExamCard.durationShort")}
           </span>
-          <span className="font-bold">{item?.duration} د</span>
+          <span className="font-bold">
+            {item?.duration} {t("teacherExamCard.minutes")}
+          </span>
         </div>
       </div>
 

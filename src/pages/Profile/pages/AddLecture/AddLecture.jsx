@@ -156,11 +156,50 @@ const AddLecture = () => {
     createLectureMutate(formData);
   };
 
+  // =========================================================
+  // Errors
+  // =========================================================
+
+  const getFirstErrorMessage = (errors) => {
+    if (!errors || typeof errors !== "object") return null;
+
+    for (const key of Object.keys(errors)) {
+      const error = errors[key];
+
+      // Error مباشر
+      if (error?.message) {
+        return error.message;
+      }
+
+      // Nested errors
+      if (typeof error === "object") {
+        const nestedError = getFirstErrorMessage(error);
+
+        if (nestedError) {
+          return nestedError;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const handleInvalid = (errors) => {
+    const firstErrorMessage = getFirstErrorMessage(errors);
+
+    if (firstErrorMessage) {
+      toast.error(firstErrorMessage);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <ProfileTitle title={t("addLecture.title")} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, handleInvalid)}
+        className="flex flex-col gap-6"
+      >
         {/* قسم رفع فيديو المحاضرة */}
         <div className="flex flex-col items-center justify-center mb-4 relative">
           <input

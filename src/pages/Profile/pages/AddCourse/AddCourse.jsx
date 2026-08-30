@@ -33,27 +33,21 @@ const AddCourse = () => {
   const { t } = useTranslation();
   const { user } = useAuthGuard();
 
-  // جلب الفئات المتاحة من Redux لتتبع الفئات الفرعية
   const { categories, categoriesLoading } = useSelector(
     (state) => state.categories,
   );
 
-  // تتبع مسار الفئات الفرعية المختارة من قبل المستخدم في الـ State
-  // نبدأ بمصفوفة تحتوي على القسم الرئيسي الخاص بالمستخدم لمنع تعديله
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  // تحديث القسم الرئيسي تلقائياً فور توفر بيانات المستخدم
   useEffect(() => {
     if (user?.category?.id) {
       setSelectedCategories([String(user.category.id)]);
     }
   }, [user?.category?.id]);
 
-  // بناء قائمة المستويات المتاحة للعرض ديناميكياً
   const renderLevels = [];
   let currentLevelOptions = categories || [];
 
-  // المستوى الأول (القسم الرئيسي للمدرس)
   if (user?.category?.id) {
     const mainCategoryObj = currentLevelOptions.find(
       (cat) => String(cat.id) === String(user.category.id),
@@ -63,11 +57,10 @@ const AddCourse = () => {
       levelIndex: 0,
       options: currentLevelOptions,
       selectedValue: String(user.category.id),
-      disabled: true, // معطل دائماً بناءً على طلبك
+      disabled: true,
       parentName: "",
     });
 
-    // بناء القوائم الفرعية المتتالية إذا اختار المستخدم مستويات أدنى
     if (mainCategoryObj && mainCategoryObj.sub_categories) {
       currentLevelOptions = mainCategoryObj.sub_categories;
 
@@ -100,24 +93,19 @@ const AddCourse = () => {
     }
   }
 
-  // التعامل مع تغيير قيم الفئات الفرعية
   const handleCategoryChange = (levelIndex, value) => {
     if (value === "all") {
-      // إذا اختار "الكل" نعود إلى مسار الأب فقط
       setSelectedCategories(selectedCategories.slice(0, levelIndex));
     } else {
-      // تحديث المسار بإضافة العنصر الجديد وحذف الفروع التالية له
       const newPath = [...selectedCategories.slice(0, levelIndex)];
       newPath[levelIndex] = value;
       setSelectedCategories(newPath);
     }
   };
 
-  // الـ ID الفعلي والنهائي المختار لإرساله للـ API (آخر عنصر نشط في المصفوفة)
   const activeCategoryId =
     selectedCategories[selectedCategories.length - 1] || user?.category?.id;
 
-  // التحقق من صحة المدخلات (Zod)
   const requiredNumberSchema = z
     .string()
     .min(1, t("addCourse.validation.priceRequired"))
@@ -127,6 +115,17 @@ const AddCourse = () => {
     )
     .transform((val) => Number(val))
     .refine((val) => val >= 0, t("addCourse.validation.priceRequired"));
+
+  // فالديشن فترة الاشتراك بالشهور (رقم موجب صحيح)
+  const subscriptionMonthsSchema = z
+    .string()
+    .min(1, t("addCourse.validation.subscriptionMonthsRequired"))
+    .refine(
+      (val) => !isNaN(Number(val)) && Number.isInteger(Number(val)),
+      t("addCourse.validation.subscriptionMonthsInvalid"),
+    )
+    .transform((val) => Number(val))
+    .refine((val) => val > 0, t("addCourse.validation.subscriptionMonthsMin"));
 
   const courseSchema = z.object({
     link: z
@@ -163,6 +162,7 @@ const AddCourse = () => {
       .string()
       .min(1, t("addCourse.validation.durationRequired"))
       .regex(/^\d{2}:\d{2}$/, t("addCourse.validation.durationFormat")),
+    subscription_months: subscriptionMonthsSchema,
     price: requiredNumberSchema,
     dollar_price: requiredNumberSchema,
     price_before_discount: z.preprocess(
@@ -194,6 +194,7 @@ const AddCourse = () => {
         { title_ar: "", title_en: "", description_ar: "", description_en: "" },
       ],
       duration: "",
+      subscription_months: "",
       price: "",
       dollar_price: "",
       price_before_discount: "",
@@ -236,8 +237,8 @@ const AddCourse = () => {
       data.dollar_price_before_discount,
     );
     formData.append("duration", data.duration);
+    formData.append("subscription_months", data.subscription_months);
 
-    // إرسال الـ category_id النهائي للشجرة النشطة
     if (activeCategoryId) {
       formData.append("category_id", activeCategoryId);
     }
@@ -266,11 +267,50 @@ const AddCourse = () => {
     createCourseMutate(formData);
   };
 
+  // =========================================================
+  // Errors
+  // =========================================================
+
+  const getFirstErrorMessage = (errors) => {
+    if (!errors || typeof errors !== "object") return null;
+
+    for (const key of Object.keys(errors)) {
+      const error = errors[key];
+
+      // Error مباشر
+      if (error?.message) {
+        return error.message;
+      }
+
+      // Nested errors
+      if (typeof error === "object") {
+        const nestedError = getFirstErrorMessage(error);
+
+        if (nestedError) {
+          return nestedError;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const handleInvalid = (errors) => {
+    const firstErrorMessage = getFirstErrorMessage(errors);
+
+    if (firstErrorMessage) {
+      toast.error(firstErrorMessage);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <ProfileTitle title={t("addCourse.title")} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, handleInvalid)}
+        className="flex flex-col gap-6"
+      >
         {/* قسم رفع صورة الكورس */}
         <div className="flex flex-col items-center justify-center mb-4">
           <input
@@ -289,7 +329,7 @@ const AddCourse = () => {
 
           <div
             onClick={() => fileInputRef.current.click()}
-            className={`w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed rounded-lg cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:bg-gray-100 transition-all ${
+            className={`w-full max-w-80 aspect-5/3 bg-gray-50 border-2 border-dashed rounded-lg cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:bg-gray-100 transition-all ${
               errors.image ? "border-red-500" : "border-gray-200"
             }`}
           >
@@ -368,7 +408,7 @@ const AddCourse = () => {
           )}
         />
 
-        {/* اسم الكورس وعناوين الوصف وباقي الحقول */}
+        {/* اسم الكورس */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="name_ar"
@@ -400,6 +440,7 @@ const AddCourse = () => {
           />
         </div>
 
+        {/* وصف الكورس */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="description_ar"
@@ -532,23 +573,41 @@ const AddCourse = () => {
           </button>
         </div>
 
-        {/* مدة الكورس وأسعاره */}
-        <Controller
-          name="duration"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              name={field.name}
-              value={field.value}
-              onChange={field.onChange}
-              type="text"
-              label={t("addCourse.duration")}
-              placeholder={t("addCourse.durationPlaceholder")}
-              error={errors.duration?.message}
-            />
-          )}
-        />
+        {/* مدة الكورس وفترة الاشتراك بالشهور */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Controller
+            name="duration"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                type="text"
+                label={t("addCourse.duration")}
+                placeholder={t("addCourse.durationPlaceholder")}
+                error={errors.duration?.message}
+              />
+            )}
+          />
+          <Controller
+            name="subscription_months"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                type="number"
+                label={t("addCourse.subscriptionMonths")}
+                placeholder={t("addCourse.subscriptionMonthsPlaceholder")}
+                error={errors.subscription_months?.message}
+              />
+            )}
+          />
+        </div>
 
+        {/* أسعار الكورس */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Controller
             name="price"

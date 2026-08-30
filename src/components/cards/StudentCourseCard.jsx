@@ -3,6 +3,7 @@ import { SlLayers } from "react-icons/sl";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
+import { MdOutlineCalendarMonth } from "react-icons/md";
 
 const StudentCourseCard = ({ item }) => {
   const { t } = useTranslation();
@@ -37,6 +38,14 @@ const StudentCourseCard = ({ item }) => {
             <SlLayers />
             {item?.category}
           </p>
+          {item.subscription_months && (
+            <p className="flex items-center gap-1">
+              <MdOutlineCalendarMonth />
+              {t("cartCard.subscriptionMonths", {
+                count: item.subscription_months,
+              })}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center flex-wrap gap-1 text-sm">

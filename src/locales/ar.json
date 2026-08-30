@@ -450,6 +450,8 @@
   },
 
   "cartCard": {
+    "subscriptionMonths": "اشتراك {{count}} شهر",
+    "subscriptionMonths_plural": "اشتراك {{count}} أشهر",
     "lecturesCount": "{{count}} محاضرة",
     "lecturesCount_plural": "{{count}} محاضرات",
     "delete": "حذف",
@@ -463,16 +465,21 @@
 
   "examCard": {
     "exam": "اختبار",
+    "finalExam": "اختبار نهائي",
+    "lectureExam": "اختبار محاضرة",
+    "lectureLabel": "المحاضرة",
     "questions": "{{count}} سؤال",
     "questions_plural": "{{count}} اسئلة",
     "attempts": "عدد المحاولات : {{count}} / {{max}}",
-    "testScore": "درجة الاختبار: {{score}} / {{max}}",
-    "passMark": "درجة النجاح: {{score}}",
-    "grade": "التقدير: {{grade}}",
+    "testScoreLabel": "درجة الاختبار",
+    "passMarkLabel": "درجة النجاح",
+    "gradeLabel": "التقدير",
     "viewExam": "عرض الاختبار",
     "startExam": "ابدأ الاختبار",
     "progress": "التقدم في المشاهدة",
-    "notAccessible": " هذا الاختبار متاحًا بعد مشاهدة {{percentage}}% من محاضرات الدورة."
+    "notAccessible": "هذا الاختبار متاح بعد مشاهدة {{percentage}}% من محاضرات الكورس.",
+    "lectureNotAccessible": "هذا الاختبار متاح بعد مشاهدة المحاضرة الخاصة به.",
+    "minutes": "دقائق"
   },
 
   "teacherCourseCard": {
@@ -514,12 +521,13 @@
     "cancel": "إلغاء",
     "deleteSuccess": "تم حذف الاختبار بنجاح",
     "deleteError": "حدث خطأ أثناء حذف الاختبار",
-    "finalExam": "نهائي",
-    "lectureExam": "محاضرة",
+    "finalExam": "اختبار نهائي",
+    "lectureExam": "اختبار محاضرة",
     "lectureLabel": "المحاضرة",
     "passMarkShort": "النجاح",
     "fullMarkShort": "الدرجة",
-    "durationShort": "المدة"
+    "durationShort": "المدة",
+    "minutes": "دقائق"
   },
 
   "orderCard": {
@@ -617,6 +625,8 @@
 
   "courseDetails": {
     "duration": "مدة الكورس",
+    "subscriptionMonths": "مدة الاشتراك",
+    "months": "شهور",
     "lecturesCount": "عدد المحاضرات",
     "category": "القسم",
     "price": "السعر:",
@@ -702,6 +712,8 @@
     "addFeature": "+ إضافة ميزة جديدة",
     "duration": "مدة الكورس",
     "durationPlaceholder": "مثال: 05:30",
+    "subscriptionMonths": "فترة الاشتراك (بالشهور)",
+    "subscriptionMonthsPlaceholder": "مثال: 6",
     "priceEg": "سعر الكورس بالجنيه المصري",
     "priceEgPlaceholder": "ادخل سعر الكورس بالجنيه المصري...",
     "priceUsd": "سعر الكورس بالدولار الأمريكي",
@@ -727,6 +739,9 @@
       "featureDescEn": "وصف الميزة بالإنجليزي مطلوب",
       "durationRequired": "مدة الكورس مطلوبة",
       "durationFormat": "صيغة المدة يجب أن تكون HH:MM مثل 05:30",
+      "subscriptionMonthsRequired": "فترة الاشتراك بالشهور مطلوبة",
+      "subscriptionMonthsInvalid": "يرجى إدخال عدد صحيح من الشهور",
+      "subscriptionMonthsMin": "يجب أن تكون فترة الاشتراك شهر واحد على الأقل",
       "priceRequired": "السعر مطلوب",
       "invalidDiscount": "السعر قبل الخصم غير صالح",
       "priceBeforeDiscountInvalid": "السعر قبل الخصم يجب ان يكون اكبر من السعر الحالي او قيمه فارغه"

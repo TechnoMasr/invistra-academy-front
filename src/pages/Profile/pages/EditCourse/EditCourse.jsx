@@ -185,6 +185,19 @@ const EditCourse = () => {
       .min(1, t("addCourse.validation.durationRequired"))
       .regex(/^\d{2}:\d{2}$/, t("addCourse.validation.durationFormat")),
 
+    subscription_months: z
+      .string()
+      .min(1, t("addCourse.validation.subscriptionMonthsRequired"))
+      .refine(
+        (val) => !isNaN(Number(val)) && Number.isInteger(Number(val)),
+        t("addCourse.validation.subscriptionMonthsInvalid"),
+      )
+      .transform((val) => Number(val))
+      .refine(
+        (val) => val > 0,
+        t("addCourse.validation.subscriptionMonthsMin"),
+      ),
+
     price: requiredNumberSchema,
     dollar_price: requiredNumberSchema,
 
@@ -223,6 +236,7 @@ const EditCourse = () => {
         },
       ],
       duration: "",
+      subscription_months: "",
       price: "",
       dollar_price: "",
       price_before_discount: "",
@@ -259,6 +273,11 @@ const EditCourse = () => {
         },
       ],
       duration: data.duration || "",
+      subscription_months:
+        data.subscription_months !== undefined &&
+        data.subscription_months !== null
+          ? String(data.subscription_months)
+          : "",
       price:
         data.price !== undefined && data.price !== null
           ? String(data.price)
@@ -318,6 +337,7 @@ const EditCourse = () => {
       data.dollar_price_before_discount,
     );
     formData.append("duration", data.duration);
+    formData.append("subscription_months", data.subscription_months);
 
     if (data.link) {
       formData.append("link", data.link);
@@ -343,6 +363,42 @@ const EditCourse = () => {
     updateCourseMutate(formData);
   };
 
+  // =========================================================
+  // Errors
+  // =========================================================
+
+  const getFirstErrorMessage = (errors) => {
+    if (!errors || typeof errors !== "object") return null;
+
+    for (const key of Object.keys(errors)) {
+      const error = errors[key];
+
+      // Error مباشر
+      if (error?.message) {
+        return error.message;
+      }
+
+      // Nested errors
+      if (typeof error === "object") {
+        const nestedError = getFirstErrorMessage(error);
+
+        if (nestedError) {
+          return nestedError;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const handleInvalid = (errors) => {
+    const firstErrorMessage = getFirstErrorMessage(errors);
+
+    if (firstErrorMessage) {
+      toast.error(firstErrorMessage);
+    }
+  };
+
   if (isLoading) return <LoadingPage />;
 
   return (
@@ -362,7 +418,10 @@ const EditCourse = () => {
         )}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, handleInvalid)}
+        className="flex flex-col gap-6"
+      >
         {/* قسم رفع صورة الكورس */}
         <div className="flex flex-col items-center justify-center mb-4">
           <input
@@ -382,7 +441,7 @@ const EditCourse = () => {
 
           <div
             onClick={() => isEditing && fileInputRef.current.click()}
-            className={`w-full max-w-60 aspect-5/3 bg-gray-50 border-2 border-dashed rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all ${
+            className={`w-full max-w-80 aspect-5/3 bg-gray-50 border-2 border-dashed rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all ${
               isEditing
                 ? "cursor-pointer hover:bg-gray-100"
                 : "cursor-not-allowed opacity-90"
@@ -661,23 +720,42 @@ const EditCourse = () => {
           )}
         </div>
 
-        {/* مدة الكورس */}
-        <Controller
-          name="duration"
-          control={control}
-          render={({ field }) => (
-            <MainInput
-              name={field.name}
-              value={field.value}
-              onChange={field.onChange}
-              disabled={!isEditing}
-              type="text"
-              label={t("addCourse.duration")}
-              placeholder={t("addCourse.durationPlaceholder")}
-              error={errors.duration?.message}
-            />
-          )}
-        />
+        {/* مدة الكورس وفترة الاشتراك بالشهور */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Controller
+            name="duration"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                disabled={!isEditing}
+                type="text"
+                label={t("addCourse.duration")}
+                placeholder={t("addCourse.durationPlaceholder")}
+                error={errors.duration?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="subscription_months"
+            control={control}
+            render={({ field }) => (
+              <MainInput
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                disabled={!isEditing}
+                type="number"
+                label={t("addCourse.subscriptionMonths")}
+                placeholder={t("addCourse.subscriptionMonthsPlaceholder")}
+                error={errors.subscription_months?.message}
+              />
+            )}
+          />
+        </div>
 
         {/* سعر الكورس (جنيه مصري ودولار أمريكي) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

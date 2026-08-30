@@ -6,6 +6,7 @@ import {
   MdOndemandVideo,
   MdOutlineAccessTime,
   MdOutlineOndemandVideo,
+  MdOutlineCalendarMonth, // تم إضافة الأيقونة هنا
 } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { GrCart } from "react-icons/gr";
@@ -67,12 +68,20 @@ const Details = ({ data }) => {
     },
     {
       id: 2,
+      label: t("courseDetails.subscriptionMonths"), // تمت إضافة فترة الاشتراك
+      value: data?.subscription_months
+        ? `${data?.subscription_months} ${t("courseDetails.months")}`
+        : null,
+      icon: <MdOutlineCalendarMonth size={40} />,
+    },
+    {
+      id: 3,
       label: t("courseDetails.lecturesCount"),
       value: data?.lectures_count,
       icon: <MdOndemandVideo size={40} />,
     },
     {
-      id: 3,
+      id: 4,
       label: t("courseDetails.category"),
       value: data?.category,
       icon: <LuLayers3 size={40} />,
@@ -105,19 +114,22 @@ const Details = ({ data }) => {
           <h4 className="font-medium">{data?.instructor?.name}</h4>
         </div>
 
-        <ul className="flex flex-wrap items-center gap-4">
-          {list.map((item) => (
-            <li key={item.id} className="flex items-center gap-2">
-              {item.icon}
-              <div>
-                <p className="font-bold">{item.label}</p>
-                <span>{item.value}</span>
-              </div>
-            </li>
-          ))}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {list.map((item) =>
+            // تأكد من وجود قيمة قبل عرض العنصر
+            item.value ? (
+              <li key={item.id} className="flex items-center gap-2">
+                {item.icon}
+                <div>
+                  <p className="font-bold">{item.label}</p>
+                  <span>{item.value}</span>
+                </div>
+              </li>
+            ) : null,
+          )}
         </ul>
 
-        <div className="text-lg font-bold flex items-center gap-1">
+        <div className="text-lg font-bold flex items-center gap-1 mb-6">
           {t("courseDetails.price")}{" "}
           {data?.price_before_discount ? (
             <p className="text-lg font-bold text-red-500 line-through">

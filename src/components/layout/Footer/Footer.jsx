@@ -8,10 +8,12 @@ import FooterSkeleton from "@/components/Loading/SkeletonLoading/FooterSkeleton"
 import { FiInstagram } from "react-icons/fi";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useDispatch } from "react-redux";
+import useAuthGuard from "@/hooks/useAuthGuard";
 
 const Footer = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { user } = useAuthGuard();
 
   const { data: footerData, isLoading } = useQuery({
     queryKey: ["footer"],
@@ -84,9 +86,9 @@ const Footer = () => {
       name: t("courses"),
       url: "/courses",
     },
-    {
+    !user && {
       name: t("registerAsTeacher"),
-      url: "/register/teacher",
+      url: "/register/instructor",
     },
   ];
 

@@ -304,6 +304,7 @@
     "completeRegistration": "إكمال التسجيل",
     "creating": "جارٍ الإنشاء...",
     "somethingWentWrong": "حدث خطأ ما",
+    "back": "السابق",
     "validation": {
       "jobTitleAr": "يرجى إدخال المسمى الوظيفي باللغة العربية",
       "jobTitleEn": "يرجى إدخال المسمى الوظيفي باللغة الإنجليزية",
@@ -959,7 +960,9 @@
     "download": "تحميل",
     "watched": "تمت المشاهدة",
     "markAsWatched": "تحديد كمشاهدة",
-    "noVideo": "لا يوجد فيديو لهذه المحاضرة"
+    "noVideo": "لا يوجد فيديو لهذه المحاضرة",
+    "previousLecture": "المحاضرة السابقة",
+    "nextLecture": "المحاضرة التالية"
   },
 
   "enterExam": {

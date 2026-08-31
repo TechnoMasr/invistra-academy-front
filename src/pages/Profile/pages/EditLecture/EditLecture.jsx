@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { RiVideoUploadLine } from "react-icons/ri";
+import { RiDeleteBin5Fill, RiVideoUploadLine } from "react-icons/ri";
 import { FiUploadCloud, FiFilm } from "react-icons/fi";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
@@ -514,13 +514,15 @@ const EditLecture = () => {
                       ({(file.size / (1024 * 1024)).toFixed(2)} MB)
                     </span>
                   </span>
+
                   <button
                     type="button"
                     onClick={() => removeNewFile(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
+                    className="bg-red-500 hover:bg-red-700 text-white transition-all 
+                    flex items-center justify-center rounded-full w-6 h-6 cursor-pointer"
                     title={t("addLecture.deleteFile")}
                   >
-                    <IoCloseCircleSharp className="text-xl" />
+                    <RiDeleteBin5Fill />
                   </button>
                 </div>
               ))}

@@ -24,6 +24,11 @@ const RegisterTeacher = () => {
     setStep((prev) => prev + 1);
   };
 
+  const goBack = () => {
+    window.scrollTo(0, 0);
+    setStep((prev) => prev - 1);
+  };
+
   const [parentData, setParentData] = useState({});
 
   return (
@@ -55,6 +60,7 @@ const RegisterTeacher = () => {
               setParentData={setParentData}
               parentData={parentData}
               goNext={goNext}
+              goBack={goBack}
             />
           )}
         </>

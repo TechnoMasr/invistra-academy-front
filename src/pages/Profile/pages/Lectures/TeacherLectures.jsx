@@ -2,10 +2,12 @@ import TeacherLectureCard from "@/components/cards/TeacherLectureCard";
 import { useTranslation } from "react-i18next";
 import ProfileTitle from "@/components/common/ProfileTitle";
 import LecturesPageSkeleton from "@/components/Loading/SkeletonLoading/LecturesPageSkeleton";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import { getLecturesInstructor } from "@/api/lectureServices";
+import { buttonVariants } from "@/components/ui/button";
+import { LuCirclePlus } from "react-icons/lu";
 
 const Lectures = () => {
   const { t } = useTranslation();
@@ -21,7 +23,17 @@ const Lectures = () => {
 
   return (
     <div className="space-y-6">
-      <ProfileTitle title={t("teacherLectures.title")} />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <ProfileTitle title={t("teacherLectures.title")} />
+
+        <Link
+          to={`/profile/add-lecture/${id}`}
+          className={`${buttonVariants({  size: "sm" })}`}
+        >
+          <LuCirclePlus className="w-4 h-4" />
+          <span>{t("teacherCourseCard.addLecture")}</span>
+        </Link>
+      </div>
 
       {isLoading ? (
         <LecturesPageSkeleton />

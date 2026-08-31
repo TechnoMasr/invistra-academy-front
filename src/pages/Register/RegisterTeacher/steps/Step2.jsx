@@ -10,7 +10,8 @@ import FormError from "@/components/form/FormError";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
-const Step2 = ({ setParentData, parentData, goNext }) => {
+// إضافة goBack في الـ props
+const Step2 = ({ setParentData, parentData, goNext, goBack }) => {
   const { t } = useTranslation();
 
   const isGoogleFlow = Boolean(parentData?.id_token);
@@ -48,7 +49,6 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
     },
   });
 
-  // تحديد الـ API المناسبة بناءً على id_token
   const { mutate, isPending, error } = useMutation({
     mutationFn: isGoogleFlow ? googleCompleteInstructor : registerUser,
     onSuccess: () => {
@@ -65,7 +65,6 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
     setParentData(finalData);
 
     if (isGoogleFlow) {
-      // تجهيز JSON Payload كما موضح في الصورة المرفقة
       const googlePayload = {
         id_token: finalData.id_token,
         type: "instructor",
@@ -86,7 +85,6 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
 
       mutate(googlePayload);
     } else {
-      // التسجيل العادي باستخدام FormData
       const formData = new FormData();
 
       if (finalData.image) {
@@ -205,11 +203,24 @@ const Step2 = ({ setParentData, parentData, goNext }) => {
         )}
       />
 
-      <Button type="submit" className="w-full mt-4" disabled={isPending}>
-        {isPending
-          ? t("RegisterTeacherStep2.creating")
-          : t("RegisterTeacherStep2.completeRegistration")}
-      </Button>
+      {/* أزرار التحكم: العودة والإكمال */}
+      <div className="flex gap-2 items-center mt-4">
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1"
+          onClick={goBack}
+          disabled={isPending}
+        >
+          {t("RegisterTeacherStep2.back")}
+        </Button>
+
+        <Button type="submit" className="flex-1" disabled={isPending}>
+          {isPending
+            ? t("RegisterTeacherStep2.creating")
+            : t("RegisterTeacherStep2.completeRegistration")}
+        </Button>
+      </div>
 
       {error && (
         <FormError

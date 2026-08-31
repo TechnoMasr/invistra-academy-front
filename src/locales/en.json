@@ -304,6 +304,7 @@
     "completeRegistration": "Complete Registration",
     "creating": "Creating...",
     "somethingWentWrong": "Something went wrong",
+    "back": "Back",
     "validation": {
       "jobTitleAr": "Please enter the job title in Arabic",
       "jobTitleEn": "Please enter the job title in English",
@@ -961,7 +962,9 @@
     "download": "Download",
     "watched": "Watched",
     "markAsWatched": "Mark as watched",
-    "noVideo": "No video available for this lecture"
+    "noVideo": "No video available for this lecture",
+    "previousLecture": "Previous Lecture",
+    "nextLecture": "Next Lecture"
   },
 
   "enterExam": {

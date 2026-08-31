@@ -17,7 +17,7 @@ const Register = () => {
     {
       id: 2,
       title: t("registerPage.teacher"),
-      link: "/register/teacher",
+      link: "/register/instructor",
       icon: <GiTeacher />,
     },
   ];

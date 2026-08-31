@@ -1,14 +1,15 @@
-import { FaRegFolderOpen } from "react-icons/fa";
-import { FiDownloadCloud, FiCheckCircle } from "react-icons/fi";
+import { FaEye, FaRegFolderOpen } from "react-icons/fa";
+import { FiDownloadCloud, FiCheckCircle, FiChevronLeft } from "react-icons/fi";
 import { FaFilePdf } from "react-icons/fa6";
 import LectureDetailsSkeleton from "@/components/Loading/SkeletonLoading/LectureDetailsSkeleton";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyLectureDetails } from "@/api/ordersServices";
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 import EmptyDataSection from "@/components/sections/EmptyDataSection";
 import { useTranslation } from "react-i18next";
 import { useDirectDownload } from "@/hooks/useDirectDownload";
 import { setShowLecture } from "@/api/lectureServices";
+import { buttonVariants } from "@/components/ui/button";
 
 function isValidVideoUrl(url) {
   if (!url) return false;
@@ -54,7 +55,6 @@ const LectureDetails = () => {
   const { mutate: markAsWatched, isPending: isWatching } = useMutation({
     mutationFn: () => setShowLecture(id),
     onSuccess: () => {
-      // عمل invalidate للـ query لإعادة جلب البيانات وتحديث الـ UI بالحالة الجديدة
       queryClient.invalidateQueries({ queryKey: ["lecture", id] });
     },
   });
@@ -91,7 +91,6 @@ const LectureDetails = () => {
               title={lecture?.title}
             />
           ) : (
-            /* في حالة عدم وجود فيديو أو إذا كان الرابط غير معروف/غير مدعوم */
             <div className="w-full h-full flex items-center justify-center font-semibold">
               {t("lectureDetails.noVideo")}
             </div>
@@ -111,7 +110,7 @@ const LectureDetails = () => {
             {/* زرار حالة المشاهدة */}
             <div>
               {lecture?.is_watched === 1 || lecture?.is_watched === true ? (
-                <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1.5 rounded-xl font-medium text-sm border border-green-200 w-fit">
+                <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1.5 rounded-lg font-medium text-sm border border-green-200 w-fit">
                   <FiCheckCircle className="text-lg" />
                   <span>{t("lectureDetails.watched")}</span>
                 </div>
@@ -119,9 +118,16 @@ const LectureDetails = () => {
                 <button
                   onClick={() => markAsWatched()}
                   disabled={isWatching}
-                  className="bg-primary hover:bg-primary/95 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all disabled:opacity-75 cursor-pointer w-fit"
+                  className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all disabled:opacity-75 cursor-pointer w-fit"
                 >
-                  {isWatching ? "..." : t("lectureDetails.markAsWatched")}
+                  {isWatching ? (
+                    "..."
+                  ) : (
+                    <>
+                      <span>{t("lectureDetails.markAsWatched")}</span>
+                      <FaEye className="text-lg" />
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -131,6 +137,33 @@ const LectureDetails = () => {
             className="rich_content text-sm opacity-90 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: lecture?.description }}
           />
+
+          {/* أزرار التنقل بين المحاضرات (التالية والسابقة) */}
+          {(lecture?.prev_id || lecture?.next_id) && (
+            <div className="flex items-center justify-between gap-3 pt-4 border-t mt-4">
+              <Link
+                to={`/profile/lecture-details/${lecture?.prev_id}`}
+                disabled={!lecture?.prev_id}
+                className={`rounded-lg gap-1!
+              ${buttonVariants({ size: "sm", variant: "outline" })} 
+              ${!lecture?.prev_id && "invisible"}`}
+              >
+                <FiChevronLeft className="text-lg rtl:rotate-180" />
+                <span>{t("lectureDetails.previousLecture")}</span>
+              </Link>
+
+              <Link
+                to={`/profile/lecture-details/${lecture?.next_id}`}
+                disabled={!lecture?.next_id}
+                className={`rounded-lg gap-1!
+              ${buttonVariants({ size: "sm", variant: "outline" })} 
+              ${!lecture?.next_id && "invisible"}`}
+              >
+                <span>{t("lectureDetails.nextLecture")}</span>
+                <FiChevronLeft className="text-lg ltr:rotate-180" />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 

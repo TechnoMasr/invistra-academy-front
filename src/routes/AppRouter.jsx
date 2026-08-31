@@ -254,7 +254,7 @@ const router = createBrowserRouter([
         children: [
           { path: "/login", element: <Login /> },
           { path: "/register", element: <Register /> },
-          { path: "/register/teacher", element: <RegisterTeacher /> },
+          { path: "/register/instructor", element: <RegisterTeacher /> },
           { path: "/register/student", element: <RegisterStudent /> },
           { path: "/forgot-password", element: <ForgotPassword /> },
         ],

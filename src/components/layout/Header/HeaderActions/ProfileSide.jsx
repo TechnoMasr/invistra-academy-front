@@ -114,8 +114,13 @@ const ProfileSide = ({ user }) => {
           <Link to="/login" className="rounded-full">
             <Button>{t("profileSide.login")}</Button>
           </Link>
-          <Link to="/register/teacher" className="rounded-full hidden md:block">
-            <Button variant="outline">{t("profileSide.joinAsInstructor")}</Button>
+          <Link
+            to="/register/instructor"
+            className="rounded-full hidden md:block"
+          >
+            <Button variant="outline">
+              {t("profileSide.joinAsInstructor")}
+            </Button>
           </Link>
         </>
       )}

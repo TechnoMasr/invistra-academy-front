@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -54,15 +54,16 @@ const TeacherLectureCard = ({ item }) => {
       </div>
 
       <div className="flex items-center gap-2">
-        <Link to={`/profile/edit-lecture/${item?.id}`} className="rounded-full">
-          <Button variant="outline" className="w-full">
-            {t("teacherLectureCard.viewLectureDetails")}
-          </Button>
+        <Link
+          to={`/profile/edit-lecture/${item?.id}`}
+          className={`${buttonVariants({ variant: "outline", size: "sm" })}`}
+        >
+          {t("teacherLectureCard.viewLectureDetails")}
         </Link>
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="destructive" disabled={isPending}>
+            <Button variant="destructive" size="sm" disabled={isPending}>
               {isPending ? (
                 <Loader2 className="animate-spin h-4 w-4" />
               ) : (

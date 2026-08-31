@@ -13,8 +13,9 @@ import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
 import { GoogleLogin } from "@react-oauth/google";
 import { useMutation } from "@tanstack/react-query";
-import { googleAuthenticate, checkAvailability } from "@/api/authServices";
+import { googleAuthenticate } from "@/api/authServices";
 import FormError from "@/components/form/FormError";
+// 1. استيراد الأكشن المسؤول عن حفظ التوكن وبيانات المستخدم (تأكد من المسار الصحيح)
 import { setCredentials } from "@/store/auth/authSlice";
 import { toast } from "sonner";
 
@@ -63,25 +64,7 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
     },
   });
 
-  // 1. Mutation للتحقق من التوفر
-  const {
-    mutate: checkMutate,
-    isPending: isCheckPending,
-    error: checkError,
-  } = useMutation({
-    mutationFn: checkAvailability,
-    onSuccess: () => {
-      goNext();
-    },
-    onError: (error) => {
-      toast.error(
-        error?.response?.data?.message ||
-          t("RegisterTeacherStep1.somethingWentWrong")
-      );
-    },
-  });
-
-  // 2. Mutation تسجيل الدخول عبر جوجل
+  // 2. تحديث الـ Mutation لفحص الـ Response والتعامل مع الحالتين
   const {
     mutate: googleMutate,
     isPending: isGooglePending,
@@ -89,9 +72,13 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
   } = useMutation({
     mutationFn: googleAuthenticate,
     onSuccess: (data) => {
+      // استخراج البيانات القادمة من الـ API (تأكد إذا كان الـ API يرجع res مباشرة أو res.data)
+      // const data = res?.data || res;
+
       if (data?.requires_activation) {
         goNext(true);
       } else if (data?.id_token) {
+        // الحالة الأولى: يحتاج تفعيل -> اذهب للخطوة التالية
         setParentData({
           ...parentData,
           ...data,
@@ -99,11 +86,12 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
         });
         goNext();
       } else if (data?.token) {
+        // الحالة الثانية: تسجيل دخول مباشر -> حفظ البيانات في ريدكس
         dispatch(
           setCredentials({
             user: data.user,
-            token: data.token,
-          })
+            token: data.token, // يفضل تمرير التوكن أيضاً إذا كان الأكشن يستقبله
+          }),
         );
       }
     },
@@ -125,11 +113,7 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
       image: imageFile,
     });
 
-    // إرسال البيانات للتحقق قبل الانتقال
-    checkMutate({
-      email: data.email,
-      phone: data.phone,
-    });
+    goNext();
   };
 
   return (
@@ -302,31 +286,17 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
       </div>
 
       {/* زر المتابعة العادي */}
-      <Button
-        type="submit"
-        className="w-full mt-4"
-        disabled={isGooglePending || isCheckPending}
-      >
+      <Button type="submit" className="w-full mt-4" disabled={isGooglePending}>
         {t("RegisterTeacherStep1.continueNextStep")}
       </Button>
 
-      {/* إظهار خطأ فحص التوفر إن وجد */}
-      {checkError && (
-        <FormError
-          errorMsg={
-            checkError?.response?.data?.message ||
-            t("RegisterTeacherStep1.somethingWentWrong")
-          }
-        />
-      )}
-
       {/* خط فاصل وزر التسجيل بجوجل */}
       <div className="relative flex py-2 items-center">
-        <div className="grow border-t border-muted"></div>
-        <span className="shrink mx-4 text-muted-foreground text-xs uppercase">
+        <div className="flex-grow border-t border-muted"></div>
+        <span className="flex-shrink mx-4 text-muted-foreground text-xs uppercase">
           {t("or")}
         </span>
-        <div className="grow border-t border-muted"></div>
+        <div className="flex-grow border-t border-muted"></div>
       </div>
 
       <div className="w-full flex justify-center">
@@ -344,7 +314,7 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
           theme="outline"
           size="large"
           width="100%"
-          disabled={isGooglePending || isCheckPending}
+          disabled={isGooglePending}
         />
       </div>
 

@@ -78,3 +78,13 @@ export const googleCompleteInstructor = async (payload) => {
 
   return data?.data;
 };
+
+export const checkAvailability = async (payload) => {
+  const { data } = await api.post("/auth/check-availability", payload);
+
+  if (data?.data?.token) {
+    Cookies.set("token", data?.data?.token);
+  }
+
+  return data?.data;
+};

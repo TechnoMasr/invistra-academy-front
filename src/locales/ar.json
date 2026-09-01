@@ -484,6 +484,8 @@
   },
 
   "teacherCourseCard": {
+    "approved": "تمت الموافقة",
+    "pending": "قيد المراجعة",
     "orders": "{{count}} طلب",
     "orders_plural": "{{count}} طلبات",
     "price": "السعر:",

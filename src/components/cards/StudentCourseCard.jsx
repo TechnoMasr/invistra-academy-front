@@ -2,14 +2,14 @@ import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { SlLayers } from "react-icons/sl";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 
 const StudentCourseCard = ({ item }) => {
   const { t } = useTranslation();
   return (
     <div className="border rounded-lg overflow-hidden bg-white flex flex-col xl:flex-row items-start gap-4 p-4">
-      <div className="w-full aspect-5/3 xl:w-36 xl:h-36 2xl:w-40 2xl:h-40 xl:aspect-square shrink-0 rounded-md overflow-hidden border">
+      <div className="w-full aspect-5/3 xl:w-40 xl:h-40 xl:aspect-square shrink-0 rounded-md overflow-hidden border">
         {item?.image && (
           <img
             loading="lazy"
@@ -80,15 +80,6 @@ const StudentCourseCard = ({ item }) => {
         </div>
 
         <div className="flex flex-col gap-2 pt-2 border-t border-gray-200 mt-auto">
-          <Link
-            to={`/profile/lectures/${item?.id}`}
-            className="w-full rounded-full"
-          >
-            <Button size="sm" variant="outline" className={`w-full`}>
-              {t("ordersDetailsCard.viewLectures")}
-            </Button>
-          </Link>
-
           {/* شريط تقدم مخصص بـ Tailwind */}
           <div className="flex flex-col gap-1 my-1">
             <div className="flex justify-between items-center text-xs font-medium text-slate-700">
@@ -110,6 +101,13 @@ const StudentCourseCard = ({ item }) => {
               />
             </div>
           </div>
+
+          <Link
+            to={`/profile/lectures/${item?.id}`}
+            className={`${buttonVariants({ variant: "outline", size: "sm" })}`}
+          >
+            {t("ordersDetailsCard.viewLectures")}
+          </Link>
         </div>
       </div>
     </div>

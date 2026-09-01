@@ -484,6 +484,8 @@
   },
 
   "teacherCourseCard": {
+    "approved": "Approved",
+    "pending": "Pending Approval",
     "orders": "{{count}} order",
     "orders_plural": "{{count}} orders",
     "price": "Price:",

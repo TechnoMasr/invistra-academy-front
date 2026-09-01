@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FaBoxOpen } from "react-icons/fa";
 import { Link } from "react-router";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -27,7 +27,6 @@ const TeacherCourseCard = ({ item }) => {
   const { mutate: handleDeleteCourse, isPending } = useMutation({
     mutationFn: (courseId) => deleteCourse(courseId),
     onSuccess: () => {
-      // قم بتحديث الـ Query key المسؤول عن جلب كورسات المدرس (عدله حسب الـ key عندك مثلاً "teacherCourses")
       queryClient.invalidateQueries({ queryKey: ["myCoursesTeacher"] });
       toast.success(t("teacherCourseCard.deleteSuccess"));
       setOpen(false);
@@ -41,8 +40,8 @@ const TeacherCourseCard = ({ item }) => {
 
   return (
     <div className="border rounded-lg overflow-hidden bg-white p-3 flex flex-col justify-between gap-3">
-      <div className="flex flex-col xs:flex-row items-start gap-3">
-        <div className="w-full h-50 xs:w-36 xs:h-36 md:w-30 md:h-30 xl:w-40 xl:h-40 aspect-square shrink-0 rounded-md overflow-hidden border">
+      <div className="flex flex-col xl:flex-row items-start gap-3">
+        <div className="w-full aspect-5/3 xl:w-40 xl:h-40 xl:aspect-square shrink-0 rounded-md overflow-hidden border">
           {item?.image && (
             <img
               loading="lazy"
@@ -53,10 +52,28 @@ const TeacherCourseCard = ({ item }) => {
           )}
         </div>
 
-        <div className="w-full flex flex-col gap-2 lg:gap-2">
-          <h3 className="text-lg font-bold line-clamp-2">{item?.name}</h3>
+        <div className="w-full flex flex-col gap-2">
+          {/* Header Section: Title & Acceptance Status Badge */}
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-lg font-bold line-clamp-2">{item?.name}</h3>
 
-          <p className="line-clamp-2 text-sm">{item?.description}</p>
+            {/* حالة الموافقة على الكورس */}
+            {item?.is_accepted ? (
+              <span className="shrink-0 text-[0.7rem] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {t("teacherCourseCard.approved")}
+              </span>
+            ) : (
+              <span className="shrink-0 text-[0.7rem] font-semibold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                {t("teacherCourseCard.pending")}
+              </span>
+            )}
+          </div>
+
+          <p className="line-clamp-2 text-sm text-gray-600">
+            {item?.description}
+          </p>
 
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
@@ -70,24 +87,29 @@ const TeacherCourseCard = ({ item }) => {
                   />
                 )}
               </div>
-              <h4 className="font-medium">{item?.instructor_name}</h4>
+              <h4 className="font-medium text-sm">{item?.instructor_name}</h4>
             </div>
 
-            <p className="font-medium text-xs py-1 px-4 text-green-500 border border-green-500 rounded-full flex items-center gap-1">
+            <p
+              className="font-medium text-xs py-0.5 px-1.5 text-primary 
+              border border-primary rounded-full flex items-center gap-1 bg-primary/5"
+            >
               <FaBoxOpen />
               {t("teacherCourseCard.orders", { count: item?.orders_count })}
             </p>
           </div>
 
-          <div className="flex items-center flex-wrap gap-1">
-            <p className="font-semibold">{t("teacherCourseCard.price")}</p>
+          <div className="flex items-center flex-wrap gap-1 mt-1">
+            <p className="font-semibold text-sm">
+              {t("teacherCourseCard.price")}
+            </p>
 
             {item?.price_before_discount ? (
-              <p className="text-lg font-bold text-red-500 line-through">
+              <p className="text-base font-bold text-red-500 line-through me-1">
                 {item?.price_before_discount} {item?.currency}
               </p>
             ) : null}
-            <span className="text-2xl font-bold text-green-500">
+            <span className="text-xl font-bold text-green-600">
               {item?.price} {item?.currency}
             </span>
           </div>
@@ -95,23 +117,24 @@ const TeacherCourseCard = ({ item }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <Link to={`/profile/add-lecture/${item?.id}`} className="rounded-full">
-          <Button className="w-full">
-            {t("teacherCourseCard.addLecture")}
-          </Button>
+        <Link
+          to={`/profile/add-lecture/${item?.id}`}
+          className={`${buttonVariants({ variant: "default", size: "sm" })}`}
+        >
+          {t("teacherCourseCard.addLecture")}
         </Link>
-        <Link to={`/profile/lectures/${item?.id}`} className="rounded-full">
-          <Button variant="outline" className="w-full">
-            {t("teacherCourseCard.viewLectures")}
-          </Button>
+        <Link
+          to={`/profile/lectures/${item?.id}`}
+          className={`${buttonVariants({ variant: "outline", size: "sm" })}`}
+        >
+          {t("teacherCourseCard.viewLectures")}
         </Link>
         <Link
           to={`/profile/edit-course/${item?.id}`}
-          className={`rounded-full ${item?.is_purchased && "sm:col-span-2"}`}
+          className={`${buttonVariants({ variant: "outline", size: "sm" })}
+          ${item?.is_purchased && "sm:col-span-2"}`}
         >
-          <Button variant="outline" className="w-full">
-            {t("teacherCourseCard.viewCourseDetails")}
-          </Button>
+          {t("teacherCourseCard.viewCourseDetails")}
         </Link>
 
         {/* تفعيل الحذف فقط إذا كان مسموحاً حذف الكورس */}
@@ -120,6 +143,7 @@ const TeacherCourseCard = ({ item }) => {
             <DialogTrigger asChild>
               <Button
                 variant="destructive"
+                size="sm"
                 className="w-full"
                 disabled={isPending}
               >

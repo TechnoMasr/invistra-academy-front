@@ -78,6 +78,9 @@ const LectureDetails = () => {
             <video
               src={videoSrc}
               controls
+              controlsList="nodownload noremoteplayback"
+              disablePictureInPicture
+              onContextMenu={(e) => e.preventDefault()}
               className="w-full h-full object-cover"
             >
               {t("lectureDetails.videoNotSupported")}

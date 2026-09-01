@@ -9,7 +9,6 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router";
 import { IoImageOutline } from "react-icons/io5";
-import { FcGoogle } from "react-icons/fc"; // أيقونة جوجل الملونة لـ UI احترافي
 import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser, googleAuthenticate } from "@/api/authServices"; // استيراد الدالتين
@@ -18,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { openModal } from "@/store/modals/modalsSlice";
 import { useTranslation } from "react-i18next";
 import { setCredentials } from "@/store/auth/authSlice";
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google"; // الـ hook الرسمي من المكتبة
+import { GoogleLogin } from "@react-oauth/google"; // الـ hook الرسمي من المكتبة
 import { toast } from "sonner";
 
 const RegisterStudent = () => {
@@ -109,6 +108,7 @@ const RegisterStudent = () => {
 
   // معالجة الـ Submit للـ Form العادي
   const onSubmit = (data) => {
+    // eslint-disable-next-line no-unused-vars
     const { terms_accepted, ...payload } = data;
     const formData = new FormData();
 
@@ -294,11 +294,11 @@ const RegisterStudent = () => {
 
         {/* خط فاصل مرئي بين نموذج التسجيل العادي وزر جوجل */}
         <div className="relative flex py-2 items-center">
-          <div className="flex-grow border-t border-muted"></div>
-          <span className="flex-shrink mx-4 text-muted-foreground text-xs uppercase">
+          <div className="grow border-t border-muted"></div>
+          <span className="shrink mx-4 text-muted-foreground text-xs uppercase">
             {t("or")}
           </span>
-          <div className="flex-grow border-t border-muted"></div>
+          <div className="grow border-t border-muted"></div>
         </div>
 
         <div className="w-full flex justify-center">

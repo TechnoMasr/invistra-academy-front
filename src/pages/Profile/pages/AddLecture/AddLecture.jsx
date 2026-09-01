@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { RiDeleteBin5Fill, RiVideoUploadLine } from "react-icons/ri";
 import { FiUploadCloud, FiFilm } from "react-icons/fi";
-import { IoCloseCircleSharp } from "react-icons/io5";
 import { useParams, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -229,9 +228,9 @@ const AddLecture = () => {
                 <button
                   type="button"
                   onClick={removeVideoFile}
-                  className="absolute top-3 right-3 z-10 text-red-500 hover:text-red-700 bg-white rounded-full p-0.5 shadow-md transition-transform hover:scale-110"
+                  className="absolute top-3 right-3 z-10 bg-red-500 hover:bg-red-700 text-white rounded-full p-1 shadow-md transition-transform hover:scale-110"
                 >
-                  <IoCloseCircleSharp className="text-2xl" />
+                  <RiDeleteBin5Fill className="text-xl" />
                 </button>
 
                 <div className="bg-emerald-500 text-white p-4 rounded-xl mb-3">

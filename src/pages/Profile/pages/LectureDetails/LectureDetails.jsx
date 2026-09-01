@@ -81,6 +81,13 @@ const LectureDetails = () => {
               controlsList="nodownload noremoteplayback"
               disablePictureInPicture
               onContextMenu={(e) => e.preventDefault()}
+              onEnded={() => {
+                if (
+                  !(lecture?.is_watched === 1 || lecture?.is_watched === true)
+                ) {
+                  markAsWatched();
+                }
+              }}
               className="w-full h-full object-cover"
             >
               {t("lectureDetails.videoNotSupported")}

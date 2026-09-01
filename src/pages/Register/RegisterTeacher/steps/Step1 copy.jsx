@@ -292,11 +292,11 @@ const Step1 = ({ setParentData, parentData, goNext }) => {
 
       {/* خط فاصل وزر التسجيل بجوجل */}
       <div className="relative flex py-2 items-center">
-        <div className="flex-grow border-t border-muted"></div>
-        <span className="flex-shrink mx-4 text-muted-foreground text-xs uppercase">
+        <div className="grow border-t border-muted"></div>
+        <span className="shrink mx-4 text-muted-foreground text-xs uppercase">
           {t("or")}
         </span>
-        <div className="flex-grow border-t border-muted"></div>
+        <div className="grow border-t border-muted"></div>
       </div>
 
       <div className="w-full flex justify-center">

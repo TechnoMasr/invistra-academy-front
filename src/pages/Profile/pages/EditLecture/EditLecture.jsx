@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RiDeleteBin5Fill, RiVideoUploadLine } from "react-icons/ri";
 import { FiUploadCloud, FiFilm } from "react-icons/fi";
-import { IoCloseCircleSharp } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -304,9 +303,9 @@ const EditLecture = () => {
                   <button
                     type="button"
                     onClick={removeVideoFile}
-                    className="absolute top-3 right-3 z-10 text-red-500 hover:text-red-700 bg-white rounded-full p-0.5 shadow-md transition-transform hover:scale-110"
+                    className="absolute top-3 right-3 z-10 bg-red-500 hover:bg-red-700 text-white rounded-full p-1 shadow-md transition-transform hover:scale-110"
                   >
-                    <IoCloseCircleSharp className="text-2xl" />
+                    <RiDeleteBin5Fill className="text-xl" />
                   </button>
                 )}
 
@@ -486,10 +485,10 @@ const EditLecture = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveOldFile(file.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1"
+                      className="bg-red-500 hover:bg-red-700 text-white transition-colors flex items-center p-1 rounded-full"
                       title={t("addLecture.deleteFile")}
                     >
-                      <IoCloseCircleSharp className="text-xl" />
+                      <RiDeleteBin5Fill className="text-lg" />
                     </button>
                   )}
                 </div>

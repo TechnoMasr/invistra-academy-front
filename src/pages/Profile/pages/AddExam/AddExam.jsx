@@ -831,7 +831,7 @@ const AddExam = () => {
                           onChange(file);
                         });
                       }}
-                      className={`relative flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition-all duration-200 ${
+                      className={`relative flex min-h-55 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition-all duration-200 ${
                         isDragging
                           ? "border-primary bg-primary/10 scale-[1.01]"
                           : selectedFile
